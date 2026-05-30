@@ -1,74 +1,53 @@
 @import "tailwindcss";
 
 :root {
-  --scg-green: #1a7a3a;
-  --scg-dark-green: #0f5228;
-  --scg-light-green: #2ea04f;
-  --scg-gold: #f5a623;
-  --scg-dark-gold: #d4891a;
-  --scg-cream: #fffef5;
+  --scg-navy: #1a1a2e;
+  --scg-dark: #2d2d2d;
+  --scg-mid: #555;
+  --scg-light: #888;
+  --scg-border: #e5e5e5;
+  --scg-bg: #ffffff;
+  --scg-bg-soft: #f9f9f9;
+  --scg-accent: #1e3a8a;
+  --scg-green: #16a34a;
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #2d2d2d;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-scg-green: var(--scg-green);
-  --color-scg-dark-green: var(--scg-dark-green);
-  --color-scg-light-green: var(--scg-light-green);
-  --color-scg-gold: var(--scg-gold);
-  --color-scg-dark-gold: var(--scg-dark-gold);
-  --color-scg-cream: var(--scg-cream);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
-}
-
-.scg-gradient {
-  background: linear-gradient(135deg, #0f5228 0%, #1a7a3a 50%, #2ea04f 100%);
-}
-
-.gold-gradient {
-  background: linear-gradient(135deg, #f5a623 0%, #d4891a 100%);
-}
-
-.quiz-option:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(26, 122, 58, 0.25);
+  background: #fff;
+  color: var(--scg-dark);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
 .quiz-option {
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.speaking-indicator {
-  animation: pulse-green 1.5s ease-in-out infinite;
+.quiz-option:hover {
+  border-color: #1e3a8a !important;
+  background: #eff6ff !important;
 }
 
-@keyframes pulse-green {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+.speaking-pulse {
+  animation: spulse 1.4s ease-in-out infinite;
 }
 
-.star-burst {
-  animation: star-pop 0.5s ease-out;
+@keyframes spulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.92); }
 }
 
-@keyframes star-pop {
-  0% { transform: scale(0) rotate(-30deg); opacity: 0; }
-  60% { transform: scale(1.2) rotate(5deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+.fade-in {
+  animation: fadein 0.4s ease;
 }
 
-.result-bounce {
-  animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes bounce-in {
-  0% { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }

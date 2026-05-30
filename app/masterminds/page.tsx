@@ -3,139 +3,74 @@ import Link from "next/link";
 export default function MastermindsPage() {
   return (
     <div>
-      <section
-        className="py-16 px-4 text-white"
-        style={{ background: "linear-gradient(135deg, #0f5228, #1a7a3a)" }}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <div
-            className="inline-block px-4 py-1 rounded-full text-sm font-semibold mb-4"
-            style={{ backgroundColor: "#f5a623", color: "#0f5228" }}
-          >
-            SCG Masterminds
-          </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4">
-            Free Learning Resources
-          </h1>
-          <p className="text-xl text-green-100 max-w-2xl mx-auto">
-            Choose your year group to begin. Each section includes AI-read comprehensions and interactive quizzes
-            with results emailed directly to parents.
+      <section className="bg-gray-50 border-b border-gray-200 py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">SCG Masterminds</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Free Learning Resources</h1>
+          <p className="text-gray-500 text-base max-w-xl">
+            Choose your year group to begin. Stories are read aloud by your device, then your child answers five questions. Results are emailed to the parent.
           </p>
         </div>
       </section>
 
-      <section className="py-16 px-4">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8" style={{ color: "#0f5228" }}>
-            Year 2 — Ages 6–7
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+      <section className="py-14 px-6">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Year 2 <span className="font-normal text-gray-400">— Ages 6–7</span></h2>
+          <p className="text-sm text-gray-400 mb-6">Short stories with clear vocabulary and five comprehension questions</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
             <Link href="/masterminds/year-2/english">
-              <div
-                className="rounded-2xl p-8 text-white transition-all hover:scale-105 shadow-lg cursor-pointer"
-                style={{ background: "linear-gradient(135deg, #1a7a3a, #2ea04f)" }}
-              >
-                <div className="text-4xl mb-4">📖</div>
-                <h3 className="text-2xl font-bold mb-2">English — Comprehension</h3>
-                <p className="text-green-100 mb-4">
-                  5 stories read aloud by AI, each followed by 5 multiple-choice questions. Perfect for building
-                  reading comprehension at Year 2 level.
-                </p>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer">
+                <div className="text-2xl mb-3">📖</div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">English</div>
+                <h3 className="text-base font-bold text-gray-900 mb-2">Comprehension Quizzes</h3>
+                <p className="text-sm text-gray-500 mb-4">5 read-aloud stories, 5 questions each. Results emailed to parent.</p>
                 <div className="flex items-center gap-2">
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: "#f5a623", color: "#0f5228" }}
-                  >
-                    5 Comprehensions
-                  </span>
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: "#f5a623", color: "#0f5228" }}
-                  >
-                    Free
-                  </span>
+                  <span className="bg-blue-50 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">5 quizzes</span>
+                  <span className="bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">Free</span>
                 </div>
               </div>
             </Link>
-
-            <div
-              className="rounded-2xl p-8 text-white shadow-lg opacity-60"
-              style={{ background: "linear-gradient(135deg, #555, #777)" }}
-            >
-              <div className="text-4xl mb-4">🔢</div>
-              <h3 className="text-2xl font-bold mb-2">Maths — Coming Soon</h3>
-              <p className="text-gray-300 mb-4">
-                Addition, subtraction, multiplication and division practice activities for Year 2.
-              </p>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-600 text-gray-300">
-                Coming Soon
-              </span>
+            <div className="bg-white border border-dashed border-gray-200 rounded-xl p-6 opacity-50">
+              <div className="text-2xl mb-3">🔢</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Maths</div>
+              <h3 className="text-base font-bold text-gray-900 mb-2">Skills Practice</h3>
+              <p className="text-sm text-gray-500 mb-4">Addition, subtraction, multiplication and division for Year 2.</p>
+              <span className="text-xs text-gray-400 border border-gray-200 px-2.5 py-1 rounded-full">Coming Soon</span>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold mb-8" style={{ color: "#0f5228" }}>
-            Year 3 — Ages 7–8
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Year 3 <span className="font-normal text-gray-400">— Ages 7–8</span></h2>
+          <p className="text-sm text-gray-400 mb-6">Longer fiction and non-fiction passages with more challenging questions</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-12">
             <Link href="/masterminds/year-3/english">
-              <div
-                className="rounded-2xl p-8 text-white transition-all hover:scale-105 shadow-lg cursor-pointer"
-                style={{ background: "linear-gradient(135deg, #0f5228, #1a7a3a)" }}
-              >
-                <div className="text-4xl mb-4">📚</div>
-                <h3 className="text-2xl font-bold mb-2">English — Comprehension</h3>
-                <p className="text-green-100 mb-4">
-                  5 longer, more challenging passages including fiction and non-fiction texts, each with 5
-                  multiple-choice questions at Year 3 level.
-                </p>
+              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md hover:border-gray-300 transition-all cursor-pointer">
+                <div className="text-2xl mb-3">📚</div>
+                <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">English</div>
+                <h3 className="text-base font-bold text-gray-900 mb-2">Comprehension Quizzes</h3>
+                <p className="text-sm text-gray-500 mb-4">5 read-aloud passages including fiction and non-fiction, 5 questions each.</p>
                 <div className="flex items-center gap-2">
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: "#f5a623", color: "#0f5228" }}
-                  >
-                    5 Comprehensions
-                  </span>
-                  <span
-                    className="px-3 py-1 rounded-full text-xs font-bold"
-                    style={{ backgroundColor: "#f5a623", color: "#0f5228" }}
-                  >
-                    Free
-                  </span>
+                  <span className="bg-blue-50 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">5 quizzes</span>
+                  <span className="bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">Free</span>
                 </div>
               </div>
             </Link>
-
-            <div
-              className="rounded-2xl p-8 text-white shadow-lg opacity-60"
-              style={{ background: "linear-gradient(135deg, #555, #777)" }}
-            >
-              <div className="text-4xl mb-4">🔢</div>
-              <h3 className="text-2xl font-bold mb-2">Maths — Coming Soon</h3>
-              <p className="text-gray-300 mb-4">
-                Times tables, written methods for addition and subtraction, and more for Year 3.
-              </p>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-600 text-gray-300">
-                Coming Soon
-              </span>
+            <div className="bg-white border border-dashed border-gray-200 rounded-xl p-6 opacity-50">
+              <div className="text-2xl mb-3">🔢</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Maths</div>
+              <h3 className="text-base font-bold text-gray-900 mb-2">Skills Practice</h3>
+              <p className="text-sm text-gray-500 mb-4">Times tables, written methods and more for Year 3.</p>
+              <span className="text-xs text-gray-400 border border-gray-200 px-2.5 py-1 rounded-full">Coming Soon</span>
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold mb-8" style={{ color: "#0f5228" }}>
-            Year 6 — SATs Preparation
-          </h2>
-          <div
-            className="rounded-2xl p-8 text-white shadow-lg opacity-60 max-w-md"
-            style={{ background: "linear-gradient(135deg, #333, #555)" }}
-          >
-            <div className="text-4xl mb-4">🎓</div>
-            <h3 className="text-2xl font-bold mb-2">SATs Prep — Coming Soon</h3>
-            <p className="text-gray-300 mb-4">
-              Full SATs preparation materials including reading comprehension, grammar, and maths practice for Year 6
-              pupils.
-            </p>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-600 text-gray-300">
-              Coming Soon
-            </span>
+          <h2 className="text-lg font-bold text-gray-800 mb-1">Year 6 <span className="font-normal text-gray-400">— SATs Preparation</span></h2>
+          <p className="text-sm text-gray-400 mb-6">Full SATs preparation materials — coming soon</p>
+          <div className="bg-white border border-dashed border-gray-200 rounded-xl p-6 opacity-50 max-w-sm">
+            <div className="text-2xl mb-3">🎓</div>
+            <div className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">SATs Prep</div>
+            <h3 className="text-base font-bold text-gray-900 mb-2">Year 6 Resources</h3>
+            <p className="text-sm text-gray-500 mb-4">Reading comprehension, grammar, and maths practice.</p>
+            <span className="text-xs text-gray-400 border border-gray-200 px-2.5 py-1 rounded-full">Coming Soon</span>
           </div>
         </div>
       </section>

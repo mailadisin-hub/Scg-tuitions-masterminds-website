@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 100" width="220" height="100">
+  <!-- "11" in dark navy -->
+  <text x="18" y="54" font-family="Arial Black, Arial" font-weight="900" font-size="46" fill="#1a2870">11</text>
+  <!-- Pencil (part of the "1") — orange tip -->
+  <polygon points="71,56 77,56 74,64" fill="#e8781a"/>
+  <!-- "+" in green -->
+  <text x="78" y="32" font-family="Arial Black, Arial" font-weight="900" font-size="22" fill="#27ae60">+</text>
+
+  <!-- Open book (teal pages) -->
+  <ellipse cx="74" cy="70" rx="52" ry="10" fill="#00b4c8" opacity="0.85"/>
+  <path d="M22 70 Q74 58 126 70" fill="#27ae60" opacity="0.9"/>
+  <line x1="74" y1="60" x2="74" y2="72" stroke="#1a2870" strokeWidth="1.5"/>
+
+  <!-- Green stick figure (right of 11+) -->
+  <!-- Head -->
+  <circle cx="118" cy="26" r="9" fill="#f9c823"/>
+  <circle cx="115" cy="24" r="1.5" fill="#333"/>
+  <circle cx="121" cy="24" r="1.5" fill="#333"/>
+  <path d="M114 29 Q118 33 122 29" stroke="#333" strokeWidth="1.2" fill="none"/>
+  <!-- Body -->
+  <line x1="118" y1="35" x2="118" y2="52" stroke="#27ae60" strokeWidth="3.5" strokeLinecap="round"/>
+  <!-- Arms raised -->
+  <line x1="118" y1="40" x2="107" y2="32" stroke="#27ae60" strokeWidth="3" strokeLinecap="round"/>
+  <line x1="118" y1="40" x2="129" y2="32" stroke="#27ae60" strokeWidth="3" strokeLinecap="round"/>
+  <!-- Legs -->
+  <line x1="118" y1="52" x2="111" y2="62" stroke="#27ae60" strokeWidth="3" strokeLinecap="round"/>
+  <line x1="118" y1="52" x2="125" y2="62" stroke="#27ae60" strokeWidth="3" strokeLinecap="round"/>
+
+  <!-- "SCG Tuitions" text -->
+  <text x="10" y="92" font-family="Arial Black, Arial" font-weight="900" font-size="18" fill="#1a2870">SCG </text>
+  <text x="55" y="92" font-family="Arial Black, Arial" font-weight="900" font-size="18" fill="#27ae60">Tuitions</text>
+</svg>
