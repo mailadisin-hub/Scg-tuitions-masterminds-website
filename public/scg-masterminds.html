@@ -1,0 +1,1233 @@
+<!--
+  ============================================================================
+  SCG MASTERMINDS  —  Embeddable sub-page for scgtuitions.co.uk
+  ============================================================================
+  HOW TO USE
+  • This is a "bare content block". Paste everything between the two
+    <!-- SCGMM:START --> and <!-- SCGMM:END --> markers into the body of the
+    new "SCG Masterminds" page on your website. It brings its own styles and
+    scripts (all scoped under #scgmm so it won't clash with your site theme).
+  • No server required. Read-aloud uses the browser's built-in voice (free).
+
+  WHERE THE DATA GOES (parent emails + scores)
+  • Every completed quiz is saved in the visitor's browser AND, if you set a
+    SUBMIT_ENDPOINT below, POSTed to that URL so it lands in a Google Sheet /
+    spreadsheet you can automate later (e.g. with your OpenClaw automation).
+  • To pull every result as an Excel file at any time: open the page with
+    #scg-admin on the end of the URL  (e.g.  .../masterminds#scg-admin )
+    or press  Ctrl + Shift + E  — then click "Download Excel (.csv)".
+
+  TO WIRE UP A LIVE SPREADSHEET (optional, do later):
+  • Create a Google Apps Script Web App that appends the POSTed JSON as a row
+    to a Google Sheet, publish it, and paste its URL into SUBMIT_ENDPOINT in
+    the script block near the bottom (search for "SUBMIT_ENDPOINT").
+  ============================================================================
+-->
+
+<!-- SCGMM:START -->
+<section id="scgmm">
+<style>
+/* ===== Fonts (falls back gracefully if blocked) ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ===== Scoped reset — only affects elements inside #scgmm ===== */
+#scgmm, #scgmm *, #scgmm *::before, #scgmm *::after { box-sizing: border-box; }
+#scgmm {
+  --navy:#1a2870; --navy-deep:#111a4d; --green:#27ae60; --green-deep:#1e8c4d;
+  --teal:#00b4c8; --yellow:#f9c823; --orange:#e8781a;
+  --ink:#1f2433; --muted:#6b7280; --line:#e7e9f0; --bg:#ffffff; --bg-soft:#f6f8fc;
+  --radius:16px; --shadow:0 10px 40px -12px rgba(26,40,112,.18);
+  --shadow-lg:0 24px 70px -20px rgba(26,40,112,.35);
+  font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+  background:var(--bg); position:relative;
+}
+#scgmm h1,#scgmm h2,#scgmm h3,#scgmm h4 { font-family:'Poppins','Segoe UI',sans-serif; line-height:1.2; margin:0; color:var(--navy); }
+#scgmm p { margin:0; }
+#scgmm button { font-family:inherit; cursor:pointer; border:none; background:none; }
+#scgmm a { color:inherit; }
+#scgmm img,#scgmm svg { display:block; }
+
+/* ===== Layout helpers ===== */
+#scgmm .mm-wrap { max-width:1080px; margin:0 auto; padding:0 22px; }
+#scgmm .mm-section { padding:54px 0; }
+
+/* ===== HERO ===== */
+#scgmm .mm-hero {
+  position:relative; overflow:hidden;
+  background:
+    radial-gradient(1200px 500px at 85% -10%, rgba(0,180,200,.30), transparent 60%),
+    radial-gradient(900px 500px at 10% 120%, rgba(39,174,96,.28), transparent 55%),
+    linear-gradient(135deg, var(--navy-deep), var(--navy) 60%, #243a9c);
+  color:#fff; padding:64px 0 72px;
+}
+#scgmm .mm-hero::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(rgba(255,255,255,.10) 1px, transparent 1px);
+  background-size:22px 22px; opacity:.5; mask-image:linear-gradient(to bottom, #000, transparent);
+}
+#scgmm .mm-hero .mm-wrap { position:relative; z-index:2; }
+#scgmm .mm-badge{
+  display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:12.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:#cfe0ff;
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.22);
+  padding:7px 14px; border-radius:999px; backdrop-filter:blur(6px);
+}
+#scgmm .mm-hero h1{ color:#fff; font-size:clamp(34px,5vw,56px); font-weight:800; margin:18px 0 14px; letter-spacing:-.01em; }
+#scgmm .mm-hero h1 .accent{ background:linear-gradient(90deg,var(--yellow),#ffd95e); -webkit-background-clip:text; background-clip:text; color:transparent; }
+#scgmm .mm-hero p.lead{ font-size:clamp(16px,1.8vw,19px); color:#dfe6ff; max-width:640px; }
+#scgmm .mm-hero .mm-stats{ display:flex; flex-wrap:wrap; gap:14px; margin-top:30px; }
+#scgmm .mm-hero .mm-stat{
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16);
+  border-radius:14px; padding:14px 18px; min-width:120px; backdrop-filter:blur(6px);
+}
+#scgmm .mm-hero .mm-stat b{ display:block; font-family:'Poppins'; font-size:24px; color:#fff; }
+#scgmm .mm-hero .mm-stat span{ font-size:12.5px; color:#c7d3ff; }
+
+/* ===== Tabs ===== */
+#scgmm .mm-tabs{ position:sticky; top:0; z-index:30; background:rgba(255,255,255,.92);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
+#scgmm .mm-tabs .mm-wrap{ display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+#scgmm .mm-tabs .mm-wrap::-webkit-scrollbar{ display:none; }
+#scgmm .mm-tab{
+  position:relative; white-space:nowrap; padding:18px 18px 16px; font-weight:600; font-size:15px;
+  color:var(--muted); border-bottom:3px solid transparent; transition:color .2s; display:flex; align-items:center; gap:8px;
+}
+#scgmm .mm-tab:hover{ color:var(--navy); }
+#scgmm .mm-tab.active{ color:var(--navy); border-bottom-color:var(--navy); }
+#scgmm .mm-tab .pill{ font-size:11px; font-weight:700; background:var(--bg-soft); color:var(--muted); padding:2px 8px; border-radius:999px; }
+#scgmm .mm-tab.active .pill{ background:#eaf0ff; color:var(--navy); }
+
+#scgmm .mm-panel{ display:none; animation:mmFade .45s ease; }
+#scgmm .mm-panel.active{ display:block; }
+@keyframes mmFade{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+
+/* ===== Section headers ===== */
+#scgmm .mm-shead{ margin-bottom:26px; }
+#scgmm .mm-shead .eyebrow{ font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:var(--green); margin-bottom:8px; }
+#scgmm .mm-shead h2{ font-size:clamp(24px,3vw,32px); font-weight:800; }
+#scgmm .mm-shead p{ color:var(--muted); margin-top:8px; max-width:620px; }
+
+/* ===== Year group band ===== */
+#scgmm .mm-yearband{ display:flex; align-items:center; gap:12px; margin:38px 0 18px; }
+#scgmm .mm-yearband:first-child{ margin-top:0; }
+#scgmm .mm-yearband .chip{ font-family:'Poppins'; font-weight:700; font-size:13px; padding:6px 14px; border-radius:999px; color:#fff; }
+#scgmm .mm-yearband h3{ font-size:20px; }
+#scgmm .mm-yearband .sub{ color:var(--muted); font-size:14px; }
+
+/* ===== Cards grid ===== */
+#scgmm .mm-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(258px,1fr)); gap:18px; }
+#scgmm .mm-card{
+  background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px;
+  display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s, border-color .25s;
+  position:relative; overflow:hidden;
+}
+#scgmm .mm-card::before{ content:""; position:absolute; left:0; top:0; height:4px; width:100%; background:var(--accent,var(--navy)); opacity:0; transition:opacity .25s; }
+#scgmm .mm-card:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:transparent; }
+#scgmm .mm-card:hover::before{ opacity:1; }
+#scgmm .mm-card .top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+#scgmm .mm-card .num{ width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-family:'Poppins'; font-weight:700; color:#fff; font-size:16px; background:var(--accent,var(--navy)); }
+#scgmm .mm-card .tag{ font-size:11px; font-weight:700; padding:4px 10px; border-radius:999px; background:var(--accent-soft,#eaf0ff); color:var(--accent,var(--navy)); }
+#scgmm .mm-card h4{ font-size:17px; margin-bottom:7px; }
+#scgmm .mm-card .desc{ font-size:13.5px; color:var(--muted); flex:1; margin-bottom:16px;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+#scgmm .mm-card .foot{ display:flex; align-items:center; justify-content:space-between; font-size:12.5px; color:var(--muted); }
+#scgmm .mm-card .go{ font-weight:700; color:var(--accent,var(--navy)); display:inline-flex; align-items:center; gap:5px; }
+#scgmm .mm-card .go svg{ transition:transform .2s; }
+#scgmm .mm-card:hover .go svg{ transform:translateX(3px); }
+
+/* "Coming soon" card */
+#scgmm .mm-card.soon{ border-style:dashed; opacity:.72; }
+#scgmm .mm-card.soon:hover{ transform:none; box-shadow:none; }
+#scgmm .mm-card.soon::before{ display:none; }
+#scgmm .mm-soon-tag{ font-size:11px; font-weight:700; color:var(--muted); border:1px solid var(--line); padding:4px 10px; border-radius:999px; align-self:flex-start; }
+
+/* ===== Feature strip ===== */
+#scgmm .mm-features{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:34px; }
+#scgmm .mm-feat{ background:var(--bg-soft); border:1px solid var(--line); border-radius:14px; padding:20px; }
+#scgmm .mm-feat .ic{ width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; margin-bottom:12px; }
+#scgmm .mm-feat h4{ font-size:15.5px; margin-bottom:5px; }
+#scgmm .mm-feat p{ font-size:13px; color:var(--muted); }
+
+/* ===== Maths controls ===== */
+#scgmm .mm-ops{ display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:16px; }
+#scgmm .mm-op{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px; text-align:center; transition:transform .2s, box-shadow .2s, border-color .2s; position:relative; overflow:hidden; }
+#scgmm .mm-op:hover{ transform:translateY(-4px); box-shadow:var(--shadow); border-color:transparent; }
+#scgmm .mm-op .sym{ font-family:'Poppins'; font-size:34px; font-weight:800; line-height:1; margin-bottom:10px; }
+#scgmm .mm-op h4{ font-size:16px; margin-bottom:4px; }
+#scgmm .mm-op p{ font-size:12.5px; color:var(--muted); margin-bottom:14px; }
+#scgmm .mm-op .start{ font-size:13px; font-weight:700; color:#fff; padding:9px 14px; border-radius:10px; width:100%; transition:filter .2s; }
+#scgmm .mm-op .start:hover{ filter:brightness(1.08); }
+
+/* ===== FAQ ===== */
+#scgmm .mm-faq{ max-width:760px; margin:0 auto; }
+#scgmm .mm-q{ border:1px solid var(--line); border-radius:14px; margin-bottom:12px; overflow:hidden; background:#fff; transition:box-shadow .2s; }
+#scgmm .mm-q[open]{ box-shadow:var(--shadow); }
+#scgmm .mm-q summary{ list-style:none; cursor:pointer; padding:18px 22px; font-weight:600; font-size:15.5px; color:var(--navy); display:flex; justify-content:space-between; align-items:center; gap:16px; }
+#scgmm .mm-q summary::-webkit-details-marker{ display:none; }
+#scgmm .mm-q summary .plus{ flex:none; width:24px; height:24px; border-radius:50%; background:var(--bg-soft); display:flex; align-items:center; justify-content:center; font-size:18px; color:var(--green); transition:transform .25s, background .2s; }
+#scgmm .mm-q[open] summary .plus{ transform:rotate(45deg); background:var(--green); color:#fff; }
+#scgmm .mm-q .ans{ padding:0 22px 20px; color:var(--muted); font-size:14.5px; }
+
+/* ===== FSCE section ===== */
+#scgmm .mm-fsce-hero{ background:linear-gradient(135deg,var(--navy),#2a3f9e); color:#fff; border-radius:22px; padding:38px; position:relative; overflow:hidden; }
+#scgmm .mm-fsce-hero::after{ content:""; position:absolute; right:-40px; top:-40px; width:240px; height:240px; border-radius:50%; background:radial-gradient(circle,rgba(0,180,200,.45),transparent 70%); }
+#scgmm .mm-fsce-hero h2{ color:#fff; font-size:28px; max-width:560px; position:relative; }
+#scgmm .mm-fsce-hero p{ color:#d9e1ff; max-width:560px; margin-top:12px; position:relative; }
+#scgmm .mm-fsce-feats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-top:26px; position:relative; }
+#scgmm .mm-fsce-feat{ background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16); border-radius:12px; padding:16px; }
+#scgmm .mm-fsce-feat b{ display:block; font-family:'Poppins'; font-size:14px; color:#fff; margin-bottom:3px; }
+#scgmm .mm-fsce-feat span{ font-size:12.5px; color:#c7d3ff; }
+#scgmm .mm-fsce-cta{ margin-top:26px; position:relative; display:flex; gap:12px; flex-wrap:wrap; }
+#scgmm .mm-btn-primary{ background:var(--green); color:#fff; font-weight:700; padding:13px 24px; border-radius:12px; font-size:15px; transition:filter .2s, transform .15s; }
+#scgmm .mm-btn-primary:hover{ filter:brightness(1.08); transform:translateY(-2px); }
+#scgmm .mm-btn-ghost{ background:rgba(255,255,255,.12); color:#fff; font-weight:600; padding:13px 22px; border-radius:12px; font-size:15px; border:1px solid rgba(255,255,255,.25); }
+#scgmm .mm-noselect{ -webkit-user-select:none; user-select:none; }
+
+/* ===== MODAL (quiz runner) ===== */
+#scgmm-modal{ position:fixed; inset:0; z-index:9999; display:none; align-items:flex-start; justify-content:center;
+  background:rgba(17,26,77,.55); backdrop-filter:blur(5px); padding:24px 16px; overflow-y:auto; }
+#scgmm-modal.open{ display:flex; animation:mmFade .3s ease; }
+#scgmm-modal .sheet{
+  background:#fff; width:100%; max-width:720px; border-radius:22px; box-shadow:var(--shadow-lg);
+  margin:auto; overflow:hidden; position:relative; animation:mmPop .35s cubic-bezier(.2,.9,.3,1.2);
+}
+@keyframes mmPop{ from{opacity:0; transform:scale(.94) translateY(14px);} to{opacity:1; transform:none;} }
+#scgmm-modal .bar{ height:6px; background:var(--bg-soft); }
+#scgmm-modal .bar > i{ display:block; height:100%; width:0; background:linear-gradient(90deg,var(--green),var(--teal)); transition:width .4s ease; }
+#scgmm-modal .head{ display:flex; align-items:center; justify-content:space-between; padding:18px 26px; border-bottom:1px solid var(--line); }
+#scgmm-modal .head .meta{ display:flex; align-items:center; gap:11px; }
+#scgmm-modal .head .ico{ width:36px; height:36px; border-radius:10px; background:var(--accent,var(--navy)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:17px; }
+#scgmm-modal .head h3{ font-size:16px; }
+#scgmm-modal .head .sub{ font-size:12px; color:var(--muted); }
+#scgmm-modal .close{ width:34px; height:34px; border-radius:50%; background:var(--bg-soft); color:var(--muted); font-size:20px; display:flex; align-items:center; justify-content:center; transition:background .2s,color .2s; }
+#scgmm-modal .close:hover{ background:#ffe3e3; color:#d33; }
+#scgmm-modal .body{ padding:30px 30px 34px; }
+
+/* phase: intro */
+#scgmm .ph-intro{ text-align:center; }
+#scgmm .ph-intro .emoji{ font-size:54px; margin-bottom:10px; }
+#scgmm .ph-intro h2{ font-size:26px; margin-bottom:10px; }
+#scgmm .ph-intro p{ color:var(--muted); max-width:440px; margin:0 auto 8px; }
+#scgmm .ph-intro .steps{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:22px 0 26px; }
+#scgmm .ph-intro .step{ background:var(--bg-soft); border:1px solid var(--line); border-radius:12px; padding:12px 16px; font-size:13px; font-weight:600; color:var(--navy); display:flex; align-items:center; gap:8px; }
+#scgmm .ph-intro .step .n{ width:22px; height:22px; border-radius:50%; background:var(--accent,var(--navy)); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center; }
+
+/* phase: reading */
+#scgmm .read-passage{ background:var(--bg-soft); border:1px solid var(--line); border-radius:16px; padding:26px; max-height:46vh; overflow-y:auto; font-size:17px; line-height:1.85; color:#2a3042; }
+#scgmm .read-passage p{ margin-bottom:14px; }
+#scgmm .read-passage .sent{ transition:background .2s; border-radius:4px; padding:1px 2px; }
+#scgmm .read-passage .sent.on{ background:var(--yellow); color:#3a2e00; box-shadow:0 0 0 4px var(--yellow); }
+#scgmm .read-controls{ display:flex; align-items:center; gap:12px; margin-top:20px; flex-wrap:wrap; }
+#scgmm .read-status{ display:flex; align-items:center; gap:9px; font-size:14px; color:var(--muted); font-weight:600; margin-right:auto; }
+#scgmm .read-dot{ width:11px; height:11px; border-radius:50%; background:#cbd2e0; }
+#scgmm .read-dot.live{ background:var(--green); animation:mmPulse 1s infinite; }
+@keyframes mmPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(39,174,96,.5);} 50%{ box-shadow:0 0 0 8px rgba(39,174,96,0);} }
+#scgmm .ctl{ display:inline-flex; align-items:center; gap:8px; font-weight:700; font-size:14px; padding:11px 18px; border-radius:11px; transition:filter .2s, transform .15s, background .2s; }
+#scgmm .ctl.play{ background:var(--green); color:#fff; }
+#scgmm .ctl.stop{ background:#fff; color:#d33; border:1.5px solid #f3c4c4; }
+#scgmm .ctl.replay{ background:var(--bg-soft); color:var(--navy); border:1.5px solid var(--line); }
+#scgmm .ctl.next{ background:var(--accent,var(--navy)); color:#fff; margin-left:auto; }
+#scgmm .ctl:hover{ filter:brightness(1.05); transform:translateY(-1px); }
+#scgmm .read-hint{ font-size:12.5px; color:var(--muted); margin-top:14px; text-align:center; }
+
+/* phase: quiz */
+#scgmm .q-prog{ font-size:12.5px; font-weight:700; color:var(--accent,var(--navy)); letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px; }
+#scgmm .q-text{ font-size:20px; font-weight:700; color:var(--navy); margin-bottom:20px; font-family:'Poppins'; }
+#scgmm .q-opts{ display:flex; flex-direction:column; gap:11px; }
+#scgmm .q-opt{ text-align:left; border:1.5px solid var(--line); background:#fff; border-radius:13px; padding:15px 18px; font-size:15px; display:flex; align-items:center; gap:13px; transition:border-color .15s, background .15s, transform .1s; }
+#scgmm .q-opt .key{ flex:none; width:28px; height:28px; border-radius:8px; background:var(--bg-soft); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; color:var(--muted); transition:background .15s,color .15s; }
+#scgmm .q-opt:hover:not(.locked){ border-color:var(--accent,var(--navy)); background:#fafbff; }
+#scgmm .q-opt:hover:not(.locked) .key{ background:var(--accent,var(--navy)); color:#fff; }
+#scgmm .q-opt.locked{ cursor:default; }
+#scgmm .q-opt.correct{ border-color:var(--green); background:#eafaf0; }
+#scgmm .q-opt.correct .key{ background:var(--green); color:#fff; }
+#scgmm .q-opt.wrong{ border-color:#e57373; background:#fdeeee; }
+#scgmm .q-opt.wrong .key{ background:#e57373; color:#fff; }
+#scgmm .q-feedback{ margin-top:18px; padding:14px 18px; border-radius:12px; font-size:14.5px; font-weight:600; display:none; align-items:center; gap:10px; }
+#scgmm .q-feedback.show{ display:flex; }
+#scgmm .q-feedback.good{ background:#eafaf0; color:var(--green-deep); }
+#scgmm .q-feedback.bad{ background:#fdeeee; color:#c0392b; }
+#scgmm .q-next{ margin-top:18px; background:var(--accent,var(--navy)); color:#fff; font-weight:700; padding:13px 24px; border-radius:12px; font-size:15px; float:right; display:none; }
+#scgmm .q-next.show{ display:inline-block; }
+
+/* maths input */
+#scgmm .m-sum{ text-align:center; font-family:'Poppins'; font-weight:800; color:var(--navy); font-size:48px; margin:6px 0 22px; }
+#scgmm .m-input{ display:block; margin:0 auto 14px; width:170px; text-align:center; font-family:'Poppins'; font-size:30px; font-weight:700; color:var(--navy); padding:12px; border:2px solid var(--line); border-radius:14px; outline:none; transition:border-color .15s; }
+#scgmm .m-input:focus{ border-color:var(--accent,var(--navy)); }
+#scgmm .m-input.correct{ border-color:var(--green); background:#eafaf0; }
+#scgmm .m-input.wrong{ border-color:#e57373; background:#fdeeee; }
+#scgmm .m-check{ display:block; margin:0 auto; background:var(--accent,var(--navy)); color:#fff; font-weight:700; padding:12px 32px; border-radius:12px; font-size:15px; }
+
+/* phase: email/details */
+#scgmm .ph-form h2{ font-size:24px; margin-bottom:6px; }
+#scgmm .ph-form .score-pre{ text-align:center; margin-bottom:24px; }
+#scgmm .ph-form .score-pre .ring{ display:inline-flex; align-items:center; justify-content:center; width:96px; height:96px; border-radius:50%; font-family:'Poppins'; font-size:30px; font-weight:800; color:#fff; }
+#scgmm .field{ margin-bottom:15px; }
+#scgmm .field label{ display:block; font-size:13px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+#scgmm .field input{ width:100%; padding:13px 15px; border:1.5px solid var(--line); border-radius:11px; font-size:15px; font-family:inherit; outline:none; transition:border-color .15s; }
+#scgmm .field input:focus{ border-color:var(--accent,var(--navy)); }
+#scgmm .field .err{ color:#c0392b; font-size:12.5px; margin-top:5px; display:none; }
+#scgmm .field.invalid input{ border-color:#e57373; }
+#scgmm .field.invalid .err{ display:block; }
+#scgmm .consent{ display:flex; gap:10px; align-items:flex-start; background:var(--bg-soft); border:1px solid var(--line); border-radius:11px; padding:13px 15px; font-size:12.5px; color:var(--muted); margin:6px 0 20px; }
+#scgmm .consent input{ margin-top:2px; }
+#scgmm .ph-form .submit{ width:100%; background:var(--green); color:#fff; font-weight:700; padding:15px; border-radius:12px; font-size:16px; transition:filter .2s; }
+#scgmm .ph-form .submit:hover{ filter:brightness(1.07); }
+#scgmm .ph-form .submit:disabled{ opacity:.6; cursor:not-allowed; }
+#scgmm .saved-note{ font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
+
+/* phase: done/results */
+#scgmm .ph-done{ text-align:center; }
+#scgmm .ph-done .ring{ display:inline-flex; align-items:center; justify-content:center; width:130px; height:130px; border-radius:50%; font-family:'Poppins'; font-weight:800; color:#fff; margin-bottom:18px; position:relative; }
+#scgmm .ph-done .ring small{ display:block; font-size:13px; font-weight:600; opacity:.9; }
+#scgmm .ph-done .ring .big{ font-size:40px; line-height:1; }
+#scgmm .ph-done h2{ font-size:26px; margin-bottom:8px; }
+#scgmm .ph-done .msg{ color:var(--muted); max-width:420px; margin:0 auto 22px; }
+#scgmm .review{ text-align:left; margin:24px 0; }
+#scgmm .review .ritem{ display:flex; gap:12px; padding:12px 0; border-top:1px solid var(--line); font-size:14px; }
+#scgmm .review .ricon{ flex:none; width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:#fff; }
+#scgmm .review .ricon.ok{ background:var(--green); }
+#scgmm .review .ricon.no{ background:#e57373; }
+#scgmm .review .rq{ font-weight:600; color:var(--navy); }
+#scgmm .review .ra{ color:var(--muted); font-size:13px; margin-top:2px; }
+#scgmm .review .ra b{ color:var(--green-deep); }
+#scgmm .ph-done .actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+#scgmm .ph-done .actions button{ font-weight:700; padding:13px 22px; border-radius:12px; font-size:14.5px; }
+#scgmm .ph-done .again{ background:var(--accent,var(--navy)); color:#fff; }
+#scgmm .ph-done .more{ background:var(--bg-soft); color:var(--navy); border:1px solid var(--line); }
+#scgmm .confetti{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden; }
+#scgmm .confetti i{ position:absolute; width:9px; height:14px; top:-20px; opacity:.9; animation:mmFall linear forwards; }
+@keyframes mmFall{ to{ transform:translateY(120vh) rotate(540deg); opacity:0; } }
+
+/* ===== Admin panel ===== */
+#scgmm-admin{ position:fixed; right:18px; bottom:18px; z-index:99999; display:none; }
+#scgmm-admin.show{ display:block; }
+#scgmm-admin .panel{ background:#fff; border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow-lg); width:300px; padding:18px; }
+#scgmm-admin h4{ font-size:15px; margin-bottom:4px; }
+#scgmm-admin p{ font-size:12px; color:var(--muted); margin-bottom:14px; }
+#scgmm-admin .count{ font-family:'Poppins'; font-size:30px; font-weight:800; color:var(--navy); }
+#scgmm-admin button{ width:100%; font-weight:700; font-size:13.5px; padding:11px; border-radius:10px; margin-top:8px; }
+#scgmm-admin .dl{ background:var(--green); color:#fff; }
+#scgmm-admin .clr{ background:var(--bg-soft); color:#c0392b; border:1px solid var(--line); }
+#scgmm-admin .hide{ background:none; color:var(--muted); }
+
+/* ===== Footer note ===== */
+#scgmm .mm-foot{ text-align:center; padding:40px 0; color:var(--muted); font-size:13px; border-top:1px solid var(--line); }
+#scgmm .mm-foot .logo-row{ display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px; font-weight:700; color:var(--navy); font-family:'Poppins'; }
+
+@media (max-width:600px){
+  #scgmm .mm-section{ padding:40px 0; }
+  #scgmm-modal .body{ padding:24px 20px 28px; }
+  #scgmm .q-text{ font-size:18px; }
+  #scgmm .m-sum{ font-size:38px; }
+}
+</style>
+
+<!-- ===================== HERO ===================== -->
+<div class="mm-hero">
+  <div class="mm-wrap">
+    <span class="mm-badge">🧠 SCG Masterminds</span>
+    <h1>Learning that's <span class="accent">read aloud</span>,<br>scored &amp; sent to you</h1>
+    <p class="lead">Free interactive practice for Year 2 &amp; Year 3. Stories and questions are read aloud by the device, your child answers, and the results come straight to your inbox-ready report.</p>
+    <div class="mm-stats">
+      <div class="mm-stat"><b>10</b><span>Read-aloud comprehensions</span></div>
+      <div class="mm-stat"><b>4</b><span>Maths skills practised</span></div>
+      <div class="mm-stat"><b>11+</b><span>FSCE-style preparation</span></div>
+      <div class="mm-stat"><b>£0</b><span>Completely free</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TABS ===================== -->
+<div class="mm-tabs">
+  <div class="mm-wrap">
+    <button class="mm-tab active" data-tab="english">📖 English <span class="pill">10</span></button>
+    <button class="mm-tab" data-tab="maths">🔢 Maths <span class="pill">Y2 · Y3</span></button>
+    <button class="mm-tab" data-tab="fsce">🎓 11+ FSCE</button>
+    <button class="mm-tab" data-tab="faq">💬 FAQ</button>
+  </div>
+</div>
+
+<!-- ===================== ENGLISH ===================== -->
+<div class="mm-panel active" data-panel="english">
+  <div class="mm-section"><div class="mm-wrap">
+    <div class="mm-shead">
+      <div class="eyebrow">English · Reading Comprehension</div>
+      <h2>Read-aloud comprehension quizzes</h2>
+      <p>Pick a story. It's read aloud to your child sentence by sentence, then they answer five multiple-choice questions. A full results report is captured for the parent.</p>
+    </div>
+
+    <div class="mm-yearband">
+      <span class="chip" style="background:var(--navy)">Year 2</span>
+      <div><h3>Ages 6–7</h3><div class="sub">Short stories with clear vocabulary</div></div>
+    </div>
+    <div class="mm-grid" id="mm-y2-grid"></div>
+
+    <div class="mm-yearband" style="margin-top:42px">
+      <span class="chip" style="background:var(--green)">Year 3</span>
+      <div><h3>Ages 7–8</h3><div class="sub">Longer fiction &amp; non-fiction passages</div></div>
+    </div>
+    <div class="mm-grid" id="mm-y3-grid"></div>
+
+    <div class="mm-features">
+      <div class="mm-feat"><div class="ic" style="background:#eaf0ff">🔊</div><h4>Read aloud, free</h4><p>Uses your device's built-in voice — no apps, no AI costs, works on phones and tablets.</p></div>
+      <div class="mm-feat"><div class="ic" style="background:#eafaf0">✅</div><h4>Instant marking</h4><p>Five questions per story, marked as you go with friendly feedback.</p></div>
+      <div class="mm-feat"><div class="ic" style="background:#fff4d6">📊</div><h4>Parent report</h4><p>Every result is saved with a full question-by-question breakdown.</p></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===================== MATHS ===================== -->
+<div class="mm-panel" data-panel="maths">
+  <div class="mm-section"><div class="mm-wrap">
+    <div class="mm-shead">
+      <div class="eyebrow">Maths · Number Skills</div>
+      <h2>Quick-fire maths practice</h2>
+      <p>Ten questions per round, pitched to the year group. Your child types the answers and gets instant marking — then a results report is captured for the parent.</p>
+    </div>
+
+    <div class="mm-yearband">
+      <span class="chip" style="background:var(--navy)">Year 2</span>
+      <div><h3>Ages 6–7</h3><div class="sub">Numbers to 100, 2/5/10 times tables</div></div>
+    </div>
+    <div class="mm-ops" id="mm-maths-y2"></div>
+
+    <div class="mm-yearband" style="margin-top:42px">
+      <span class="chip" style="background:var(--green)">Year 3</span>
+      <div><h3>Ages 7–8</h3><div class="sub">Larger numbers &amp; tables up to 12×</div></div>
+    </div>
+    <div class="mm-ops" id="mm-maths-y3"></div>
+  </div></div>
+</div>
+
+<!-- ===================== FSCE ===================== -->
+<div class="mm-panel" data-panel="fsce">
+  <div class="mm-section"><div class="mm-wrap">
+    <div class="mm-fsce-hero mm-noselect">
+      <span class="mm-badge" style="background:rgba(255,255,255,.12)">🎓 Year 6 · 11+ Preparation</span>
+      <h2>FSCE-style practice paper</h2>
+      <p>A taste of the SCG Masterminds 11+ programme. Try a short mixed mini-paper — verbal reasoning, maths reasoning and comprehension — marked instantly, with the parent receiving a full report. Full papers are delivered on-screen only and are not downloadable.</p>
+      <div class="mm-fsce-feats">
+        <div class="mm-fsce-feat"><b>Verbal Reasoning</b><span>Words, codes &amp; logic</span></div>
+        <div class="mm-fsce-feat"><b>Maths Reasoning</b><span>Problem solving</span></div>
+        <div class="mm-fsce-feat"><b>Comprehension</b><span>Read &amp; infer</span></div>
+        <div class="mm-fsce-feat"><b>Timed &amp; marked</b><span>Exam-style</span></div>
+      </div>
+      <div class="mm-fsce-cta">
+        <button class="mm-btn-primary" id="mm-fsce-start">Start the mini-paper →</button>
+        <button class="mm-btn-ghost" data-tab-jump="faq">How does it work?</button>
+      </div>
+    </div>
+
+    <div class="mm-features">
+      <div class="mm-feat"><div class="ic" style="background:#eaf0ff">🖥️</div><h4>On-screen only</h4><p>Questions are presented in the browser and cannot be downloaded, copied or printed.</p></div>
+      <div class="mm-feat"><div class="ic" style="background:#eafaf0">🧩</div><h4>Mixed sections</h4><p>Mirrors the structure of real 11+ entrance assessments.</p></div>
+      <div class="mm-feat"><div class="ic" style="background:#fff4d6">📈</div><h4>Progress report</h4><p>Section-by-section breakdown captured for the parent.</p></div>
+    </div>
+  </div></div>
+</div>
+
+<!-- ===================== FAQ ===================== -->
+<div class="mm-panel" data-panel="faq">
+  <div class="mm-section"><div class="mm-wrap">
+    <div class="mm-shead" style="text-align:center">
+      <div class="eyebrow">Questions &amp; Answers</div>
+      <h2>Frequently asked questions</h2>
+    </div>
+    <div class="mm-faq" id="mm-faq"></div>
+  </div></div>
+</div>
+
+<!-- ===================== FOOTER NOTE ===================== -->
+<div class="mm-foot">
+  <div class="mm-wrap">
+    <div class="logo-row"><span style="color:var(--navy)">11+</span> <span>SCG Masterminds</span></div>
+    Part of SCG Tuitions · Helping children read, reason and shine.
+  </div>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div id="scgmm-modal" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="bar"><i id="mm-bar"></i></div>
+    <div class="head">
+      <div class="meta">
+        <div class="ico" id="mm-head-ico">📖</div>
+        <div><h3 id="mm-head-title">Quiz</h3><div class="sub" id="mm-head-sub">SCG Masterminds</div></div>
+      </div>
+      <button class="close" id="mm-close" aria-label="Close">×</button>
+    </div>
+    <div class="body" id="mm-body"></div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN ===================== -->
+<div id="scgmm-admin">
+  <div class="panel">
+    <h4>📥 Saved results</h4>
+    <p>Parent emails &amp; scores captured on this device.</p>
+    <div class="count" id="mm-admin-count">0</div>
+    <button class="dl" id="mm-admin-dl">⬇ Download Excel (.csv)</button>
+    <button class="clr" id="mm-admin-clr">Clear all</button>
+    <button class="hide" id="mm-admin-hide">Hide panel</button>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================================
+   ⚙️  CONFIG  — set this later to send results to a live spreadsheet.
+   Leave "" to just store in the browser (download anytime via #scg-admin).
+   Point it at a Google Apps Script Web App URL that appends a row.
+   ========================================================================= */
+var SUBMIT_ENDPOINT = "";
+
+var $ = function(s,r){ return (r||document).querySelector(s); };
+var $$ = function(s,r){ return Array.prototype.slice.call((r||document).querySelectorAll(s)); };
+var root = $("#scgmm");
+
+/* ---------------- DATA: comprehensions ---------------- */
+function P(){ return Array.prototype.slice.call(arguments); }  // paragraph helper
+var COMPREHENSIONS = {
+  year2: [
+    { id:"y2-magic-garden", title:"The Magic Garden", emoji:"🌷",
+      paragraphs:P(
+        "Once upon a time, a little girl called Lily found a small wooden gate at the bottom of her garden. She had never noticed it before. The gate was covered in green ivy and tiny purple flowers.",
+        "Lily pushed the gate open and stepped through. She gasped with surprise! On the other side was the most beautiful garden she had ever seen. Enormous red roses grew beside the path. Golden sunflowers turned their bright faces towards the sun. A blue stream trickled past, making a soft splashing sound.",
+        "In the middle of the garden sat a small rabbit with a bright orange carrot. The rabbit looked up at Lily with big brown eyes and said, Welcome! This garden grows whatever you dream about. What would you like to plant today?",
+        "Lily thought carefully. She decided she would plant kindness seeds, so that everyone who visited the garden would feel happy and welcome. She bent down and pushed three tiny seeds into the soft, warm earth.",
+        "The next morning, when Lily came back, three beautiful rainbow flowers had grown where she had planted her seeds. And every person who smelled them smiled all day long."),
+      questions:[
+        {q:"What did Lily find at the bottom of her garden?",o:["A big red door","A small wooden gate","A tall iron fence","A stone archway"],c:1},
+        {q:"What was covering the gate?",o:["Red roses and daisies","Moss and mud","Green ivy and tiny purple flowers","Yellow leaves"],c:2},
+        {q:"What was the rabbit holding when Lily first saw it?",o:["A bright orange carrot","A bunch of flowers","A golden key","A small blue book"],c:0},
+        {q:"What did Lily decide to plant in the magic garden?",o:["Sunflower seeds","Tomato seeds","Kindness seeds","Apple seeds"],c:2},
+        {q:"What happened to people who smelled the rainbow flowers?",o:["They fell asleep","They smiled all day long","They started to sing","They grew taller"],c:1}
+      ]},
+    { id:"y2-little-train", title:"The Little Red Train", emoji:"🚂",
+      paragraphs:P(
+        "Thomas the little red train lived at Greenfield Station. Every morning he would wake up, fill his tank with water, and set off along the shiny silver tracks. His job was to carry passengers from one village to another.",
+        "One Tuesday morning, Thomas was carrying six children to school. The children were singing songs and laughing loudly. Suddenly, Thomas saw something on the track ahead. A large brown cow had wandered onto the railway line and was eating the long grass beside it.",
+        "Thomas blew his whistle loudly. Whoo! Whoo! But the cow did not move. Thomas slowed down carefully and came to a stop just in front of the cow.",
+        "Oh dear, said Thomas. We will be late for school!",
+        "A kind farmer heard the whistle and came running. He gently led the cow back to the field and closed the gate firmly. Thomas let out a happy puff of steam and set off again.",
+        "The children arrived at school only five minutes late. Their teacher, Miss Green, had heard about the cow. She smiled and said, That sounds like a very exciting journey!"),
+      questions:[
+        {q:"Where did Thomas the train live?",o:["Redfield Station","Greenfield Station","Bluefield Station","Sunfield Station"],c:1},
+        {q:"What was on the track that made Thomas stop?",o:["A fallen tree","A large brown cow","A broken fence","A flock of sheep"],c:1},
+        {q:"How many children was Thomas carrying to school?",o:["Four","Five","Six","Seven"],c:2},
+        {q:"Who helped move the cow off the track?",o:["A police officer","Miss Green","A kind farmer","One of the children"],c:2},
+        {q:"How late did the children arrive at school?",o:["Two minutes late","Ten minutes late","Five minutes late","One hour late"],c:2}
+      ]},
+    { id:"y2-bees", title:"Bees and Flowers", emoji:"🐝",
+      paragraphs:P(
+        "Bees are some of the most important insects in the world. They are small and furry, and they have yellow and black stripes on their bodies. Most bees live together in a big group called a colony inside a beehive.",
+        "Every day, worker bees fly out to find flowers. They drink a sweet liquid from the flowers called nectar. They also collect tiny grains called pollen on their fuzzy legs. When a bee moves from flower to flower, it carries pollen with it. This helps the flowers to make seeds and grow into new plants. This is called pollination.",
+        "Back at the hive, bees turn nectar into honey. They flap their wings very fast to dry the nectar out, and it slowly becomes thick and golden. Honey is used to feed the young bees inside the hive.",
+        "Without bees, many of our favourite foods would not exist. Apples, strawberries, and sunflowers all need bees to pollinate them. That is why it is so important to protect bees and plant flowers in our gardens for them to visit.",
+        "Next time you see a bee buzzing around a flower, remember the amazing job it is doing for all of us!"),
+      questions:[
+        {q:"What are the colours of a bee's stripes?",o:["Red and black","Yellow and black","Orange and white","Green and yellow"],c:1},
+        {q:"What is the sweet liquid that bees drink from flowers called?",o:["Honey","Pollen","Nectar","Syrup"],c:2},
+        {q:"What do bees carry on their fuzzy legs?",o:["Nectar","Seeds","Honey","Pollen"],c:3},
+        {q:"What do bees make from nectar?",o:["Wax","Honey","Pollen","Milk"],c:1},
+        {q:"Which of these foods needs bees to pollinate it?",o:["Potatoes","Rice","Strawberries","Bread"],c:2}
+      ]},
+    { id:"y2-lost-puppy", title:"The Lost Puppy", emoji:"🐶",
+      paragraphs:P(
+        "On a cold and rainy Saturday, Sam was walking home from the shops when he heard a soft whimpering sound coming from under a park bench. He crouched down and looked underneath. A small, golden puppy was curled up there, shivering and wet.",
+        "Oh, you poor thing! said Sam. He gently picked up the puppy and tucked it inside his coat to keep it warm.",
+        "Sam looked around for someone who might own the puppy. He noticed a collar around its neck with a silver tag on it. The tag said: My name is Biscuit. If lost, call 07700 900123.",
+        "Sam found a telephone box nearby and called the number. A little girl answered the phone. She sounded very worried.",
+        "Biscuit ran away this morning during the storm, she said. I've been looking everywhere!",
+        "I've found him! said Sam. He's safe and warm now. Where do you live?",
+        "Twenty minutes later, Sam knocked on the door of a yellow house on Oak Street. The door flew open and a girl called Emma threw her arms around Biscuit. She looked up at Sam with grateful eyes.",
+        "Thank you so much, she said. You are a real hero! Sam smiled. I'm just glad Biscuit is safe, he said."),
+      questions:[
+        {q:"Where did Sam find the puppy?",o:["Behind a bush","Under a park bench","Inside a telephone box","Near the shops"],c:1},
+        {q:"What was the puppy's name?",o:["Spot","Biscuit","Cookie","Fluffy"],c:1},
+        {q:"What was on the puppy's collar?",o:["A golden bell","A red ribbon","A silver tag with a phone number","A blue flower"],c:2},
+        {q:"What colour was Emma's house?",o:["Blue","Green","Red","Yellow"],c:3},
+        {q:"What was the weather like when Sam found the puppy?",o:["Hot and sunny","Windy and snowy","Cold and rainy","Warm and cloudy"],c:2}
+      ]},
+    { id:"y2-seasons", title:"The Four Seasons", emoji:"🍂",
+      paragraphs:P(
+        "Each year has four seasons: spring, summer, autumn and winter. Each season brings different weather and changes to the natural world.",
+        "In spring, the days slowly get longer. Trees begin to grow new green leaves. Colourful flowers like daffodils and tulips push up through the soil. Many animals have their young in spring because there is plenty of food about. Baby lambs can often be seen in fields.",
+        "Summer is the warmest season. The sun shines for a long time each day. Children can play outside until late in the evening. Trees are full of thick, green leaves that give cool shade. Farmers harvest fruits like strawberries and cherries.",
+        "In autumn, the days become shorter and cooler. Leaves on the trees change colour to shades of red, orange and gold, before falling to the ground. Squirrels collect nuts and store them away for winter. Conkers fall from horse chestnut trees.",
+        "Winter is the coldest season. Some trees have no leaves at all and look bare. Animals like hedgehogs sleep through the winter in a deep sleep called hibernation. Sometimes snow falls, covering the ground in a white blanket. Days are short and nights are long.",
+        "Each season is special in its own way, and together they make up the beautiful cycle of a whole year."),
+      questions:[
+        {q:"Which flowers are mentioned as blooming in spring?",o:["Roses and sunflowers","Daffodils and tulips","Poppies and daisies","Bluebells and lilies"],c:1},
+        {q:"In which season do farmers harvest strawberries?",o:["Spring","Autumn","Winter","Summer"],c:3},
+        {q:"What do squirrels do in autumn?",o:["Build nests","Collect and store nuts","Grow new fur","Migrate south"],c:1},
+        {q:"What is the name for the deep sleep hedgehogs have in winter?",o:["Dormancy","Rest","Hibernation","Slumber"],c:2},
+        {q:"What happens to the days in autumn?",o:["They stay the same","They become shorter and cooler","They become longer and warmer","They become longer and cooler"],c:1}
+      ]}
+  ],
+  year3: [
+    { id:"y3-ancient-egypt", title:"Ancient Egypt", emoji:"🏺",
+      paragraphs:P(
+        "Ancient Egypt was one of the greatest civilisations in history. It existed along the banks of the River Nile in north Africa for over 3,000 years, from around 3100 BC to 30 BC.",
+        "The River Nile was essential to life in Ancient Egypt. Every year, the river flooded its banks, leaving behind a thick layer of rich, dark mud. This mud was perfect for growing crops such as wheat and barley. Without the Nile, the land would have been nothing but dry, empty desert.",
+        "The Ancient Egyptians built enormous structures called pyramids as tombs for their rulers, known as pharaohs. The most famous pyramids are found at Giza, near the modern city of Cairo. The Great Pyramid of Giza was built for Pharaoh Khufu around 2560 BC. It is made from over two million large stone blocks and is so precisely constructed that we still do not fully understand how it was built without modern machinery.",
+        "The Egyptians also developed one of the world's earliest writing systems, called hieroglyphics. Instead of letters, hieroglyphics used pictures and symbols to represent words and sounds. These symbols were carved into the walls of temples and painted inside tombs.",
+        "Ancient Egyptians believed in many gods and goddesses. Ra was the sun god, Osiris was the god of the afterlife, and Anubis was often depicted as a man with the head of a jackal.",
+        "Much of what we know about Ancient Egypt comes from studying mummies, paintings, and artefacts discovered by archaeologists over hundreds of years."),
+      questions:[
+        {q:"How long did the Ancient Egyptian civilisation last?",o:["About 1,000 years","About 3,000 years","About 500 years","About 5,000 years"],c:1},
+        {q:"Why was the annual flooding of the River Nile important to Egyptians?",o:["It brought fresh fish for eating","It cooled the land in summer","It left behind rich mud perfect for growing crops","It washed away desert sand"],c:2},
+        {q:"For whom was the Great Pyramid of Giza built?",o:["Pharaoh Ramesses","Pharaoh Tutankhamun","Pharaoh Nefertiti","Pharaoh Khufu"],c:3},
+        {q:"What was the Egyptian writing system called?",o:["Cuneiform","Sanskrit","Hieroglyphics","Latin"],c:2},
+        {q:"Which Egyptian god was depicted with the head of a jackal?",o:["Ra","Osiris","Anubis","Horus"],c:2}
+      ]},
+    { id:"y3-jungle-adventure", title:"Journey Through the Jungle", emoji:"🦜",
+      paragraphs:P(
+        "Maya had always dreamed of exploring the Amazon rainforest. So when her father, a wildlife photographer, invited her to join his expedition to Brazil, she packed her bag immediately.",
+        "The rainforest was overwhelming in every way. The air was thick with heat and humidity, and every surface seemed to pulse with life. Brightly coloured parrots screeched overhead, their feathers flashing like jewels. Enormous blue morpho butterflies drifted past like scraps of sky.",
+        "On their second day, Maya's father stopped suddenly and held up his hand for silence. He pointed carefully to a branch just above the path. Draped across it, almost invisible against the bark, was a green tree boa. Its scales shimmered like polished emeralds as it lifted its head to watch them with calm, unblinking eyes.",
+        "She won't hurt us, Maya's father whispered. She's more scared of us than we are of her.",
+        "Later that afternoon, they heard a deep, rumbling sound rolling through the trees. Maya thought it was thunder, but her father smiled.",
+        "Howler monkeys, he said. Their call can be heard up to five kilometres away. They're the loudest land animals on Earth.",
+        "As the sun began to sink behind the canopy, painting the sky in shades of amber and rose, Maya sat quietly in a clearing and wrote in her journal. She understood now why her father loved this place so deeply. The rainforest was not just a place — it was a living, breathing, roaring world all of its own."),
+      questions:[
+        {q:"Why was Maya travelling to Brazil?",o:["To take part in a school trip","To join her father's wildlife photography expedition","To visit her grandparents","To compete in a jungle race"],c:1},
+        {q:"What did Maya see draped across a branch on the second day?",o:["A giant spider","A sleeping jaguar","A green tree boa","A howler monkey"],c:2},
+        {q:"How were the snake's scales described?",o:["Dull and rough like stone","Shimmering like polished emeralds","Patterned like autumn leaves","Bright orange and red"],c:1},
+        {q:"How far away can the call of a howler monkey be heard?",o:["Up to one kilometre","Up to three kilometres","Up to five kilometres","Up to ten kilometres"],c:2},
+        {q:"What did Maya do as the sun began to set?",o:["She climbed a tall tree","She took photographs","She wrote in her journal","She listened to the monkeys"],c:2}
+      ]},
+    { id:"y3-rainforest", title:"Rainforests of the World", emoji:"🌳",
+      paragraphs:P(
+        "Tropical rainforests are found near the equator, in regions of the world where it is hot and wet throughout the year. The largest rainforest on Earth is the Amazon, which spreads across parts of Brazil and eight other countries in South America. Other major rainforests are found in Central Africa and Southeast Asia.",
+        "A rainforest is made up of several distinct layers. The tallest trees form the emergent layer, poking above all others and bathed in sunlight. Below this is the canopy, a thick, continuous cover of leaves and branches that blocks out much of the light. The understorey is a darker, shadier zone where plants have adapted to grow with very little sunlight. The forest floor, the lowest layer, receives almost no direct light at all.",
+        "Rainforests are home to an extraordinary variety of life. Although tropical rainforests cover only about six percent of the Earth's surface, they are thought to contain over half of the world's plant and animal species. This includes countless insects, birds, reptiles, mammals, and plants — many of which have not yet been discovered or named by scientists.",
+        "Unfortunately, rainforests are under serious threat. Every year, huge areas are cleared for farming, logging, and building. This is called deforestation. When trees are cut down, the animals that depend on them lose their homes. Rainforests also play a vital role in regulating the planet's climate, absorbing carbon dioxide and producing oxygen.",
+        "Scientists, governments, and local communities around the world are working to protect these precious ecosystems before it is too late."),
+      questions:[
+        {q:"Where are tropical rainforests found?",o:["Near the North Pole","Near the equator","In cold mountain regions","Along coastlines only"],c:1},
+        {q:"Which layer of the rainforest receives almost no direct sunlight?",o:["The emergent layer","The canopy","The understorey","The forest floor"],c:3},
+        {q:"What percentage of Earth's surface do tropical rainforests cover?",o:["About two percent","About six percent","About twenty percent","About fifty percent"],c:1},
+        {q:"What is the name for the clearing of rainforest for farming and logging?",o:["Pollution","Erosion","Deforestation","Migration"],c:2},
+        {q:"What important role do rainforests play in the planet's climate?",o:["They create rainfall around the world","They absorb carbon dioxide and produce oxygen","They cool the oceans","They prevent earthquakes"],c:1}
+      ]},
+    { id:"y3-dragon-cave", title:"The Dragon's Secret", emoji:"🐉",
+      paragraphs:P(
+        "In the kingdom of Embervale, everyone feared the dragon that lived in the caves above the city. Every full moon, a distant roar would echo through the mountains, and the townsfolk would bolt their shutters and whisper fearfully to one another.",
+        "Everyone feared the dragon — except for a young girl named Freya.",
+        "Freya was twelve years old and intensely curious. She had spent months observing the mountain from a safe distance, noting that the dragon never came down to the town, never stole livestock, and never did anything threatening at all. She began to wonder whether the fear was truly deserved.",
+        "One crisp autumn morning, she packed a flask of warm soup and a wedge of cheese into her satchel and climbed the mountain path alone. As she neared the cave entrance, she heard not a terrifying roar, but a low, mournful sound — like someone crying.",
+        "Freya stepped inside. Curled in the furthest corner of the cave was an enormous copper-coloured dragon, its great head resting on its front claws. One of its wings was badly damaged, bent at an unnatural angle.",
+        "You're hurt, said Freya softly. The dragon raised its enormous head slowly. Its amber eyes, each as large as a dinner plate, fixed on her with an expression of surprise and — unmistakably — hope.",
+        "I won't hurt you, said Freya. I want to help. And so began an unlikely friendship that would change both of their lives, and the fearful stories of Embervale, forever."),
+      questions:[
+        {q:"When would the distant roar echo through the mountains?",o:["Every night at midnight","Every full moon","Every morning at dawn","Every winter storm"],c:1},
+        {q:"What had Freya noticed that made her think the dragon was not dangerous?",o:["The dragon had made friends with the farmers","The dragon never came down, stole livestock, or threatened anyone","The dragon was too small to cause harm","The villagers had told her it was friendly"],c:1},
+        {q:"What did Freya pack in her satchel?",o:["A sword and a shield","A map and a compass","A flask of warm soup and a wedge of cheese","Bandages and medicine"],c:2},
+        {q:"What colour was the dragon?",o:["Emerald green","Midnight blue","Copper-coloured","Silvery white"],c:2},
+        {q:"What was wrong with the dragon?",o:["It had a broken claw","One of its wings was badly damaged","It had lost one of its teeth","It was very old and weak"],c:1}
+      ]},
+    { id:"y3-ocean-life", title:"Life in the Ocean", emoji:"🐙",
+      paragraphs:P(
+        "The ocean covers more than seventy percent of the Earth's surface, yet much of it remains unexplored. It is the world's largest habitat, home to an astonishing diversity of life — from the tiniest microscopic plankton to the enormous blue whale, the largest animal that has ever lived on Earth.",
+        "The ocean is divided into different zones based on depth. The sunlit zone is the uppermost layer, reaching down to about 200 metres. Here, sunlight penetrates the water, allowing plants and algae to photosynthesise. This zone teems with life: fish, sea turtles, dolphins, and sharks all live here.",
+        "Below the sunlit zone lies the twilight zone, where only a little light filters through. Animals here have developed remarkable adaptations. Many produce their own light through a process called bioluminescence, which they use to attract prey or communicate with others of their kind.",
+        "Deeper still is the midnight zone, plunged in total darkness and under immense pressure. Despite these extreme conditions, life still exists here. The anglerfish, for example, uses a glowing lure attached to its head to attract prey in the blackness.",
+        "Coral reefs, found in the warm, shallow waters of the sunlit zone, are among the most biodiverse ecosystems on Earth. Though they cover less than one percent of the ocean floor, coral reefs support around twenty-five percent of all marine species.",
+        "Sadly, the oceans are facing serious threats from pollution, overfishing, and climate change. Protecting our oceans is one of the most urgent challenges of our time."),
+      questions:[
+        {q:"How much of the Earth's surface does the ocean cover?",o:["About fifty percent","About sixty percent","About seventy percent","About eighty percent"],c:2},
+        {q:"How deep does the sunlit zone reach?",o:["About 100 metres","About 200 metres","About 500 metres","About 1,000 metres"],c:1},
+        {q:"What is bioluminescence?",o:["A type of camouflage used by sea creatures","The ability to produce one's own light","A method of communication using sound","A way of breathing without gills"],c:1},
+        {q:"What does the anglerfish use to attract prey in the midnight zone?",o:["A bright pattern on its scales","A loud clicking sound","A glowing lure attached to its head","A powerful electric shock"],c:2},
+        {q:"What percentage of all marine species do coral reefs support?",o:["About five percent","About ten percent","About twenty-five percent","About fifty percent"],c:2}
+      ]}
+  ]
+};
+
+/* ---------------- DATA: FAQ ---------------- */
+var FAQ = [
+  ["Is SCG Masterminds really free?","Yes — every comprehension, maths round and the 11+ mini-paper is completely free to use. It's our way of supporting families preparing for the 11+ and building strong foundations early."],
+  ["How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice (the same technology that reads out directions on a phone). It works in modern browsers like Chrome, Edge and Safari with the sound turned on — and it costs nothing to run."],
+  ["What happens to my child's score?","After each quiz, you enter the parent's name and email. The full results — including a question-by-question breakdown — are saved as a report so you can track progress. We use the email to share results and occasional updates about SCG Tuitions."],
+  ["Which year groups are covered?","Right now there are 5 comprehensions and maths practice for Year 2, and 5 comprehensions and maths practice for Year 3. A Year 6 SATs section and the full 11+ FSCE programme are on the way."],
+  ["Can my child do a quiz more than once?","Absolutely. Practice makes progress! Children can replay any story or maths round as many times as they like, and each completed attempt can be saved."],
+  ["Will it work on a phone or tablet?","Yes. The whole section is designed to work beautifully on phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
+  ["How is my email used?","Your email is used to send your child's results and to keep you informed about SCG Tuitions courses, mock exams and resources. You can ask us to remove you at any time."]
+];
+
+/* ---------------- DATA: FSCE mini-paper ---------------- */
+var FSCE = {
+  id:"fsce-mini", title:"11+ FSCE Mini-Paper", emoji:"🎓",
+  questions:[
+    {section:"Verbal Reasoning", q:"Which word is the ODD ONE OUT?", o:["Apple","Banana","Carrot","Grape"], c:2},
+    {section:"Verbal Reasoning", q:"If CAT is written in code as DBU (each letter moves forward one), what is DOG?", o:["EPH","CPF","EOH","DPH"], c:0},
+    {section:"Verbal Reasoning", q:"Complete the sequence: 2, 4, 8, 16, ?", o:["18","24","32","20"], c:2},
+    {section:"Maths Reasoning", q:"A book costs £4.50. How much do 3 books cost?", o:["£12.50","£13.50","£13.00","£14.50"], c:1},
+    {section:"Maths Reasoning", q:"There are 24 pupils in a class. One third walk to school. How many walk to school?", o:["6","8","12","4"], c:1},
+    {section:"Maths Reasoning", q:"A train leaves at 14:20 and arrives at 15:05. How long is the journey?", o:["35 minutes","40 minutes","45 minutes","50 minutes"], c:2},
+    {section:"Comprehension", q:"\"The frost lay thick on the ground and her breath hung in the air.\" What season is it most likely to be?", o:["Summer","Spring","Winter","Autumn"], c:2},
+    {section:"Comprehension", q:"\"He was reluctant to leave.\" The word 'reluctant' most nearly means:", o:["Excited","Unwilling","Ready","Frightened"], c:1},
+    {section:"Verbal Reasoning", q:"BIG is to SMALL as TALL is to …?", o:["Wide","Short","Long","High"], c:1},
+    {section:"Maths Reasoning", q:"What is half of 86?", o:["41","42","43","44"], c:2}
+  ]
+};
+
+/* =========================================================================
+   RENDER: cards & controls
+   ========================================================================= */
+function svgArrow(){ return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>'; }
+
+function buildComprehensionCard(c, idx, accent, accentSoft, tag){
+  var d = document.createElement('div');
+  d.className = 'mm-card';
+  d.style.setProperty('--accent', accent);
+  d.style.setProperty('--accent-soft', accentSoft);
+  var preview = c.paragraphs[0].slice(0,92) + '…';
+  d.innerHTML =
+    '<div class="top"><span class="num">'+(idx+1)+'</span><span class="tag">'+tag+'</span></div>'+
+    '<h4>'+c.emoji+' '+c.title+'</h4>'+
+    '<div class="desc">'+preview+'</div>'+
+    '<div class="foot"><span>🔊 Read-aloud · 5 Qs</span><span class="go">Start '+svgArrow()+'</span></div>';
+  d.addEventListener('click', function(){ Quiz.startComprehension(c, accent); });
+  return d;
+}
+
+(function renderEnglish(){
+  var g2 = $("#mm-y2-grid"), g3 = $("#mm-y3-grid");
+  COMPREHENSIONS.year2.forEach(function(c,i){ g2.appendChild(buildComprehensionCard(c,i,'#1a2870','#eaf0ff','Year 2')); });
+  COMPREHENSIONS.year3.forEach(function(c,i){ g3.appendChild(buildComprehensionCard(c,i,'#27ae60','#eafaf0','Year 3')); });
+})();
+
+var MATHS_OPS = [
+  {key:'add', name:'Addition', sym:'+', color:'#1a2870'},
+  {key:'sub', name:'Subtraction', sym:'−', color:'#27ae60'},
+  {key:'mul', name:'Multiplication', sym:'×', color:'#00b4c8'},
+  {key:'div', name:'Division', sym:'÷', color:'#e8781a'}
+];
+function buildMathsOps(containerId, year, accent){
+  var box = $(containerId);
+  MATHS_OPS.forEach(function(op){
+    var el = document.createElement('div');
+    el.className = 'mm-op';
+    el.style.setProperty('--accent', accent);
+    el.innerHTML =
+      '<div class="sym" style="color:'+op.color+'">'+op.sym+'</div>'+
+      '<h4>'+op.name+'</h4><p>10 questions · type the answer</p>'+
+      '<button class="start" style="background:'+accent+'">Start →</button>';
+    el.querySelector('.start').addEventListener('click', function(){ Quiz.startMaths(year, op, accent); });
+    box.appendChild(el);
+  });
+}
+buildMathsOps("#mm-maths-y2", 2, '#1a2870');
+buildMathsOps("#mm-maths-y3", 3, '#27ae60');
+
+(function renderFaq(){
+  var box = $("#mm-faq");
+  FAQ.forEach(function(pair){
+    var d = document.createElement('details'); d.className = 'mm-q';
+    d.innerHTML = '<summary>'+pair[0]+'<span class="plus">+</span></summary><div class="ans">'+pair[1]+'</div>';
+    box.appendChild(d);
+  });
+})();
+
+/* =========================================================================
+   TABS
+   ========================================================================= */
+function switchTab(name){
+  $$('.mm-tab', root).forEach(function(t){ t.classList.toggle('active', t.dataset.tab===name); });
+  $$('.mm-panel', root).forEach(function(p){ p.classList.toggle('active', p.dataset.panel===name); });
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+$$('.mm-tab', root).forEach(function(t){ t.addEventListener('click', function(){ switchTab(t.dataset.tab); }); });
+$$('[data-tab-jump]', root).forEach(function(b){ b.addEventListener('click', function(){ switchTab(b.dataset.tabJump); }); });
+$("#mm-fsce-start").addEventListener('click', function(){ Quiz.startFsce(); });
+
+/* =========================================================================
+   STORAGE  (localStorage + optional endpoint) + CSV/Excel export
+   ========================================================================= */
+var STORE_KEY = 'scgMastermindsSubmissions';
+var PARENT_KEY = 'scgMastermindsParent';
+var Store = {
+  all: function(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)||'[]'); }catch(e){ return []; } },
+  add: function(rec){
+    var a = this.all(); a.push(rec);
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(a)); }catch(e){}
+    if (SUBMIT_ENDPOINT){
+      try{
+        fetch(SUBMIT_ENDPOINT, {method:'POST', mode:'no-cors',
+          headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(rec)});
+      }catch(e){}
+    }
+    Admin.refresh();
+  },
+  parent: function(){ try{ return JSON.parse(localStorage.getItem(PARENT_KEY)||'null'); }catch(e){ return null; } },
+  saveParent: function(p){ try{ localStorage.setItem(PARENT_KEY, JSON.stringify(p)); }catch(e){} },
+  clear: function(){ try{ localStorage.removeItem(STORE_KEY); }catch(e){} Admin.refresh(); }
+};
+
+function toCSV(rows){
+  var cols = ['Date','Child Name','Parent Name','Parent Email','Section','Quiz','Score','Total','Percentage','Question Breakdown'];
+  function esc(v){ v = (v==null?'':String(v)); return '"'+v.replace(/"/g,'""')+'"'; }
+  var lines = [cols.map(esc).join(',')];
+  rows.forEach(function(r){
+    lines.push([r.date, r.childName, r.parentName, r.parentEmail, r.section, r.quiz,
+      r.score, r.total, r.percentage+'%', r.breakdown].map(esc).join(','));
+  });
+  return '﻿' + lines.join('\r\n');   // BOM for Excel UTF-8
+}
+function downloadCSV(){
+  var rows = Store.all();
+  if(!rows.length){ alert('No results saved yet.'); return; }
+  var blob = new Blob([toCSV(rows)], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = 'scg-masterminds-results.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+
+/* =========================================================================
+   ADMIN panel
+   ========================================================================= */
+var Admin = {
+  el: $("#scgmm-admin"),
+  show: function(){ this.el.classList.add('show'); this.refresh(); },
+  hide: function(){ this.el.classList.remove('show'); },
+  refresh: function(){ $("#mm-admin-count").textContent = Store.all().length; }
+};
+$("#mm-admin-dl").addEventListener('click', downloadCSV);
+$("#mm-admin-clr").addEventListener('click', function(){ if(confirm('Delete all saved results on this device?')) Store.clear(); });
+$("#mm-admin-hide").addEventListener('click', function(){ Admin.hide(); });
+if (location.hash === '#scg-admin') Admin.show();
+window.addEventListener('hashchange', function(){ if(location.hash==='#scg-admin') Admin.show(); });
+document.addEventListener('keydown', function(e){
+  if(e.ctrlKey && e.shiftKey && (e.key==='E'||e.key==='e')){ e.preventDefault(); Admin.show(); }
+});
+
+/* =========================================================================
+   SPEECH (Web Speech API) — sentence-by-sentence highlight
+   ========================================================================= */
+var Speech = {
+  supported: ('speechSynthesis' in window),
+  voice: null,
+  pickVoice: function(){
+    if(!this.supported) return;
+    var vs = speechSynthesis.getVoices();
+    this.voice = vs.find(function(v){ return /en-GB/i.test(v.lang) && /female|Hazel|Libby|Sonia|Google UK English Female/i.test(v.name); })
+      || vs.find(function(v){ return /en-GB/i.test(v.lang); })
+      || vs.find(function(v){ return /^en/i.test(v.lang); }) || vs[0] || null;
+  },
+  speakSentences: function(sentences, onIndex, onDone){
+    if(!this.supported){ onDone && onDone(); return; }
+    speechSynthesis.cancel();
+    var self = this, i = 0;
+    function next(){
+      if(i >= sentences.length){ onIndex && onIndex(-1); onDone && onDone(); return; }
+      var u = new SpeechSynthesisUtterance(sentences[i]);
+      u.lang='en-GB'; u.rate=0.9; u.pitch=1.05; if(self.voice) u.voice=self.voice;
+      var idx=i;
+      u.onstart=function(){ onIndex && onIndex(idx); };
+      u.onend=function(){ i++; next(); };
+      u.onerror=function(){ i++; next(); };
+      speechSynthesis.speak(u);
+    }
+    next();
+  },
+  stop: function(){ if(this.supported) speechSynthesis.cancel(); }
+};
+if(Speech.supported){
+  Speech.pickVoice();
+  speechSynthesis.onvoiceschanged = function(){ Speech.pickVoice(); };
+}
+
+/* =========================================================================
+   QUIZ ENGINE  (handles comprehension, maths and FSCE)
+   ========================================================================= */
+var modal = $("#scgmm-modal");
+var mmBody = $("#mm-body");
+var mmBar = $("#mm-bar");
+
+var Quiz = {
+  state: null,
+
+  open: function(accent, icon, title, sub){
+    root.style.setProperty('--accent', accent);
+    $("#mm-head-ico").style.background = accent;
+    $("#mm-head-ico").textContent = icon;
+    $("#mm-head-title").textContent = title;
+    $("#mm-head-sub").textContent = sub;
+    modal.classList.add('open');
+    document.documentElement.style.overflow = 'hidden';
+  },
+  close: function(){
+    Speech.stop();
+    modal.classList.remove('open');
+    document.documentElement.style.overflow = '';
+    this.state = null;
+    mmBody.innerHTML = '';
+  },
+  progress: function(pct){ mmBar.style.width = Math.max(0,Math.min(100,pct))+'%'; },
+
+  /* ---------- COMPREHENSION ---------- */
+  startComprehension: function(c, accent){
+    this.state = { type:'comprehension', accent:accent, data:c,
+      section:'English (Year '+(/y2/.test(c.id)?2:3)+')', quizTitle:c.title,
+      qi:0, answers:[], correct:0 };
+    this.open(accent, c.emoji||'📖', c.title, 'Year '+(/y2/.test(c.id)?2:3)+' English · Read-aloud');
+    this.renderCompIntro();
+  },
+  renderCompIntro: function(){
+    var c = this.state.data; this.progress(5);
+    mmBody.innerHTML =
+      '<div class="ph-intro">'+
+        '<div class="emoji">'+(c.emoji||'📖')+'</div>'+
+        '<h2>'+c.title+'</h2>'+
+        '<p>The story will be read aloud. Listen carefully, then answer five questions about it.</p>'+
+        '<div class="steps">'+
+          '<div class="step"><span class="n">1</span> Listen</div>'+
+          '<div class="step"><span class="n">2</span> Answer 5 questions</div>'+
+          '<div class="step"><span class="n">3</span> Get your report</div>'+
+        '</div>'+
+        '<button class="ctl play" id="mm-begin" style="margin:0 auto">🔊 Read to me</button>'+
+        (Speech.supported?'':'<p class="read-hint" style="color:#c0392b">Your browser may not support read-aloud — you can still read the story on screen.</p>')+
+      '</div>';
+    $("#mm-begin").addEventListener('click', this.renderCompReading.bind(this));
+  },
+  renderCompReading: function(){
+    var c = this.state.data; this.progress(15);
+    // build sentence list across paragraphs for highlighting
+    var sentences = [], html = '';
+    c.paragraphs.forEach(function(para){
+      var parts = para.match(/[^.!?]+[.!?]*/g) || [para];
+      html += '<p>';
+      parts.forEach(function(s){
+        s = s.trim(); if(!s) return;
+        var idx = sentences.length; sentences.push(s);
+        html += '<span class="sent" data-s="'+idx+'">'+s+'</span> ';
+      });
+      html += '</p>';
+    });
+    this.state.sentences = sentences;
+    mmBody.innerHTML =
+      '<div class="read-passage" id="mm-passage">'+html+'</div>'+
+      '<div class="read-controls">'+
+        '<div class="read-status"><span class="read-dot" id="mm-dot"></span><span id="mm-rstatus">Ready to read</span></div>'+
+        '<button class="ctl play" id="mm-play">▶ Play</button>'+
+        '<button class="ctl stop" id="mm-stop" style="display:none">⏹ Stop</button>'+
+        '<button class="ctl replay" id="mm-replay" style="display:none">🔄 Replay</button>'+
+        '<button class="ctl next" id="mm-toq">Start questions →</button>'+
+      '</div>'+
+      '<p class="read-hint">Turn your sound on. The current sentence lights up as it\'s read.</p>';
+    var self=this;
+    var dot=$("#mm-dot"), st=$("#mm-rstatus"), play=$("#mm-play"), stop=$("#mm-stop"), replay=$("#mm-replay");
+    function highlight(i){
+      $$('.sent', $("#mm-passage")).forEach(function(s){ s.classList.remove('on'); });
+      if(i>=0){ var el=$('.sent[data-s="'+i+'"]', $("#mm-passage")); if(el){ el.classList.add('on'); el.scrollIntoView({block:'center',behavior:'smooth'}); } }
+    }
+    function setLive(on){
+      dot.classList.toggle('live', on);
+      st.textContent = on ? 'Reading aloud…' : 'Paused';
+      play.style.display = on ? 'none':'inline-flex';
+      stop.style.display = on ? 'inline-flex':'none';
+      replay.style.display = (!on)?'inline-flex':'none';
+    }
+    function start(){
+      setLive(true);
+      Speech.speakSentences(self.state.sentences, highlight, function(){
+        setLive(false); st.textContent='Finished — ready for questions'; highlight(-1);
+      });
+    }
+    play.addEventListener('click', start);
+    replay.addEventListener('click', start);
+    stop.addEventListener('click', function(){ Speech.stop(); setLive(false); highlight(-1); });
+    $("#mm-toq").addEventListener('click', function(){ Speech.stop(); self.renderCompQuestion(); });
+    // auto-start reading
+    start();
+  },
+  renderCompQuestion: function(){
+    var s = this.state, c = s.data, q = c.questions[s.qi];
+    this.progress(20 + (s.qi/c.questions.length)*55);
+    var opts = q.o.map(function(opt,i){
+      return '<button class="q-opt" data-i="'+i+'"><span class="key">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span></button>';
+    }).join('');
+    mmBody.innerHTML =
+      '<div class="q-prog">Question '+(s.qi+1)+' of '+c.questions.length+'</div>'+
+      '<div class="q-text">'+q.q+'</div>'+
+      '<div class="q-opts">'+opts+'</div>'+
+      '<div class="q-feedback" id="mm-fb"></div>'+
+      '<button class="q-next" id="mm-qnext">'+(s.qi===c.questions.length-1?'See results →':'Next question →')+'</button>';
+    var self=this, answered=false;
+    $$('.q-opt', mmBody).forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(answered) return; answered=true;
+        var chosen=+btn.dataset.i, ok=(chosen===q.c);
+        s.answers.push({q:q.q, chosen:q.o[chosen], correct:q.o[q.c], ok:ok});
+        if(ok) s.correct++;
+        $$('.q-opt', mmBody).forEach(function(b){
+          b.classList.add('locked');
+          var bi=+b.dataset.i;
+          if(bi===q.c) b.classList.add('correct');
+          else if(bi===chosen) b.classList.add('wrong');
+        });
+        var fb=$("#mm-fb");
+        fb.className='q-feedback show '+(ok?'good':'bad');
+        fb.innerHTML = ok ? '✅ Correct! Well done.' : '❌ Not quite — the answer is <b style="margin-left:4px">'+q.o[q.c]+'</b>';
+        $("#mm-qnext").classList.add('show');
+      });
+    });
+    $("#mm-qnext").addEventListener('click', function(){
+      if(!answered) return;
+      s.qi++;
+      if(s.qi < c.questions.length) self.renderCompQuestion();
+      else self.renderForm();
+    });
+  },
+
+  /* ---------- MATHS ---------- */
+  genMaths: function(year, opKey){
+    function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    var qs=[], seen={};
+    while(qs.length<10){
+      var a,b,ans,text;
+      if(opKey==='add'){
+        if(year===2){ a=ri(5,40); b=ri(2,40); } else { a=ri(20,250); b=ri(15,200); }
+        ans=a+b; text=a+' + '+b;
+      } else if(opKey==='sub'){
+        if(year===2){ a=ri(10,40); b=ri(1,a); } else { a=ri(40,400); b=ri(10,a); }
+        ans=a-b; text=a+' − '+b;
+      } else if(opKey==='mul'){
+        if(year===2){ a=[2,5,10][ri(0,2)]; b=ri(1,10); } else { a=ri(2,12); b=ri(2,12); }
+        ans=a*b; text=a+' × '+b;
+      } else { // div
+        if(year===2){ b=[2,5,10][ri(0,2)]; ans=ri(1,10); } else { b=ri(2,12); ans=ri(2,12); }
+        a=b*ans; text=a+' ÷ '+b;
+      }
+      if(seen[text]) continue; seen[text]=1;
+      qs.push({text:text, ans:ans});
+    }
+    return qs;
+  },
+  startMaths: function(year, op, accent){
+    this.state = { type:'maths', accent:accent, op:op, year:year,
+      section:'Maths (Year '+year+')', quizTitle:op.name+' (Year '+year+')',
+      qs:this.genMaths(year, op.key), qi:0, answers:[], correct:0 };
+    this.open(accent, op.sym, op.name+' · Year '+year, '10 quick-fire questions');
+    this.renderMathsIntro();
+  },
+  renderMathsIntro: function(){
+    var s=this.state; this.progress(5);
+    mmBody.innerHTML =
+      '<div class="ph-intro">'+
+        '<div class="emoji">'+s.op.sym+'</div>'+
+        '<h2>'+s.op.name+'</h2>'+
+        '<p>Ten '+s.op.name.toLowerCase()+' questions for Year '+s.year+'. Type each answer and press Check.</p>'+
+        '<div class="steps">'+
+          '<div class="step"><span class="n">1</span> Solve 10 sums</div>'+
+          '<div class="step"><span class="n">2</span> Instant marking</div>'+
+          '<div class="step"><span class="n">3</span> Get your report</div>'+
+        '</div>'+
+        '<button class="ctl play" id="mm-mbegin" style="margin:0 auto">Start →</button>'+
+      '</div>';
+    $("#mm-mbegin").addEventListener('click', this.renderMathsQuestion.bind(this));
+  },
+  renderMathsQuestion: function(){
+    var s=this.state, q=s.qs[s.qi];
+    this.progress(15 + (s.qi/s.qs.length)*60);
+    mmBody.innerHTML =
+      '<div class="q-prog">Question '+(s.qi+1)+' of '+s.qs.length+'</div>'+
+      '<div class="m-sum">'+q.text+' = ?</div>'+
+      '<input class="m-input" id="mm-minput" type="number" inputmode="numeric" placeholder="?" autocomplete="off">'+
+      '<div class="q-feedback" id="mm-fb" style="justify-content:center"></div>'+
+      '<button class="m-check" id="mm-mcheck">Check answer</button>';
+    var self=this, input=$("#mm-minput"), answered=false;
+    input.focus();
+    function check(){
+      if(answered) return;
+      if(input.value===''){ input.focus(); return; }
+      answered=true;
+      var val=parseInt(input.value,10), ok=(val===q.ans);
+      s.answers.push({q:q.text, chosen:input.value, correct:String(q.ans), ok:ok});
+      if(ok) s.correct++;
+      input.classList.add(ok?'correct':'wrong'); input.disabled=true;
+      var fb=$("#mm-fb"); fb.className='q-feedback show '+(ok?'good':'bad');
+      fb.innerHTML = ok ? '✅ Correct!' : '❌ The answer is <b style="margin-left:4px">'+q.ans+'</b>';
+      var btn=$("#mm-mcheck");
+      btn.textContent = (s.qi===s.qs.length-1?'See results →':'Next →');
+      btn.onclick=function(){ s.qi++; if(s.qi<s.qs.length) self.renderMathsQuestion(); else self.renderForm(); };
+    }
+    $("#mm-mcheck").addEventListener('click', check);
+    input.addEventListener('keydown', function(e){ if(e.key==='Enter') check(); });
+  },
+
+  /* ---------- FSCE ---------- */
+  startFsce: function(){
+    var accent='#1a2870';
+    this.state = { type:'fsce', accent:accent, section:'11+ FSCE', quizTitle:'FSCE Mini-Paper',
+      data:FSCE, qi:0, answers:[], correct:0 };
+    this.open(accent, '🎓', 'FSCE Mini-Paper', '11+ style · mixed sections');
+    this.renderFsceIntro();
+  },
+  renderFsceIntro: function(){
+    this.progress(5);
+    mmBody.innerHTML =
+      '<div class="ph-intro mm-noselect">'+
+        '<div class="emoji">🎓</div>'+
+        '<h2>11+ FSCE Mini-Paper</h2>'+
+        '<p>Ten mixed questions across Verbal Reasoning, Maths Reasoning and Comprehension — just like the real 11+. Read each one carefully.</p>'+
+        '<div class="steps">'+
+          '<div class="step"><span class="n">1</span> 10 mixed questions</div>'+
+          '<div class="step"><span class="n">2</span> Instant marking</div>'+
+          '<div class="step"><span class="n">3</span> Section report</div>'+
+        '</div>'+
+        '<button class="ctl play" id="mm-fbegin" style="margin:0 auto;background:var(--green)">Begin paper →</button>'+
+      '</div>';
+    $("#mm-fbegin").addEventListener('click', this.renderFsceQuestion.bind(this));
+  },
+  renderFsceQuestion: function(){
+    var s=this.state, q=s.data.questions[s.qi];
+    this.progress(15 + (s.qi/s.data.questions.length)*60);
+    var opts=q.o.map(function(opt,i){
+      return '<button class="q-opt" data-i="'+i+'"><span class="key">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span></button>';
+    }).join('');
+    mmBody.innerHTML =
+      '<div class="q-prog">Question '+(s.qi+1)+' of '+s.data.questions.length+' · '+q.section+'</div>'+
+      '<div class="q-text mm-noselect">'+q.q+'</div>'+
+      '<div class="q-opts">'+opts+'</div>'+
+      '<div class="q-feedback" id="mm-fb"></div>'+
+      '<button class="q-next" id="mm-qnext">'+(s.qi===s.data.questions.length-1?'See results →':'Next question →')+'</button>';
+    var self=this, answered=false;
+    $$('.q-opt', mmBody).forEach(function(btn){
+      btn.addEventListener('click', function(){
+        if(answered) return; answered=true;
+        var chosen=+btn.dataset.i, ok=(chosen===q.c);
+        s.answers.push({q:'['+q.section+'] '+q.q, chosen:q.o[chosen], correct:q.o[q.c], ok:ok});
+        if(ok) s.correct++;
+        $$('.q-opt', mmBody).forEach(function(b){
+          b.classList.add('locked'); var bi=+b.dataset.i;
+          if(bi===q.c) b.classList.add('correct'); else if(bi===chosen) b.classList.add('wrong');
+        });
+        var fb=$("#mm-fb"); fb.className='q-feedback show '+(ok?'good':'bad');
+        fb.innerHTML = ok ? '✅ Correct!' : '❌ The answer is <b style="margin-left:4px">'+q.o[q.c]+'</b>';
+        $("#mm-qnext").classList.add('show');
+      });
+    });
+    $("#mm-qnext").addEventListener('click', function(){
+      if(!answered) return; s.qi++;
+      if(s.qi<s.data.questions.length) self.renderFsceQuestion(); else self.renderForm();
+    });
+  },
+
+  /* ---------- PARENT FORM ---------- */
+  total: function(){
+    var s=this.state;
+    return s.type==='maths' ? s.qs.length : (s.type==='fsce' ? s.data.questions.length : s.data.questions.length);
+  },
+  scoreColor: function(pct){ return pct>=80?'#27ae60':(pct>=50?'#e8781a':'#d33'); },
+  renderForm: function(){
+    var s=this.state, total=this.total(), pct=Math.round((s.correct/total)*100);
+    this.progress(88);
+    var saved = Store.parent() || {};
+    mmBody.innerHTML =
+      '<div class="ph-form">'+
+        '<div class="score-pre"><div class="ring" style="background:'+this.scoreColor(pct)+'">'+s.correct+'/'+total+'</div>'+
+          '<h2 style="margin-top:14px">Almost there!</h2>'+
+          '<p style="color:var(--muted)">Enter the parent\'s details to reveal the full report.</p></div>'+
+        '<div class="field" id="f-child"><label>Child\'s first name</label><input id="i-child" placeholder="e.g. Olivia" value="'+(saved.childName||'')+'"><div class="err">Please enter a name.</div></div>'+
+        '<div class="field" id="f-pname"><label>Parent\'s name</label><input id="i-pname" placeholder="e.g. Sarah Khan" value="'+(saved.parentName||'')+'"><div class="err">Please enter a name.</div></div>'+
+        '<div class="field" id="f-email"><label>Parent\'s email</label><input id="i-email" type="email" placeholder="you@email.com" value="'+(saved.parentEmail||'')+'"><div class="err">Please enter a valid email.</div></div>'+
+        '<label class="consent"><input type="checkbox" id="i-consent" checked><span>I\'m happy for SCG Tuitions to save these results and email me about my child\'s progress and SCG Tuitions resources.</span></label>'+
+        '<button class="submit" id="mm-submit">Reveal results →</button>'+
+        '<p class="saved-note">'+(SUBMIT_ENDPOINT?'Your report is sent securely.':'Your report is saved on this device for SCG Tuitions.')+'</p>'+
+      '</div>';
+    var self=this;
+    var emailRe=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    $("#mm-submit").addEventListener('click', function(){
+      var child=$("#i-child").value.trim(), pname=$("#i-pname").value.trim(), email=$("#i-email").value.trim();
+      var ok=true;
+      $("#f-child").classList.toggle('invalid', !child); if(!child) ok=false;
+      $("#f-pname").classList.toggle('invalid', !pname); if(!pname) ok=false;
+      var emOk=emailRe.test(email); $("#f-email").classList.toggle('invalid', !emOk); if(!emOk) ok=false;
+      if(!$("#i-consent").checked){ alert('Please tick the consent box so we can save and send the results.'); ok=false; }
+      if(!ok) return;
+      var parent={childName:child, parentName:pname, parentEmail:email};
+      Store.saveParent(parent);
+      var breakdown = s.answers.map(function(a,i){ return 'Q'+(i+1)+': '+(a.ok?'✓':'✗'); }).join(' | ');
+      Store.add({
+        date:new Date().toLocaleString('en-GB'),
+        childName:child, parentName:pname, parentEmail:email,
+        section:s.section, quiz:s.quizTitle,
+        score:s.correct, total:total, percentage:pct,
+        breakdown:breakdown
+      });
+      self.renderDone(parent);
+    });
+  },
+
+  /* ---------- RESULTS ---------- */
+  renderDone: function(parent){
+    var s=this.state, total=this.total(), pct=Math.round((s.correct/total)*100);
+    this.progress(100);
+    var col=this.scoreColor(pct);
+    var msg = pct>=80 ? 'Fantastic work — '+parent.childName+' is really shining! 🌟'
+            : pct>=50 ? 'Great effort, '+parent.childName+'! A little more practice and you\'ll ace it. 💪'
+            : 'Good try, '+parent.childName+'! Practice makes progress — give it another go. 📚';
+    var review = s.answers.map(function(a,i){
+      return '<div class="ritem"><span class="ricon '+(a.ok?'ok':'no')+'">'+(a.ok?'✓':'✗')+'</span>'+
+        '<div><div class="rq">'+(i+1)+'. '+a.q+'</div>'+
+        '<div class="ra">Answer given: '+a.chosen+(a.ok?'':' · Correct: <b>'+a.correct+'</b>')+'</div></div></div>';
+    }).join('');
+    mmBody.innerHTML =
+      '<div class="ph-done">'+
+        (pct>=80?'<div class="confetti" id="mm-confetti"></div>':'')+
+        '<div class="ring" style="background:'+col+'"><span class="big">'+pct+'%</span><small>'+s.correct+' of '+total+'</small></div>'+
+        '<h2>Results saved!</h2>'+
+        '<p class="msg">'+msg+'</p>'+
+        '<p style="font-size:13px;color:var(--muted);margin-bottom:6px">📩 A copy has been recorded for <b>'+parent.parentEmail+'</b></p>'+
+        '<div class="review">'+review+'</div>'+
+        '<div class="actions">'+
+          '<button class="again" id="mm-again">Try again</button>'+
+          '<button class="more" id="mm-more">Back to menu</button>'+
+        '</div>'+
+      '</div>';
+    var self=this;
+    $("#mm-again").addEventListener('click', function(){
+      if(s.type==='comprehension') self.startComprehension(s.data, s.accent);
+      else if(s.type==='maths') self.startMaths(s.year, s.op, s.accent);
+      else self.startFsce();
+    });
+    $("#mm-more").addEventListener('click', function(){ self.close(); });
+    if(pct>=80) this.confetti();
+  },
+  confetti: function(){
+    var box=$("#mm-confetti"); if(!box) return;
+    var cols=['#1a2870','#27ae60','#00b4c8','#f9c823','#e8781a'];
+    for(var i=0;i<60;i++){
+      var el=document.createElement('i');
+      el.style.left=Math.random()*100+'%';
+      el.style.background=cols[i%cols.length];
+      el.style.animationDuration=(2+Math.random()*2)+'s';
+      el.style.animationDelay=(Math.random()*0.6)+'s';
+      box.appendChild(el);
+    }
+    setTimeout(function(){ box.innerHTML=''; }, 4500);
+  }
+};
+
+/* close handlers */
+$("#mm-close").addEventListener('click', function(){ Quiz.close(); });
+modal.addEventListener('click', function(e){ if(e.target===modal) Quiz.close(); });
+document.addEventListener('keydown', function(e){ if(e.key==='Escape' && modal.classList.contains('open')) Quiz.close(); });
+
+/* deter casual saving/printing of FSCE content (on-screen only) */
+$$('.mm-noselect', root).forEach(function(){});
+
+Admin.refresh();
+})();
+</script>
+</section>
+<!-- SCGMM:END -->
