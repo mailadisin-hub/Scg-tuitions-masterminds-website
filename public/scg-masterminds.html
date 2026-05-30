@@ -37,8 +37,8 @@
 
 /* ── screen transitions ── */
 #scgmm .scr{display:none;}
-#scgmm .scr.fwd{animation:scgFwd .38s cubic-bezier(.25,.85,.3,1) both;}
-#scgmm .scr.bk{animation:scgBk .32s cubic-bezier(.25,.85,.3,1) both;}
+#scgmm .scr.fwd{display:block;animation:scgFwd .38s cubic-bezier(.25,.85,.3,1) both;}
+#scgmm .scr.bk{display:block;animation:scgBk .32s cubic-bezier(.25,.85,.3,1) both;}
 @keyframes scgFwd{from{opacity:0;transform:translateX(36px);}to{opacity:1;transform:none;}}
 @keyframes scgBk  {from{opacity:0;transform:translateX(-28px);}to{opacity:1;transform:none;}}
 
