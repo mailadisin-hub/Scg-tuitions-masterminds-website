@@ -641,43 +641,8 @@ var CY3=[
 ];
 
 /* ═══ DATA: FSCE ════════════════════════════════════════════════════════ */
-/* Bank of 100 questions — 10 are chosen at random each attempt */
+/* Bank of 66 questions — 10 are chosen at random each attempt */
 var FQ_BANK=[
-/* ── Verbal Reasoning (34) ── */
-{s:"Verbal Reasoning",q:"Which word is the ODD ONE OUT?",o:["Apple","Banana","Carrot","Grape"],c:2},
-{s:"Verbal Reasoning",q:"If CAT is written as DBU (each letter moves one forward), what is DOG in the same code?",o:["EPH","CPF","EOH","DPH"],c:0},
-{s:"Verbal Reasoning",q:"BIG is to SMALL as TALL is to ___",o:["Wide","Short","Long","High"],c:1},
-{s:"Verbal Reasoning",q:"Which word is closest in meaning to 'brave'?",o:["Cowardly","Frightened","Courageous","Weak"],c:2},
-{s:"Verbal Reasoning",q:"Odd one out: Robin, Sparrow, Eagle, Salmon",o:["Robin","Sparrow","Eagle","Salmon"],c:3},
-{s:"Verbal Reasoning",q:"BOOK is to LIBRARY as PAINTING is to ___",o:["Museum","Gallery","Park","Theatre"],c:1},
-{s:"Verbal Reasoning",q:"Which word means the OPPOSITE of 'narrow'?",o:["Tall","Wide","Short","Deep"],c:1},
-{s:"Verbal Reasoning",q:"Odd one out: Monday, Wednesday, April, Friday",o:["Monday","Wednesday","April","Friday"],c:2},
-{s:"Verbal Reasoning",q:"Complete the sequence: AB, CD, EF, ___",o:["GG","GH","HG","FG"],c:1},
-{s:"Verbal Reasoning",q:"Which word does NOT belong? Hammer, Screwdriver, Spanner, Fork",o:["Hammer","Screwdriver","Spanner","Fork"],c:3},
-{s:"Verbal Reasoning",q:"LIGHT is to DAY as DARK is to ___",o:["Sun","Night","Shade","Stars"],c:1},
-{s:"Verbal Reasoning",q:"Odd one out: Venus, Mars, Jupiter, London",o:["Venus","Mars","Jupiter","London"],c:3},
-{s:"Verbal Reasoning",q:"Which word means the same as 'enormous'?",o:["Tiny","Vast","Narrow","Shallow"],c:1},
-{s:"Verbal Reasoning",q:"DOCTOR is to HOSPITAL as TEACHER is to ___",o:["Office","School","Library","Gym"],c:1},
-{s:"Verbal Reasoning",q:"Complete the sequence: 1, 4, 9, 16, ___",o:["20","24","25","30"],c:2},
-{s:"Verbal Reasoning",q:"BIRD is to NEST as BEE is to ___",o:["Branch","Garden","Hive","Flower"],c:2},
-{s:"Verbal Reasoning",q:"Which word is the ODD ONE OUT? Red, Blue, Green, Heavy",o:["Red","Blue","Green","Heavy"],c:3},
-{s:"Verbal Reasoning",q:"PUPIL is to SCHOOL as PATIENT is to ___",o:["Doctor","Clinic","Hospital","Medicine"],c:2},
-{s:"Verbal Reasoning",q:"Which word means the OPPOSITE of 'generous'?",o:["Kind","Selfish","Helpful","Polite"],c:1},
-{s:"Verbal Reasoning",q:"FIRE is to HOT as ICE is to ___",o:["Wet","Slippery","Cold","White"],c:2},
-{s:"Verbal Reasoning",q:"Odd one out: Piano, Guitar, Trumpet, Paintbrush",o:["Piano","Guitar","Trumpet","Paintbrush"],c:3},
-{s:"Verbal Reasoning",q:"Complete the sequence: 3, 6, 12, 24, ___",o:["36","42","48","28"],c:2},
-{s:"Verbal Reasoning",q:"Which word is closest in meaning to 'ancient'?",o:["New","Old","Large","Tiny"],c:1},
-{s:"Verbal Reasoning",q:"Odd one out: Rose, Daisy, Oak, Tulip",o:["Rose","Daisy","Oak","Tulip"],c:2},
-{s:"Verbal Reasoning",q:"PEN is to WRITE as SCISSORS is to ___",o:["Sew","Cut","Glue","Draw"],c:1},
-{s:"Verbal Reasoning",q:"Odd one out: Swimming, Running, Singing, Cycling",o:["Swimming","Running","Singing","Cycling"],c:2},
-{s:"Verbal Reasoning",q:"Which word most nearly means 'to examine very carefully'?",o:["Glance","Peek","Scrutinise","Blink"],c:2},
-{s:"Verbal Reasoning",q:"WARM is to HOT as COOL is to ___",o:["Warm","Icy","Cold","Fresh"],c:2},
-{s:"Verbal Reasoning",q:"Which word means the OPPOSITE of 'timid'?",o:["Bold","Shy","Quiet","Cheerful"],c:0},
-{s:"Verbal Reasoning",q:"COLD is to REFRIGERATOR as HOT is to ___",o:["Oven","Ice","Fridge","Freezer"],c:0},
-{s:"Verbal Reasoning",q:"Complete the pattern: ZA, YB, XC, ___",o:["WD","WE","VD","XD"],c:0},
-{s:"Verbal Reasoning",q:"Odd one out: Swim, Jog, Sprint, Stroll — which does NOT usually take place on a track or road?",o:["Jog","Sprint","Swim","Stroll"],c:2},
-{s:"Verbal Reasoning",q:"Odd one out: Oak, Elm, Ash, Rose",o:["Oak","Elm","Ash","Rose"],c:3},
-{s:"Verbal Reasoning",q:"Which word is closest in meaning to 'weary'?",o:["Lively","Tired","Happy","Brave"],c:1},
 /* ── Maths Reasoning (33) ── */
 {s:"Maths Reasoning",q:"A book costs £4.50. How much do 3 books cost?",o:["£12.50","£13.50","£13.00","£14.50"],c:1},
 {s:"Maths Reasoning",q:"There are 24 pupils in a class. One third walk to school. How many walk?",o:["6","8","12","4"],c:1},
@@ -888,7 +853,7 @@ function goSubjects(year){
     {ico:'📖',bg:as,name:'English',desc:'Read-aloud comprehension stories. The device reads to your child sentence by sentence, then 5 questions follow.',cnt:'5 stories',action:function(){goActivities(year,'english');}},
     {ico:'🔢',bg:as,name:'Maths',desc:'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',cnt:'4 skills',action:function(){goActivities(year,'maths');}}
   ];
-  if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper, Verbal Reasoning, Maths Reasoning and Comprehension. 10 questions chosen at random from a bank of 100.',cnt:'100-Q bank',action:function(){goActivities(year,'fsce');}});
+  if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper, Maths Reasoning and Comprehension. 10 questions chosen at random from a bank of 66.',cnt:'66-Q bank',action:function(){goActivities(year,'fsce');}});
   subjects.forEach(function(sub){
     var c=document.createElement('div');c.className='subc';c.style.setProperty('--ac',a);
     c.innerHTML=
@@ -966,13 +931,13 @@ function goActivities(year,subj){
     body.appendChild(mgrid);
 
   } else {
-    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mixed practice paper</h2><p>Ten questions chosen at random from a bank of 100 across Verbal Reasoning, Maths Reasoning and Comprehension. Every attempt gives a different set.</p>';
+    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mixed practice paper</h2><p>Ten questions chosen at random from a bank of 66 across Maths Reasoning and Comprehension. Every attempt gives a different set.</p>';
     var fc=document.createElement('div');fc.className='fsce-card nosel';
     fc.innerHTML=
       '<h2>Ready for the 11+ FSCE mini-paper?</h2>'+
-      '<p>Ten questions drawn at random from a bank of 100 across three sections, marked instantly. Every attempt gives a different selection.</p>'+
+      '<p>Ten questions drawn at random from a bank of 66 across two sections, marked instantly. Every attempt gives a different selection.</p>'+
       '<div class="fsce-fs">'+
-        '<div class="fsce-f"><b>Verbal Reasoning</b><span>Words, codes &amp; logic</span></div>'+
+        
         '<div class="fsce-f"><b>Maths Reasoning</b><span>Problem solving</span></div>'+
         '<div class="fsce-f"><b>Comprehension</b><span>Read &amp; infer</span></div>'+
         '<div class="fsce-f"><b>10 questions</b><span>Instantly marked</span></div>'+
@@ -1271,7 +1236,7 @@ var Q={
       '<div class="ph-intro nosel">'+
         '<span class="ph-em">🎓</span>'+
         '<h2>11+ FSCE Mini-Paper</h2>'+
-        '<p class="il">Ten questions drawn at random from a bank of 100, across Verbal Reasoning, Maths Reasoning and Comprehension. Every attempt is different.</p>'+
+        '<p class="il">Ten questions drawn at random from a bank of 66, across Maths Reasoning and Comprehension. Every attempt is different.</p>'+
         '<div class="ph-steps">'+
           '<div class="ph-step"><span class="sn">1</span>10 mixed questions</div>'+
           '<div class="ph-step"><span class="sn">2</span>Instant marking</div>'+
