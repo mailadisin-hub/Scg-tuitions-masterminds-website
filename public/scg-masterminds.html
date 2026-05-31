@@ -829,7 +829,7 @@ function goActivities(year,subj){
 
 /* ═══ SPEECH ════════════════════════════════════════════════════════════ */
 var Sp={
-  ok:'speechSynthesis' in window,v:null,
+  ok:'speechSynthesis' in window,v:null,_stopped:false,
   pick:function(){
     if(!this.ok)return;
     var vs=speechSynthesis.getVoices();
@@ -839,18 +839,25 @@ var Sp={
   },
   speak:function(sents,onI,onDone){
     if(!this.ok){onDone&&onDone();return;}
+    this._stopped=false;
     speechSynthesis.cancel();
     var self=this,i=0;
     (function next(){
-      if(i>=sents.length){onI&&onI(-1);onDone&&onDone();return;}
+      if(self._stopped||i>=sents.length){
+        onI&&onI(-1);
+        if(!self._stopped)onDone&&onDone();
+        return;
+      }
       var u=new SpeechSynthesisUtterance(sents[i]);
       u.lang='en-GB';u.rate=0.88;u.pitch=1.05;if(self.v)u.voice=self.v;
-      var x=i;u.onstart=function(){onI&&onI(x);};
-      u.onend=u.onerror=function(){i++;next();};
+      var x=i;
+      u.onstart=function(){if(!self._stopped)onI&&onI(x);};
+      u.onend=function(){if(!self._stopped){i++;next();}};
+      u.onerror=function(){if(!self._stopped){i++;next();}};
       speechSynthesis.speak(u);
     })();
   },
-  stop:function(){if(this.ok)speechSynthesis.cancel();}
+  stop:function(){this._stopped=true;if(this.ok)speechSynthesis.cancel();}
 };
 if(Sp.ok){Sp.pick();speechSynthesis.onvoiceschanged=function(){Sp.pick();};}
 
