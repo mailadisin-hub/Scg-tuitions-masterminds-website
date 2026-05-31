@@ -1,7 +1,7 @@
 <!--
-  SCG MASTERMINDS — Embeddable sub-page for scgtuitions.co.uk
+  SCG MASTERMINDS, Embeddable sub-page for scgtuitions.co.uk
   Paste between SCGMM:START and SCGMM:END into your page body.
-  All CSS/JS is scoped to #scgmm — safe to embed alongside your existing styles.
+  All CSS/JS is scoped to #scgmm, safe to embed alongside your existing styles.
   Results: saved in browser localStorage. Download as Excel: add #scg-admin to URL or Ctrl+Shift+E.
   Live spreadsheet: set SUBMIT_ENDPOINT in the script block to your Google Apps Script Web App URL.
 -->
@@ -463,7 +463,7 @@
   <div class="wrap">
     <div class="h-badge">🧠 SCG Masterminds · Free Learning</div>
     <h1>Practice that's <em>read aloud</em>,<br>marked &amp; saved for you</h1>
-    <p class="h-lead">Pick a year group, choose a subject, and your child's device reads the story aloud — sentence by sentence. Questions mark instantly, results are saved for the parent.</p>
+    <p class="h-lead">Pick a year group, choose a subject, and your child's device reads the story aloud, sentence by sentence. Questions mark instantly, results are saved for the parent.</p>
     <div class="h-stats">
       <div class="h-stat"><b>10</b><span>Comprehensions</span></div>
       <div class="h-stat"><b>8</b><span>Maths rounds</span></div>
@@ -476,7 +476,7 @@
 <!-- ═══ SCREEN 1: Home ═══ -->
 <div class="scr" id="s-home">
   <div class="wrap">
-    <div class="stitle"><div class="ey">Step 1 — Choose a year group</div><h2>Who is practising today?</h2><p>Each year group has English comprehensions, Maths skills, and more.</p></div>
+    <div class="stitle"><div class="ey">Step 1: Choose a year group</div><h2>Who is practising today?</h2><p>Each year group has English comprehensions, Maths skills, and more.</p></div>
     <div class="yr-grid" id="yrgrid"></div>
     <div class="faq-section">
       <button class="faq-btn" id="faq-tog">💬 Frequently asked questions</button>
@@ -543,7 +543,7 @@
 "use strict";
 
 /* ═══ CONFIG ═══════════════════════════════════════════════════════════════ */
-var ENDPOINT = "";  /* Google Apps Script Web App URL — leave "" for local only */
+var ENDPOINT = "";  /* Google Apps Script Web App URL, leave "" for local only */
 /* ══════════════════════════════════════════════════════════════════════════ */
 
 var $=function(s,r){return(r||document).querySelector(s);};
@@ -575,16 +575,16 @@ var CY3=[
  paras:["Ancient Egypt was one of the greatest civilisations in history. It existed along the banks of the River Nile in north Africa for over 3,000 years, from around 3100 BC to 30 BC.","The River Nile was essential to life in Ancient Egypt. Every year, the river flooded its banks, leaving behind a thick layer of rich, dark mud. This mud was perfect for growing crops such as wheat and barley. Without the Nile, the land would have been nothing but dry, empty desert.","The Ancient Egyptians built enormous structures called pyramids as tombs for their rulers, known as pharaohs. The most famous pyramids are found at Giza, near Cairo. The Great Pyramid of Giza was built for Pharaoh Khufu around 2560 BC. It is made from over two million stone blocks.","The Egyptians also developed one of the world's earliest writing systems, called hieroglyphics. Instead of letters, hieroglyphics used pictures and symbols to represent words and sounds. These symbols were carved into temple walls and painted inside tombs.","Ancient Egyptians believed in many gods and goddesses. Ra was the sun god, Osiris was the god of the afterlife, and Anubis was often depicted as a man with the head of a jackal."],
  qs:[{q:"How long did the Ancient Egyptian civilisation last?",o:["About 1,000 years","About 3,000 years","About 500 years","About 5,000 years"],c:1},{q:"Why was the annual flooding of the River Nile important?",o:["It brought fresh fish for eating","It cooled the land in summer","It left behind rich mud perfect for growing crops","It washed away desert sand"],c:2},{q:"For whom was the Great Pyramid of Giza built?",o:["Pharaoh Ramesses","Pharaoh Tutankhamun","Pharaoh Nefertiti","Pharaoh Khufu"],c:3},{q:"What was the Egyptian writing system called?",o:["Cuneiform","Sanskrit","Hieroglyphics","Latin"],c:2},{q:"Which Egyptian god was depicted with the head of a jackal?",o:["Ra","Osiris","Anubis","Horus"],c:2}]},
 {id:"y3-jungle-adventure",title:"Journey Through the Jungle",emoji:"🦜",time:"~6 min",
- paras:["Maya had always dreamed of exploring the Amazon rainforest. So when her father, a wildlife photographer, invited her to join his expedition to Brazil, she packed her bag immediately.","The rainforest was overwhelming in every way. The air was thick with heat and humidity, and every surface seemed to pulse with life. Brightly coloured parrots screeched overhead. Enormous blue morpho butterflies drifted past like scraps of sky.","On their second day, Maya's father stopped suddenly and pointed carefully to a branch just above the path. Draped across it, almost invisible against the bark, was a green tree boa. Its scales shimmered like polished emeralds as it lifted its head to watch them with calm, unblinking eyes.","She won't hurt us, Maya's father whispered. She's more scared of us than we are of her. Later, they heard a deep, rumbling sound rolling through the trees. Maya thought it was thunder, but her father smiled.","Howler monkeys, he said. Their call can be heard up to five kilometres away. They're the loudest land animals on Earth. As the sun sank behind the canopy, Maya sat quietly and wrote in her journal. The rainforest was not just a place — it was a living, breathing, roaring world all of its own."],
+ paras:["Maya had always dreamed of exploring the Amazon rainforest. So when her father, a wildlife photographer, invited her to join his expedition to Brazil, she packed her bag immediately.","The rainforest was overwhelming in every way. The air was thick with heat and humidity, and every surface seemed to pulse with life. Brightly coloured parrots screeched overhead. Enormous blue morpho butterflies drifted past like scraps of sky.","On their second day, Maya's father stopped suddenly and pointed carefully to a branch just above the path. Draped across it, almost invisible against the bark, was a green tree boa. Its scales shimmered like polished emeralds as it lifted its head to watch them with calm, unblinking eyes.","She won't hurt us, Maya's father whispered. She's more scared of us than we are of her. Later, they heard a deep, rumbling sound rolling through the trees. Maya thought it was thunder, but her father smiled.","Howler monkeys, he said. Their call can be heard up to five kilometres away. They're the loudest land animals on Earth. As the sun sank behind the canopy, Maya sat quietly and wrote in her journal. The rainforest was not just a place, it was a living, breathing, roaring world all of its own."],
  qs:[{q:"Why was Maya travelling to Brazil?",o:["To take part in a school trip","To join her father's wildlife photography expedition","To visit her grandparents","To compete in a jungle race"],c:1},{q:"What did Maya see draped across a branch on the second day?",o:["A giant spider","A sleeping jaguar","A green tree boa","A howler monkey"],c:2},{q:"How were the snake's scales described?",o:["Dull and rough like stone","Shimmering like polished emeralds","Patterned like autumn leaves","Bright orange and red"],c:1},{q:"How far away can the call of a howler monkey be heard?",o:["Up to one kilometre","Up to three kilometres","Up to five kilometres","Up to ten kilometres"],c:2},{q:"What did Maya do as the sun began to set?",o:["She climbed a tall tree","She took photographs","She wrote in her journal","She listened to the monkeys"],c:2}]},
 {id:"y3-rainforest",title:"Rainforests of the World",emoji:"🌳",time:"~6 min",
- paras:["Tropical rainforests are found near the equator, where it is hot and wet throughout the year. The largest rainforest on Earth is the Amazon, which spreads across Brazil and eight other countries in South America. Other major rainforests are found in Central Africa and Southeast Asia.","A rainforest is made up of several distinct layers. The tallest trees form the emergent layer, bathed in sunlight. Below this is the canopy, a thick, continuous cover of leaves that blocks out much of the light. The understorey is a shadier zone where plants have adapted to grow with very little sunlight. The forest floor receives almost no direct light at all.","Rainforests are home to an extraordinary variety of life. Although they cover only about six percent of the Earth's surface, they contain over half of the world's plant and animal species — many of which have not yet been discovered by scientists.","Unfortunately, rainforests are under serious threat. Every year, huge areas are cleared for farming, logging, and building. This is called deforestation. Rainforests also play a vital role in regulating the planet's climate, absorbing carbon dioxide and producing oxygen.","Scientists, governments, and local communities around the world are working to protect these precious ecosystems before it is too late."],
+ paras:["Tropical rainforests are found near the equator, where it is hot and wet throughout the year. The largest rainforest on Earth is the Amazon, which spreads across Brazil and eight other countries in South America. Other major rainforests are found in Central Africa and Southeast Asia.","A rainforest is made up of several distinct layers. The tallest trees form the emergent layer, bathed in sunlight. Below this is the canopy, a thick, continuous cover of leaves that blocks out much of the light. The understorey is a shadier zone where plants have adapted to grow with very little sunlight. The forest floor receives almost no direct light at all.","Rainforests are home to an extraordinary variety of life. Although they cover only about six percent of the Earth's surface, they contain over half of the world's plant and animal species, many of which have not yet been discovered by scientists.","Unfortunately, rainforests are under serious threat. Every year, huge areas are cleared for farming, logging, and building. This is called deforestation. Rainforests also play a vital role in regulating the planet's climate, absorbing carbon dioxide and producing oxygen.","Scientists, governments, and local communities around the world are working to protect these precious ecosystems before it is too late."],
  qs:[{q:"Where are tropical rainforests found?",o:["Near the North Pole","Near the equator","In cold mountain regions","Along coastlines only"],c:1},{q:"Which layer of the rainforest receives almost no direct sunlight?",o:["The emergent layer","The canopy","The understorey","The forest floor"],c:3},{q:"What percentage of Earth's surface do tropical rainforests cover?",o:["About two percent","About six percent","About twenty percent","About fifty percent"],c:1},{q:"What is the name for clearing rainforest for farming and logging?",o:["Pollution","Erosion","Deforestation","Migration"],c:2},{q:"What important role do rainforests play in the planet's climate?",o:["They create rainfall around the world","They absorb carbon dioxide and produce oxygen","They cool the oceans","They prevent earthquakes"],c:1}]},
 {id:"y3-dragon-cave",title:"The Dragon's Secret",emoji:"🐉",time:"~6 min",
- paras:["In the kingdom of Embervale, everyone feared the dragon that lived in the caves above the city. Every full moon, a distant roar would echo through the mountains, and the townsfolk would bolt their shutters and whisper fearfully to one another.","Everyone feared the dragon — except for a young girl named Freya. Freya was twelve years old and intensely curious. She had spent months observing the mountain from a safe distance, noting that the dragon never came down to the town, never stole livestock, and never did anything threatening at all.","One crisp autumn morning, she packed a flask of warm soup and a wedge of cheese into her satchel and climbed the mountain path alone. As she neared the cave entrance, she heard not a terrifying roar, but a low, mournful sound — like someone crying.","Freya stepped inside. Curled in the furthest corner of the cave was an enormous copper-coloured dragon, its great head resting on its front claws. One of its wings was badly damaged, bent at an unnatural angle.","You're hurt, said Freya softly. The dragon raised its enormous head slowly. Its amber eyes fixed on her with an expression of surprise and — unmistakably — hope. I won't hurt you, said Freya. I want to help."],
+ paras:["In the kingdom of Embervale, everyone feared the dragon that lived in the caves above the city. Every full moon, a distant roar would echo through the mountains, and the townsfolk would bolt their shutters and whisper fearfully to one another.","Everyone feared the dragon, except for a young girl named Freya. Freya was twelve years old and intensely curious. She had spent months observing the mountain from a safe distance, noting that the dragon never came down to the town, never stole livestock, and never did anything threatening at all.","One crisp autumn morning, she packed a flask of warm soup and a wedge of cheese into her satchel and climbed the mountain path alone. As she neared the cave entrance, she heard not a terrifying roar, but a low, mournful sound, like someone crying.","Freya stepped inside. Curled in the furthest corner of the cave was an enormous copper-coloured dragon, its great head resting on its front claws. One of its wings was badly damaged, bent at an unnatural angle.","You're hurt, said Freya softly. The dragon raised its enormous head slowly. Its amber eyes fixed on her with an expression of surprise and, unmistakably, hope. I won't hurt you, said Freya. I want to help."],
  qs:[{q:"When would the distant roar echo through the mountains?",o:["Every night at midnight","Every full moon","Every morning at dawn","Every winter storm"],c:1},{q:"What had Freya noticed that made her think the dragon was not dangerous?",o:["The dragon had made friends with the farmers","The dragon never came down, stole livestock, or threatened anyone","The dragon was too small to cause harm","The villagers told her it was friendly"],c:1},{q:"What did Freya pack in her satchel?",o:["A sword and a shield","A map and a compass","A flask of warm soup and a wedge of cheese","Bandages and medicine"],c:2},{q:"What colour was the dragon?",o:["Emerald green","Midnight blue","Copper-coloured","Silvery white"],c:2},{q:"What was wrong with the dragon?",o:["It had a broken claw","One of its wings was badly damaged","It had lost one of its teeth","It was very old and weak"],c:1}]},
 {id:"y3-ocean-life",title:"Life in the Ocean",emoji:"🐙",time:"~6 min",
- paras:["The ocean covers more than seventy percent of the Earth's surface, yet much of it remains unexplored. It is the world's largest habitat, home to an astonishing diversity of life — from the tiniest microscopic plankton to the enormous blue whale, the largest animal that has ever lived on Earth.","The ocean is divided into zones based on depth. The sunlit zone reaches down to about 200 metres. Here, sunlight penetrates the water, allowing plants and algae to photosynthesise. This zone teems with life: fish, sea turtles, dolphins, and sharks all live here.","Below the sunlit zone lies the twilight zone, where only a little light filters through. Many animals here produce their own light through a process called bioluminescence, which they use to attract prey or communicate with others of their kind.","Deeper still is the midnight zone, plunged in total darkness and under immense pressure. The anglerfish, for example, uses a glowing lure attached to its head to attract prey in the blackness.","Coral reefs, found in the warm shallow waters of the sunlit zone, are among the most biodiverse ecosystems on Earth. Though they cover less than one percent of the ocean floor, coral reefs support around twenty-five percent of all marine species."],
+ paras:["The ocean covers more than seventy percent of the Earth's surface, yet much of it remains unexplored. It is the world's largest habitat, home to an astonishing diversity of life, from the tiniest microscopic plankton to the enormous blue whale, the largest animal that has ever lived on Earth.","The ocean is divided into zones based on depth. The sunlit zone reaches down to about 200 metres. Here, sunlight penetrates the water, allowing plants and algae to photosynthesise. This zone teems with life: fish, sea turtles, dolphins, and sharks all live here.","Below the sunlit zone lies the twilight zone, where only a little light filters through. Many animals here produce their own light through a process called bioluminescence, which they use to attract prey or communicate with others of their kind.","Deeper still is the midnight zone, plunged in total darkness and under immense pressure. The anglerfish, for example, uses a glowing lure attached to its head to attract prey in the blackness.","Coral reefs, found in the warm shallow waters of the sunlit zone, are among the most biodiverse ecosystems on Earth. Though they cover less than one percent of the ocean floor, coral reefs support around twenty-five percent of all marine species."],
  qs:[{q:"How much of the Earth's surface does the ocean cover?",o:["About fifty percent","About sixty percent","About seventy percent","About eighty percent"],c:2},{q:"How deep does the sunlit zone reach?",o:["About 100 metres","About 200 metres","About 500 metres","About 1,000 metres"],c:1},{q:"What is bioluminescence?",o:["A type of camouflage used by sea creatures","The ability to produce one's own light","A method of communication using sound","A way of breathing without gills"],c:1},{q:"What does the anglerfish use to attract prey in the midnight zone?",o:["A bright pattern on its scales","A loud clicking sound","A glowing lure attached to its head","A powerful electric shock"],c:2},{q:"What percentage of all marine species do coral reefs support?",o:["About five percent","About ten percent","About twenty-five percent","About fifty percent"],c:2}]}
 ];
 
@@ -604,12 +604,12 @@ var FQ=[
 
 /* ═══ DATA: FAQ ═════════════════════════════════════════════════════════ */
 var FAQ=[
-["🆓","Is SCG Masterminds really free?","Yes — every comprehension, maths round and the 11+ mini-paper is completely free. It's our way of supporting families building strong early foundations."],
-["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice — the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
-["📊","What happens to my child's score?","After each quiz you enter the parent's name and email. A full results report — including a question-by-question breakdown — is saved on the device and can be downloaded as a spreadsheet at any time."],
+["🆓","Is SCG Masterminds really free?","Yes, every comprehension, maths round and the 11+ mini-paper is completely free. It's our way of supporting families building strong early foundations."],
+["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
+["📊","What happens to my child's score?","After each quiz you enter the parent's name and email. A full results report, including a question-by-question breakdown, is saved on the device and can be downloaded as a spreadsheet at any time."],
 ["📅","Which year groups are covered?","Right now there are 5 comprehensions and 4 maths skills for Year 2, and the same for Year 3. A Year 6 SATs section and full 11+ FSCE programme are coming soon."],
 ["🔁","Can my child do a quiz more than once?","Absolutely. Practice makes progress! Any story or maths round can be replayed as many times as you like."],
-["📱","Will it work on a phone or tablet?","Yes — the whole section is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
+["📱","Will it work on a phone or tablet?","Yes, the whole section is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
 ["✉️","How is my email used?","Your email is used to save your child's results and keep you informed about SCG Tuitions courses and resources. You can ask to be removed at any time."]
 ];
 
@@ -735,13 +735,13 @@ function goSubjects(year){
   var bc=$("#bc-sub",root); bc.innerHTML='';
   bc.appendChild(bcBtn('Masterminds',goHome));bc.appendChild(sep());bc.appendChild(bcSpan('Year '+year));
   var t=$("#sub-title",root);
-  t.innerHTML='<div class="ey">Step 2 — Choose a subject</div><h2>Year '+year+' <span style="font-weight:500;font-size:20px;color:var(--mid)">· '+(year===2?'Ages 6–7':'Ages 7–8')+'</span></h2><p>'+(year===2?'Short stories and number skills pitched perfectly for Year 2.':'Longer passages, richer vocabulary, and more complex maths for Year 3.')+'</p>';
+  t.innerHTML='<div class="ey">Step 2: Choose a subject</div><h2>Year '+year+' <span style="font-weight:500;font-size:20px;color:var(--mid)">· '+(year===2?'Ages 6–7':'Ages 7–8')+'</span></h2><p>'+(year===2?'Short stories and number skills pitched perfectly for Year 2.':'Longer passages, richer vocabulary, and more complex maths for Year 3.')+'</p>';
   var sg=$("#sub-grid",root); sg.innerHTML='';
   var subjects=[
     {ico:'📖',bg:as,name:'English',desc:'Read-aloud comprehension stories. The device reads to your child sentence by sentence, then 5 questions follow.',cnt:'5 stories',action:function(){goActivities(year,'english');}},
     {ico:'🔢',bg:as,name:'Maths',desc:'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',cnt:'4 skills',action:function(){goActivities(year,'maths');}}
   ];
-  if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper — Verbal Reasoning, Maths Reasoning and Comprehension. On-screen only.',cnt:'10 Qs',action:function(){goActivities(year,'fsce');}});
+  if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper, Verbal Reasoning, Maths Reasoning and Comprehension. On-screen only.',cnt:'10 Qs',action:function(){goActivities(year,'fsce');}});
   subjects.forEach(function(sub){
     var c=document.createElement('div');c.className='subc';c.style.setProperty('--ac',a);
     c.innerHTML=
@@ -777,7 +777,7 @@ function goActivities(year,subj){
   var bests=Store.bests();
 
   if(subj==='english'){
-    title.innerHTML='<div class="ey">Year '+year+' · English</div><h2>Choose a story</h2><p>The story is read aloud by your device, sentence by sentence with the current line highlighted. Then 5 questions — mark instantly.</p>';
+    title.innerHTML='<div class="ey">Year '+year+' · English</div><h2>Choose a story</h2><p>The story is read aloud by your device, sentence by sentence with the current line highlighted. Then 5 questions, mark instantly.</p>';
     var comps=year===2?CY2:CY3;
     var grid=document.createElement('div');grid.className='act-grid';
     comps.forEach(function(c,i){
@@ -799,13 +799,13 @@ function goActivities(year,subj){
     body.appendChild(grid);
 
   } else if(subj==='maths'){
-    title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check — or press Enter.</p>';
+    title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check, or press Enter.</p>';
     var mgrid=document.createElement('div');mgrid.className='mop-grid';
     var mcols=['#1a2870','#27ae60','#00b4c8','#e8781a'];
     MOPS.forEach(function(op,i){
       var mc=mcols[i];
       var card=document.createElement('div');card.className='mop';card.style.setProperty('--mc',mc);
-      var b=bests[op.n+' — Year '+year];
+      var b=bests[op.n+', Year '+year];
       card.innerHTML=
         '<div class="msym" style="color:'+mc+'">'+op.s+'</div>'+
         '<h4>'+op.n+'</h4>'+
@@ -817,7 +817,7 @@ function goActivities(year,subj){
     body.appendChild(mgrid);
 
   } else {
-    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mixed practice paper</h2><p>Verbal Reasoning, Maths Reasoning and Comprehension — just like the real 11+. Presented on screen only; not downloadable.</p>';
+    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mixed practice paper</h2><p>Verbal Reasoning, Maths Reasoning and Comprehension, just like the real 11+. Presented on screen only; not downloadable.</p>';
     var fc=document.createElement('div');fc.className='fsce-card nosel';
     fc.innerHTML=
       '<h2>Ready for the 11+ FSCE mini-paper?</h2>'+
@@ -925,7 +925,7 @@ var Q={
           '<div class="ph-step"><span class="sn">3</span>Save your results</div>'+
         '</div>'+
         '<button class="rc play" id="m-beg">🔊 Read to me</button>'+
-        (!Sp.ok?'<p style="font-size:12.5px;color:#b0302a;margin-top:12px;text-align:center">Read-aloud not supported in this browser — read the text on screen.</p>':'')+
+        (!Sp.ok?'<p style="font-size:12.5px;color:#b0302a;margin-top:12px;text-align:center">Read-aloud not supported in this browser, read the text on screen.</p>':'')+
       '</div>';
     var self=this;
     $("#m-beg").addEventListener('click',function(){self.renderReading();});
@@ -968,7 +968,7 @@ var Q={
       rpl.style.display=on?'none':'inline-flex';rsto.style.display=on?'inline-flex':'none';
       rrep.style.display=!on?'inline-flex':'none';
     }
-    function start(){setLive(true);Sp.speak(self.st.sents,hl,function(){setLive(false);rst.textContent='Finished — ready for questions';hl(-1);});}
+    function start(){setLive(true);Sp.speak(self.st.sents,hl,function(){setLive(false);rst.textContent='Finished, ready for questions';hl(-1);});}
     rpl.addEventListener('click',start);rrep.addEventListener('click',start);
     rsto.addEventListener('click',function(){Sp.stop();setLive(false);hl(-1);});
     $("#rc-nxt").addEventListener('click',function(){Sp.stop();self.renderQ();});
@@ -1032,7 +1032,7 @@ var Q={
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
       var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
-      fb.innerHTML=ok?'✅ Correct! Well done.':'❌ Not quite — the answer was <b style="margin-left:3px">'+q.o[q.c]+'</b>';
+      fb.innerHTML=ok?'✅ Correct! Well done.':'❌ Not quite, the answer was <b style="margin-left:3px">'+q.o[q.c]+'</b>';
       $("#qnxt").classList.add('show');
     }
     self._answerFn=answer;
@@ -1045,7 +1045,7 @@ var Q={
   /* ── MATHS ── */
   startMaths:function(year,op,ac){
     this.st={type:'maths',ac:ac,year:year,op:op,
-      section:'Maths (Year '+year+')',quizTitle:op.n+' — Year '+year,
+      section:'Maths (Year '+year+')',quizTitle:op.n+', Year '+year,
       qs:this.genMaths(year,op.k),qi:0,answers:[],correct:0};
     this.open(ac,op.s,op.n+' · Year '+year,'10 quick-fire questions');
     this.renderMathsIntro();
@@ -1122,7 +1122,7 @@ var Q={
       '<div class="ph-intro nosel">'+
         '<span class="ph-em">🎓</span>'+
         '<h2>11+ FSCE Mini-Paper</h2>'+
-        '<p class="il">Ten mixed questions across Verbal Reasoning, Maths Reasoning and Comprehension — just like the real 11+. On-screen only.</p>'+
+        '<p class="il">Ten mixed questions across Verbal Reasoning, Maths Reasoning and Comprehension, just like the real 11+. On-screen only.</p>'+
         '<div class="ph-steps">'+
           '<div class="ph-step"><span class="sn">1</span>10 mixed questions</div>'+
           '<div class="ph-step"><span class="sn">2</span>Instant marking</div>'+
