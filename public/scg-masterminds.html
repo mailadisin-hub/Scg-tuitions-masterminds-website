@@ -94,6 +94,14 @@
   padding:4px 8px;border-radius:7px;transition:background .15s;}
 #scgmm .bc-btn:hover{background:var(--sf2);}
 #scgmm .bc-sep{color:#c8cee2;font-size:12px;}
+#scgmm .back-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-weight:700;font-size:14px;color:var(--nv);
+  background:var(--sf);border:1.5px solid var(--ln);
+  padding:9px 16px;border-radius:10px;margin-right:10px;
+  transition:background .15s,border-color .15s,transform .12s;
+}
+#scgmm .back-btn:hover{background:var(--sf2);border-color:#d0d6ef;transform:translateX(-2px);}
 
 /* ═══════ SECTION TITLE ═══════ */
 #scgmm .stitle{padding:24px 0 18px;}
@@ -469,7 +477,7 @@
 <!-- ═══ SCREEN 2: Subjects ═══ -->
 <div class="scr" id="s-sub">
   <div class="wrap">
-    <div class="bc" id="bc-sub"></div>
+    <div class="bc" id="bc-sub"><button class="back-btn" id="back-sub">← Back</button></div>
     <div class="stitle" id="sub-title"></div>
     <div class="sub-grid" id="sub-grid"></div>
   </div>
@@ -478,7 +486,7 @@
 <!-- ═══ SCREEN 3: Activities ═══ -->
 <div class="scr" id="s-act">
   <div class="wrap">
-    <div class="bc" id="bc-act"></div>
+    <div class="bc" id="bc-act"><button class="back-btn" id="back-act">← Back</button></div>
     <div class="stitle" id="act-title"></div>
     <div id="act-body"></div>
   </div>
@@ -650,7 +658,10 @@ function showScr(id,dir){
   window.scrollTo({top:root.getBoundingClientRect().top+window.pageYOffset-8,behavior:'smooth'});
 }
 function goHome(){navStack=[];showScr('s-home','bk');}
-function goBack(){if(navStack.length){var prev=navStack.pop();prev();}}
+function goBack(){if(navStack.length){var prev=navStack.pop();prev();} else goHome();}
+document.addEventListener('click',function(e){
+  if(e.target.id==='back-sub'||e.target.id==='back-act') goBack();
+});
 function bcBtn(label,fn){
   var b=document.createElement('button');b.className='bc-btn';
   b.innerHTML=arrL()+label;b.addEventListener('click',fn);return b;
