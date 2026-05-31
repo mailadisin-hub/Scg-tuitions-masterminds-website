@@ -1,0 +1,53 @@
+@import "tailwindcss";
+
+:root {
+  --scg-navy: #1a1a2e;
+  --scg-dark: #2d2d2d;
+  --scg-mid: #555;
+  --scg-light: #888;
+  --scg-border: #e5e5e5;
+  --scg-bg: #ffffff;
+  --scg-bg-soft: #f9f9f9;
+  --scg-accent: #1e3a8a;
+  --scg-green: #16a34a;
+  --background: #ffffff;
+  --foreground: #2d2d2d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+}
+
+body {
+  background: #fff;
+  color: var(--scg-dark);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.quiz-option {
+  transition: all 0.15s ease;
+}
+
+.quiz-option:hover {
+  border-color: #1e3a8a !important;
+  background: #eff6ff !important;
+}
+
+.speaking-pulse {
+  animation: spulse 1.4s ease-in-out infinite;
+}
+
+@keyframes spulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.92); }
+}
+
+.fade-in {
+  animation: fadein 0.4s ease;
+}
+
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
