@@ -38,8 +38,13 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-100 text-center text-xs text-gray-400">
-          &copy; {new Date().getFullYear()} SCG Tuitions. All rights reserved.
+        <div className="mt-8 pt-6 border-t border-gray-100 text-center text-xs text-gray-400 space-y-2">
+          <div className="flex justify-center gap-4">
+            <a href="/privacy" className="hover:text-gray-600 transition-colors">Privacy Policy</a>
+            <span aria-hidden="true">&middot;</span>
+            <a href="/terms" className="hover:text-gray-600 transition-colors">Terms of Service</a>
+          </div>
+          <div>&copy; {new Date().getFullYear()} SCG Tuitions. All rights reserved.</div>
         </div>
       </div>
     </footer>
