@@ -483,6 +483,47 @@
 #scgmm .sw-know{background:var(--sw-ac,#7c3aed);color:#fff;border:none;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:700;cursor:pointer;min-width:130px;}
 #scgmm .sw-skip{background:#f1f5f9;color:#334155;border:2px solid #e2e8f0;border-radius:12px;padding:14px 28px;font-size:16px;font-weight:600;cursor:pointer;min-width:130px;}
 
+/* ── consent screen ── */
+#scgmm .consent-wrap{
+  max-width:520px;margin:0 auto;padding:40px 24px 60px;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+}
+#scgmm .consent-logo{font-size:52px;margin-bottom:12px;}
+#scgmm .consent-wrap h2{font-size:1.55rem;font-weight:900;color:#111827;margin-bottom:8px;}
+#scgmm .consent-wrap p.cl{font-size:15px;color:#4b5563;line-height:1.6;margin-bottom:20px;}
+#scgmm .consent-bullets{
+  background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;
+  padding:16px 20px;margin-bottom:24px;text-align:left;width:100%;
+}
+#scgmm .consent-bullets li{
+  font-size:14px;color:#374151;line-height:1.55;margin-bottom:8px;
+  padding-left:4px;list-style:none;display:flex;gap:10px;align-items:flex-start;
+}
+#scgmm .consent-bullets li::before{content:"✓";color:#27ae60;font-weight:800;flex-shrink:0;}
+#scgmm .consent-bullets li:last-child{margin-bottom:0;}
+#scgmm .consent-check-row{
+  display:flex;align-items:flex-start;gap:12px;
+  background:#eff6ff;border:2px solid #bfdbfe;border-radius:12px;
+  padding:14px 16px;margin-bottom:20px;text-align:left;width:100%;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+#scgmm .consent-check-row.ticked{background:#edfaf4;border-color:#6ee7b7;}
+#scgmm .consent-check-row input[type=checkbox]{
+  width:22px;height:22px;flex-shrink:0;cursor:pointer;accent-color:#1a2870;margin-top:1px;
+}
+#scgmm .consent-check-row label{
+  font-size:14px;color:#1e3a8a;font-weight:600;line-height:1.5;cursor:pointer;
+}
+#scgmm .consent-check-row label a{color:#1d4ed8;text-decoration:underline;}
+#scgmm #consent-btn{
+  background:#94a3b8;color:#fff;border:none;border-radius:14px;
+  padding:15px 36px;font-size:16px;font-weight:700;cursor:not-allowed;
+  transition:background .2s,transform .12s;width:100%;max-width:280px;
+}
+#scgmm #consent-btn.ready{background:#1a2870;cursor:pointer;}
+#scgmm #consent-btn.ready:hover{transform:translateY(-2px);background:#2a3aaf;}
+#scgmm .consent-note{font-size:12px;color:#94a3b8;margin-top:12px;line-height:1.5;}
+
 @media(max-width:600px){
   #scgmm .hero{padding:44px 0 52px;}
   #scgmm-modal .mb{padding:20px 18px 28px;}
@@ -506,6 +547,29 @@
       <div class="h-stat"><b>11+</b><span>FSCE style</span></div>
       <div class="h-stat"><b>Free</b><span>Always</span></div>
     </div>
+  </div>
+</div>
+
+<!-- ═══ SCREEN 0: Consent (shown once) ═══ -->
+<div class="scr" id="s-consent">
+  <div class="consent-wrap">
+    <div class="consent-logo">🧠</div>
+    <h2>Welcome to SCG Masterminds!</h2>
+    <p class="cl">Before you start, please take a moment to let us know you're happy with how we use your information.</p>
+    <ul class="consent-bullets">
+      <li>We collect your <strong>name, email and your child's first name</strong> when you save results.</li>
+      <li>Results are <strong>saved on this device</strong> so you can track progress over time.</li>
+      <li>Your email may be used to send <strong>updates about SCG Tuitions</strong> courses and resources.</li>
+      <li>We <strong>never sell your data</strong> and you can ask us to delete it at any time.</li>
+    </ul>
+    <div class="consent-check-row" id="consent-row">
+      <input type="checkbox" id="consent-cb">
+      <label for="consent-cb">
+        I agree to the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms of Service</a>. I am the parent or guardian using this platform.
+      </label>
+    </div>
+    <button id="consent-btn" disabled>Let's go! →</button>
+    <p class="consent-note">You only need to do this once. Your choice is saved on this device.</p>
   </div>
 </div>
 
@@ -789,7 +853,7 @@ var FAQ=[
 ];
 
 /* ═══ STORAGE ═══════════════════════════════════════════════════════════ */
-var SK='scgMM2_results', PK='scgMM2_parent', BK='scgMM2_bests';
+var SK='scgMM2_results', PK='scgMM2_parent', BK='scgMM2_bests', CK='scgMM2_consent';
 var Store={
   all:function(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}},
   add:function(r){
@@ -1757,9 +1821,39 @@ $("#mcls").addEventListener('click',function(){Q.close();});
 modal.addEventListener('click',function(e){if(e.target===modal)Q.close();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.classList.contains('on'))Q.close();});
 
-/* show first screen */
-showScr('s-home','fwd');
-Admin.refresh();
+/* show first screen — consent gate */
+(function(){
+  var cb=document.getElementById('consent-cb');
+  var btn=document.getElementById('consent-btn');
+  var row=document.getElementById('consent-row');
+
+  function activateConsent(){
+    localStorage.setItem(CK,'1');
+    showScr('s-home','fwd');
+    Admin.refresh();
+  }
+
+  if(localStorage.getItem(CK)==='1'){
+    // Already consented — skip straight to home
+    showScr('s-home','fwd');
+    Admin.refresh();
+  } else {
+    showScr('s-consent','fwd');
+    cb.addEventListener('change',function(){
+      var ticked=cb.checked;
+      btn.disabled=!ticked;
+      btn.classList.toggle('ready',ticked);
+      row.classList.toggle('ticked',ticked);
+    });
+    // Clicking the whole row also toggles the checkbox
+    row.addEventListener('click',function(e){
+      if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}
+    });
+    btn.addEventListener('click',function(){
+      if(cb.checked) activateConsent();
+    });
+  }
+})();
 })();
 </script>
 </div>
