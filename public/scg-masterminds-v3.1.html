@@ -2123,6 +2123,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
     });
   }
 })();
+
+/* ── iframe auto-resize: report height to parent page ── */
+(function(){
+  function rh(){if(window.parent!==window){window.parent.postMessage({type:'scgmm-h',h:document.documentElement.scrollHeight},'*');}}
+  setInterval(rh,300);
+  window.addEventListener('load',rh);
+})();
+
 })();
 </script>
 </div>
