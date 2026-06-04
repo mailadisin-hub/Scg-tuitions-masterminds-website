@@ -572,7 +572,7 @@
 </div>
 
 <!-- ═══ SCREEN 0: Consent (shown once) ═══ -->
-<div class="scr" id="s-consent">
+<div class="scr fwd" id="s-consent">
   <div class="consent-wrap">
     <div class="consent-logo">🧠</div>
     <h2>Welcome to SCG Masterminds!</h2>
@@ -2096,13 +2096,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
   var row=document.getElementById('consent-row');
 
   function activateConsent(){
-    localStorage.setItem(CK,'1');
+    try{localStorage.setItem(CK,'1');}catch(e){}
     showScr('s-home','fwd');
     Admin.refresh();
   }
 
-  if(localStorage.getItem(CK)==='1'){
-    // Already consented — skip straight to home
+  var _consented=false;
+  try{_consented=localStorage.getItem(CK)==='1';}catch(e){}
+  if(_consented){
     showScr('s-home','fwd');
     Admin.refresh();
   } else {
