@@ -328,6 +328,20 @@
 #scgmm .qprog{font-size:12px;font-weight:700;color:var(--ac,var(--nv));text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
 #scgmm .qtext{font-size:20px;font-weight:700;color:var(--nv);margin-bottom:20px;font-family:'Poppins';line-height:1.35;}
 #scgmm .qopts{display:flex;flex-direction:column;gap:10px;}
+#scgmm .qopts.ph-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
+#scgmm .qopt{
+  width:100%;min-height:68px;padding:14px 12px;
+  border:2.5px solid #e2e8f0;border-radius:16px;background:#fff;
+  font-size:clamp(22px,5.5vw,30px);font-weight:800;color:#1e293b;
+  cursor:pointer;text-align:center;letter-spacing:.02em;
+  transition:transform .12s,border-color .12s,background .12s,box-shadow .12s;
+  font-family:'Poppins','Inter',sans-serif;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+#scgmm .qopt:hover:not(:disabled){transform:translateY(-3px);box-shadow:0 6px 18px rgba(0,0,0,.12);border-color:#94a3b8;}
+#scgmm .qopt:active:not(:disabled){transform:scale(.96);}
+#scgmm .qopt.ok{border-color:#27ae60;background:#edfaf4;color:#1a6640;}
+#scgmm .qopt.ng{border-color:#e57373;background:#fdf0f0;color:#b02a2a;}
 #scgmm .qo{
   text-align:left;border:1.5px solid var(--ln);background:#fff;border-radius:13px;
   padding:14px 17px;font-size:14.5px;display:flex;align-items:center;gap:12px;
@@ -1509,7 +1523,7 @@ var Q={
       '<div style="text-align:center;margin:16px 0">'+
         '<button id="ph-hear" style="background:'+s.ac+';color:#fff;border:none;border-radius:999px;padding:11px 30px;font-size:16px;font-weight:700;cursor:pointer">🔊 Hear the word</button>'+
       '</div>'+
-      '<div class="qopts" id="qopts">'+
+      '<div class="qopts ph-grid" id="qopts">'+
         q.opts.map(function(o,i){return'<button class="qopt" data-i="'+i+'">'+o+'</button>';}).join('')+
       '</div>'+
       '<div class="qfb" id="qfb"></div>';
