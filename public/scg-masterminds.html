@@ -472,8 +472,8 @@
 #scgmm .yc.pu{background:linear-gradient(135deg,#5b21b6,#7c3aed);}
 #scgmm .yc.or{background:linear-gradient(135deg,#b45309,#d97706);}
 #scgmm .phs-tile{
-  width:52px;height:52px;border-radius:10px;border:2px solid #cbd5e1;
-  background:#fff;font-size:22px;font-weight:700;cursor:pointer;
+  width:68px;height:68px;border-radius:12px;border:2px solid #cbd5e1;
+  background:#fff;font-size:26px;font-weight:700;cursor:pointer;
   transition:transform .12s,background .12s,opacity .12s;
 }
 #scgmm .phs-tile:hover:not(:disabled){background:#f1f5f9;transform:scale(1.06);}
@@ -536,6 +536,12 @@
 #scgmm .diff-hard{border-color:#fecaca;background:#fef2f2;}#scgmm .diff-hard:hover{border-color:#b91c1c;background:#fee2e2;}
 /* ── mixed quiz ── */
 #scgmm .mix-card{background:linear-gradient(135deg,#f0fdf4 0%,#eff6ff 100%);border:2px dashed #93c5fd;}
+#scgmm .star-row{font-size:30px;letter-spacing:4px;margin:10px 0 4px;text-align:center;}
+#scgmm .unlock-banner{background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:10px 18px;font-size:15px;font-weight:700;color:#854d0e;margin:12px 0;text-align:center;animation:unlockPop .45s cubic-bezier(.17,.67,.41,1.4);}
+@keyframes unlockPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+#scgmm .ph-locked{opacity:.7;cursor:default;}
+#scgmm .ph-say-btn{display:block;margin:12px auto 0;background:transparent;border:2px solid #e2e8f0;border-radius:999px;padding:8px 18px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;}
+
 #scgmm .qquote{background:#f0fdf4;border-left:4px solid #27ae60;border-radius:0 8px 8px 0;padding:10px 14px;font-size:14px;font-style:italic;color:#374151;margin-bottom:14px;line-height:1.55;}
 
 @media(max-width:480px){#scgmm .diff-grid{grid-template-columns:1fr;}}
@@ -557,9 +563,9 @@
     <h1>Practice that's <em>read aloud</em>,<br>marked &amp; saved for you</h1>
     <p class="h-lead">Pick a year group, choose a subject, and your child's device reads the story aloud, sentence by sentence. Questions mark instantly, results are saved for the parent.</p>
     <div class="h-stats">
-      <div class="h-stat"><b>10</b><span>Comprehensions</span></div>
-      <div class="h-stat"><b>8</b><span>Maths rounds</span></div>
-      <div class="h-stat"><b>11+</b><span>FSCE style</span></div>
+      <div class="h-stat"><b>15</b><span>Comprehensions</span></div>
+      <div class="h-stat"><b>Phonics</b><span>Phases 1–5</span></div>
+      <div class="h-stat"><b>12</b><span>Maths topics</span></div>
       <div class="h-stat"><b>Free</b><span>Always</span></div>
     </div>
   </div>
@@ -861,14 +867,14 @@ var FAQ=[
 ["🆓","Is SCG Masterminds really free?","Yes, every comprehension, maths round and the 11+ mini-paper is completely free. It's our way of supporting families building strong early foundations."],
 ["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
 ["📊","What happens to my child's score?","After each quiz you enter the parent's name and email. A full results report, including a question-by-question breakdown, is saved on the device and can be downloaded as a spreadsheet at any time."],
-["📅","Which year groups are covered?","Right now there are 5 comprehensions and 4 maths skills for Year 2, and the same for Year 3. A Year 6 SATs section and full 11+ FSCE programme are coming soon."],
+["📅","Which year groups are covered?","Reception (Phonics Phases 1–5 with 3 games each), Year 1 (5 comprehensions + 4 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions + 4 maths topics). A Year 6 SATs section and full 11+ FSCE programme are coming soon."],
 ["🔁","Can my child do a quiz more than once?","Absolutely. Practice makes progress! Any story or maths round can be replayed as many times as you like."],
 ["📱","Will it work on a phone or tablet?","Yes, the whole section is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
 ["✉️","How is my email used?","Your email is used to save your child's results and keep you informed about SCG Tuitions courses and resources. You can ask to be removed at any time."]
 ];
 
 /* ═══ STORAGE ═══════════════════════════════════════════════════════════ */
-var SK='scgMM2_results', PK='scgMM2_parent', BK='scgMM2_bests', CK='scgMM2_consent';
+var SK='scgMM2_results', PK='scgMM2_parent', BK='scgMM2_bests', CK='scgMM2_consent', UK='scgMM2_phonics_unlocks';
 var Store={
   all:function(){try{return JSON.parse(localStorage.getItem(SK)||'[]');}catch(e){return[];}},
   add:function(r){
@@ -884,6 +890,26 @@ var Store={
   saveParent:function(p){try{localStorage.setItem(PK,JSON.stringify(p));}catch(e){}},
   clear:function(){try{localStorage.removeItem(SK);}catch(e){} Admin.refresh();}
 };
+
+/* ═══ PHONICS UNLOCK STATE ══════════════════════════════════════════════ */
+var Unlocks={
+  get:function(){try{return JSON.parse(localStorage.getItem(UK)||'[1]');}catch(e){return[1];}},
+  isUnlocked:function(id){return this.get().indexOf(id)!==-1;},
+  unlock:function(id){var u=this.get();if(u.indexOf(id)===-1){u.push(id);localStorage.setItem(UK,JSON.stringify(u));}},
+  checkAndUnlock:function(s){
+    if(!s.phase)return null;
+    var ph=s.phase,nextId=ph.id+1;
+    if(nextId>PHONICS.length||this.isUnlocked(nextId))return null;
+    var bests=Store.bests(),keys=[];
+    if(ph.sw&&ph.sw.length>0)keys.push(ph.name+' Sight Words');
+    keys.push(ph.name+' · Hear & Choose');
+    keys.push(ph.name+' · Hear & Spell');
+    var avg=keys.reduce(function(acc,k){return acc+(bests[k]||0);},0)/keys.length;
+    if(avg>=70){this.unlock(nextId);return PHONICS[nextId-1];}
+    return null;
+  }
+};
+
 function toCSV(rows){
   var c=['Date','Child Name','Parent Name','Parent Email','Section','Quiz','Score','Total','Percentage','Breakdown'];
   function e(v){v=(v==null?'':String(v));return'"'+v.replace(/"/g,'""')+'"';}
@@ -994,25 +1020,37 @@ function goPhonicsPhases(){
   var bc=$("#bc-sub",root);bc.innerHTML='';
   bc.appendChild(bcBtn('Masterminds',goHome));bc.appendChild(sep());bc.appendChild(bcSpan('Reception · Phonics'));
   var t=$("#sub-title",root);
-  t.innerHTML='<div class="ey">Reception · Phonics</div><h2>Choose a Phase</h2><p>Each phase builds on the last. Start with Phase 1 and work through. Every phase has 3 games to practise.</p>';
+  t.innerHTML='<div class="ey">Reception · Phonics</div><h2>Choose a Phase</h2>'
+    +'<p>Each phase builds on the last. Finish all 3 games with 70%+ to unlock the next phase.</p>';
   var sg=$("#sub-grid",root);sg.innerHTML='';
   var pcols=['#7c3aed','#2563eb','#059669','#d97706','#dc2626'];
   PHONICS.forEach(function(ph,i){
     var col=pcols[i];
-    var c=document.createElement('div');c.className='subc';c.style.setProperty('--ac',col);
-    c.innerHTML=
-      '<div class="sico" style="background:#f5f3ff">'+ph.emoji+'</div>'+
-      '<h3>'+ph.name+'</h3><p>'+ph.desc+'</p>'+
-      '<div class="sft">'+
-        '<span class="scnt">'+(ph.sw.length?ph.sw.length+' sight words':'Listening focus')+'</span>'+
-        '<span class="sgo">Choose '+arr()+'</span>'+
-      '</div>';
-    (function(phase,c2){
-      c.addEventListener('click',function(){
-        navStack.push(goPhonicsPhases);
-        goPhonicsGames(phase,c2);
-      });
-    })(ph,col);
+    var locked=!Unlocks.isUnlocked(ph.id);
+    var c=document.createElement('div');
+    c.className='subc'+(locked?' ph-locked':'');
+    c.style.setProperty('--ac',locked?'#94a3b8':col);
+    if(locked){
+      c.innerHTML=
+        '<div class="sico" style="background:#f1f5f9">🔒</div>'+
+        '<h3 style="color:#94a3b8">'+ph.name+'</h3>'+
+        '<p style="color:#cbd5e1;font-size:13px">Complete '+PHONICS[i-1].name+' with 70%+ to unlock.</p>'+
+        '<div class="sft"><span class="scnt" style="opacity:.4">🔒 Locked</span></div>';
+    }else{
+      c.innerHTML=
+        '<div class="sico" style="background:#f5f3ff">'+ph.emoji+'</div>'+
+        '<h3>'+ph.name+'</h3><p>'+ph.desc+'</p>'+
+        '<div class="sft">'+
+          '<span class="scnt">'+(ph.sw.length?ph.sw.length+' sight words':'Listening focus')+'</span>'+
+          '<span class="sgo">Choose →</span>'+
+        '</div>';
+      (function(phase,c2){
+        c.addEventListener('click',function(){
+          navStack.push(goPhonicsPhases);
+          goPhonicsGames(phase,c2);
+        });
+      })(ph,col);
+    }
     sg.appendChild(c);
   });
   showScr('s-sub','fwd');
@@ -1512,15 +1550,16 @@ var Q={
     function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
     var qs=[],seen={};
     while(qs.length<10){
-      var a,b,ans,txt,e;
+      var a,b,ans,txt,e,noEq=false;
       if(k==='nb10'){
-        a=ri(0,9);b=10-a;ans=b;txt=a+' + __ = 10';
-        e='The missing number is '+b+' because '+a+' + '+b+' = 10';
+        if(diff==='easy'){a=ri(6,9);}else{a=ri(0,9);}
+        b=10-a;ans=b;txt=a+' + __ = 10';
+        e='The missing number is '+b+' because '+a+' + '+b+' = 10';noEq=true;
       }
       else if(k==='nb20'){
-        if(diff==='easy'){a=ri(0,10);}else if(diff==='medium'){a=ri(0,15);}else{a=ri(0,19);}
+        if(diff==='easy'){a=ri(10,15);}else if(diff==='medium'){a=ri(0,15);}else{a=ri(0,19);}
         b=20-a;ans=b;txt=a+' + __ = 20';
-        e='The missing number is '+b+' because '+a+' + '+b+' = 20';
+        e='The missing number is '+b+' because '+a+' + '+b+' = 20';noEq=true;
       }
       else if(k==='10more'){
         if(diff==='easy'){a=ri(1,29);}else if(diff==='medium'){a=ri(1,59);}else{a=ri(1,89);}
@@ -1533,61 +1572,56 @@ var Q={
         e='10 less than '+a+' is '+(a-10)+' because '+a+' − 10 = '+(a-10);
       }
       else if(k==='add'){
-        if(yr===2){
-          if(diff==='easy'){a=ri(1,10);b=ri(1,10);}
-          else if(diff==='medium'){a=ri(5,40);b=ri(2,40);}
-          else{a=ri(20,80);b=ri(10,100-a);}
+        if(diff==='hard'){
+          if(yr===2){b=ri(5,20);ans=ri(5,20);}else{b=ri(20,80);ans=ri(20,80);}
+          txt='? + '+b+' = '+(ans+b);
+          e=(ans+b)+' − '+b+' = '+ans+'. The missing number is '+ans;noEq=true;
         }else{
-          if(diff==='easy'){a=ri(10,60);b=ri(5,40);}
-          else if(diff==='medium'){a=ri(30,200);b=ri(15,150);}
-          else{a=ri(100,500);b=ri(50,300);}
+          if(yr===2){if(diff==='easy'){a=ri(1,10);b=ri(1,10);}else{a=ri(5,40);b=ri(2,40);}}
+          else{if(diff==='easy'){a=ri(10,60);b=ri(5,40);}else{a=ri(30,200);b=ri(15,150);}}
+          ans=a+b;txt=a+' + '+b;
+          var te=Math.floor(a/10)*10,be=Math.floor(b/10)*10;
+          e='Tens: '+te+' + '+be+' = '+(te+be)+'. Units: '+(a%10)+' + '+(b%10)+' = '+(a%10+b%10)+'. Total: '+ans;
         }
-        ans=a+b;txt=a+' + '+b;
-        e='Add tens: '+(Math.floor(a/10)*10)+' + '+(Math.floor(b/10)*10)+' = '+(Math.floor(a/10)*10+Math.floor(b/10)*10)+'. Units: '+(a%10)+' + '+(b%10)+' = '+(a%10+b%10)+'. Total: '+ans;
       }
       else if(k==='sub'){
-        if(yr===2){
-          if(diff==='easy'){a=ri(5,15);b=ri(1,Math.min(a-1,5));}
-          else if(diff==='medium'){a=ri(10,40);b=ri(1,a-1);}
-          else{a=ri(20,99);b=ri(5,a-1);}
+        if(diff==='hard'){
+          if(yr===2){ans=ri(3,15);var res=ri(3,20);}else{ans=ri(10,50);var res=ri(10,100);}
+          txt=(res+ans)+' − ? = '+res;
+          e=(res+ans)+' − '+ans+' = '+res+'. Think: '+res+' + '+ans+' = '+(res+ans);noEq=true;
         }else{
-          if(diff==='easy'){a=ri(20,80);b=ri(5,Math.min(a-1,40));}
-          else if(diff==='medium'){a=ri(50,300);b=ri(10,a-1);}
-          else{a=ri(200,700);b=ri(50,a-1);}
+          if(yr===2){if(diff==='easy'){a=ri(5,15);b=ri(1,Math.min(a-1,5));}else{a=ri(10,40);b=ri(1,a-1);}}
+          else{if(diff==='easy'){a=ri(20,80);b=ri(5,Math.min(a-1,40));}else{a=ri(50,300);b=ri(10,a-1);}}
+          ans=a-b;txt=a+' − '+b;
+          e='Count up from '+b+' to '+a+'. Answer: '+ans;
         }
-        ans=a-b;txt=a+' − '+b;
-        e='Count up from '+b+' to '+a+', or: '+a+' − '+b+' = '+ans;
       }
       else if(k==='mul'){
-        if(yr===2){
-          if(diff==='easy'){a=[2,10][ri(0,1)];b=ri(1,5);}
-          else if(diff==='medium'){a=[2,5,10][ri(0,2)];b=ri(1,10);}
-          else{a=[3,4,2,5][ri(0,3)];b=ri(1,10);}
+        if(diff==='hard'){
+          if(yr===2){b=[2,5,10][ri(0,2)];ans=ri(2,10);}else{b=ri(2,10);ans=ri(2,10);}
+          txt='? × '+b+' = '+(ans*b);
+          e=(ans*b)+' ÷ '+b+' = '+ans+'. Which number times '+b+' makes '+(ans*b)+'?';noEq=true;
         }else{
-          if(diff==='easy'){a=[2,3,4,5][ri(0,3)];b=ri(1,10);}
-          else if(diff==='medium'){a=ri(2,10);b=ri(2,10);}
-          else{a=ri(11,19);b=ri(2,9);}
+          if(yr===2){if(diff==='easy'){a=[2,10][ri(0,1)];b=ri(1,5);}else{a=[2,5,10][ri(0,2)];b=ri(1,10);}}
+          else{if(diff==='easy'){a=[2,3,4,5][ri(0,3)];b=ri(1,10);}else{a=ri(2,10);b=ri(2,10);}}
+          ans=a*b;txt=a+' × '+b;
+          e=a+' × '+b+' = '+ans+'. Think: '+a+' groups of '+b+'.';
         }
-        ans=a*b;txt=a+' × '+b;
-        e=a+' × '+b+' = '+ans+'. Think: '+a+' groups of '+b+'.';
       }
       else{
-        if(yr===2){
-          if(diff==='easy'){b=[2,10][ri(0,1)];ans=ri(1,5);}
-          else if(diff==='medium'){b=[2,5,10][ri(0,2)];ans=ri(1,10);}
-          else{b=[3,4][ri(0,1)];ans=ri(1,10);}
+        if(diff==='hard'){
+          if(yr===2){ans=[2,5,10][ri(0,2)];var qt=ri(2,10);}else{ans=ri(2,10);var qt=ri(2,10);}
+          txt=(ans*qt)+' ÷ ? = '+qt;
+          e=(ans*qt)+' ÷ '+ans+' = '+qt+'. Think: '+qt+' × '+ans+' = '+(ans*qt);noEq=true;
         }else{
-          if(diff==='easy'){b=ri(2,5);ans=ri(1,10);}
-          else if(diff==='medium'){b=ri(2,12);ans=ri(2,12);}
-          else{b=ri(6,12);ans=ri(5,12);}
+          if(yr===2){if(diff==='easy'){b=[2,10][ri(0,1)];ans=ri(1,5);}else{b=[2,5,10][ri(0,2)];ans=ri(1,10);}}
+          else{if(diff==='easy'){b=ri(2,5);ans=ri(1,10);}else{b=ri(2,12);ans=ri(2,12);}}
+          a=b*ans;txt=a+' ÷ '+b;
+          e='How many '+b+'s make '+a+'? '+b+' × '+ans+' = '+a;
         }
-        a=b*ans;txt=a+' ÷ '+b;
-        e='How many '+b+'s make '+a+'? '+b+' × '+ans+' = '+a+', so '+a+' ÷ '+b+' = '+ans;
       }
       if(seen[txt])continue;seen[txt]=1;
-      var qobj={txt:txt,ans:ans};
-      if(e)qobj.e=e;
-      if(k==='nb10'||k==='nb20')qobj.noEq=true;
+      var qobj={txt:txt,ans:ans};if(e)qobj.e=e;if(noEq)qobj.noEq=true;
       qs.push(qobj);
     }
     return qs;
@@ -1612,33 +1646,54 @@ var Q={
   renderMathsQ:function(){
     var s=this.st,q=s.qs[s.qi],total=s.qs.length;
     this.prog(14+(s.qi/total)*60);
+    function mkOpts(ans){
+      var pool=[ans],d=1;
+      while(pool.length<4){
+        var hi=ans+d,lo=ans-d;
+        if(pool.indexOf(hi)===-1&&hi>=0)pool.push(hi);
+        if(pool.length<4&&pool.indexOf(lo)===-1&&lo>=0)pool.push(lo);
+        d++;
+      }
+      return shuffle(pool);
+    }
+    var opts=mkOpts(q.ans);
     mbody.innerHTML=
       this.dots(total,s.qi,s.answers)+
       this.lscore(s.correct,s.qi)+
       '<div class="qprog">Question '+(s.qi+1)+' of '+total+'</div>'+
-      '<div class="msum">'+q.txt+(q.noEq?'':' = ?')+'</div>'+
-      '<input class="minput" id="minp" type="number" inputmode="numeric" placeholder="?" autocomplete="off">'+
+      '<div class="msum nosel">'+q.txt+(q.noEq?'':' = ?')+'</div>'+
+      '<div class="qopts">'+opts.map(function(o){
+        return'<button class="qo mopt" data-v="'+o+'"><span>'+o+'</span></button>';
+      }).join('')+'</div>'+
       '<div class="qfb" id="qfb"></div>'+
-      '<button class="mchkbtn" id="mchk">Check answer</button>';
-    var self=this,inp=$("#minp"),done=false;
-    setTimeout(function(){inp.focus();},80);
-    function chk(){
-      if(done)return;if(inp.value===''){inp.focus();return;}
-      done=true;var val=parseInt(inp.value,10),ok=(val===q.ans);
-      s.answers.push({q:q.txt,chosen:inp.value,correct:String(q.ans),ok:ok});
+      '<button class="qnxt" id="qnxt">'+(s.qi===total-1?'See results →':'Next →')+'</button>'+
+      '<div class="clr"></div>'+
+      '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>';
+    var self=this,done=false;
+    function answer(ch){
+      if(done)return;done=true;
+      var val=parseInt(opts[ch],10),ok=(val===q.ans);
+      s.answers.push({q:q.txt,chosen:String(val),correct:String(q.ans),ok:ok});
       if(ok)s.correct++;
-      inp.classList.add(ok?'ok':'ng');inp.disabled=true;
+      $$('.mopt',mbody).forEach(function(b,j){
+        b.classList.add('locked');
+        if(parseInt(b.dataset.v,10)===q.ans)b.classList.add('ok');
+        else if(j===ch)b.classList.add('ng');
+      });
       var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
       fb.innerHTML=ok
         ?'<div class="qfb-main">✅ Correct!</div>'
         :'<div class="qfb-main">❌ The answer is <b>'+q.ans+'</b></div>'
-         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'<div class="qfb-explain">Work it out: '+q.txt+' = '+q.ans+'</div>');
-      var btn=$("#mchk");
-      btn.textContent=s.qi===total-1?'See results →':'Next →';
-      btn.onclick=function(){s.qi++;if(s.qi<total)self.renderMathsQ();else self.renderForm();};
+         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'');
+      $("#qnxt").classList.add('show');
     }
-    $("#mchk").addEventListener('click',chk);
-    inp.addEventListener('keydown',function(e){if(e.key==='Enter')chk();});
+    $$('.mopt',mbody).forEach(function(b,i){
+      b.addEventListener('click',function(){answer(i);});
+    });
+    self._answerFn=answer;
+    $("#qnxt").addEventListener('click',function(){
+      s.qi++;if(s.qi<total)self.renderMathsQ();else self.renderForm();
+    });
   },
 
   /* ── FSCE ── */
@@ -1764,15 +1819,19 @@ var Q={
   },
   renderPhChooseIntro:function(){
     var s=this.st;this.prog(5);
+    var inst='Listen carefully! You will hear a word. Tap the correct spelling.';
     mbody.innerHTML=
       '<div class="ph-intro">'+
       '<span class="ph-em">👂</span>'+
-      '<h2>Hear & Choose</h2>'+
-      '<p class="il">Listen to the word, then tap the right spelling. '+s.qs.length+' questions.</p>'+
+      '<h2>Hear &amp; Choose</h2>'+
+      '<p class="il">Listen to each word, then tap the right spelling. '+s.qs.length+' questions.</p>'+
       '<button class="rc play" id="phc-go">Start →</button>'+
+      '<button class="ph-say-btn" id="phc-ri">🔊 Hear instructions again</button>'+
       '</div>';
     var self=this;
     document.getElementById('phc-go').addEventListener('click',function(){self.renderPhChooseQ();});
+    document.getElementById('phc-ri').addEventListener('click',function(){Sp.speak([inst],null,null);});
+    setTimeout(function(){Sp.speak([inst],null,null);},400);
   },
   renderPhChooseQ:function(){
     var s=this.st,q=s.qs[s.qi],total=s.qs.length;
@@ -1820,15 +1879,19 @@ var Q={
   },
   renderPhSpellIntro:function(){
     var s=this.st;this.prog(5);
+    var inst='Listen to each word, then tap the letters in the right order to spell it.';
     mbody.innerHTML=
       '<div class="ph-intro">'+
       '<span class="ph-em">✏️</span>'+
-      '<h2>Hear & Spell</h2>'+
+      '<h2>Hear &amp; Spell</h2>'+
       '<p class="il">Listen to the word, then tap the letters in order to spell it. 8 words.</p>'+
       '<button class="rc play" id="phs-go">Start →</button>'+
+      '<button class="ph-say-btn" id="phs-ri">🔊 Hear instructions again</button>'+
       '</div>';
     var self=this;
     document.getElementById('phs-go').addEventListener('click',function(){self.renderPhSpellQ();});
+    document.getElementById('phs-ri').addEventListener('click',function(){Sp.speak([inst],null,null);});
+    setTimeout(function(){Sp.speak([inst],null,null);},400);
   },
   renderPhSpellQ:function(){
     var s=this.st,word=s.qs[s.qi],total=s.qs.length;
@@ -1943,11 +2006,15 @@ var Q={
     var s=this.st,tot=this.total(),pct=Math.round((s.correct/tot)*100);
     this.prog(100);
     var col=this.scoreColor(pct);
-    var C=2*Math.PI*46; // circumference for r=46
+    var C=2*Math.PI*46;
     var offset=C*(1-pct/100);
-    var msg=pct>=80?'Brilliant work, '+par.childName+'! You\'re really shining ⭐':
-            pct>=60?'Great effort, '+par.childName+'! A little more practice and you\'ll ace it 💪':
+    var stars=pct>=80?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
+    var msg=pct>=80?'Brilliant work, '+par.childName+'! Shining star ⭐':
+            pct>=60?'Great effort, '+par.childName+'! Keep practising and you\'ll ace it 💪':
             'Good try, '+par.childName+'! Every attempt helps you improve 📚';
+    var newPhase=Unlocks.checkAndUnlock(s);
+    var unlockBanner=newPhase
+      ?'<div class="unlock-banner">🔓 '+newPhase.name+' unlocked! 🎉</div>':'';
     var rev=s.answers.map(function(a,i){
       return'<div class="ri">'+
         '<span class="ric '+(a.ok?'ok':'ng')+'">'+(a.ok?'✓':'✗')+'</span>'+
@@ -1965,8 +2032,11 @@ var Q={
               ' stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"'+
               ' transform="rotate(-90 52 52)" style="transition:stroke-dashoffset 1s cubic-bezier(.25,.8,.3,1)"/>'+
           '</svg>'+
-          '<div class="ring-inner"><span class="ring-pct" style="color:'+col+'">'+pct+'%</span><span class="ring-sub">'+s.correct+' / '+tot+'</span></div>'+
+          '<div class="ring-inner"><span class="ring-pct" style="color:'+col+'">'+pct+'%</span>'+
+            '<span class="ring-sub">'+s.correct+' / '+tot+'</span></div>'+
         '</div>'+
+        '<div class="star-row">'+stars+'</div>'+
+        unlockBanner+
         '<h2>Results saved!</h2>'+
         '<p class="dmsg">'+msg+'</p>'+
         '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">📩 Recorded for <b>'+par.parentEmail+'</b></p>'+
@@ -1976,7 +2046,6 @@ var Q={
           '<button class="d-menu" id="d-menu">Back to menu</button>'+
         '</div>'+
       '</div>';
-    // animate ring
     setTimeout(function(){
       var arc=$("#ring-arc");if(arc)arc.style.strokeDashoffset=offset.toFixed(1);
     },120);
@@ -1989,6 +2058,7 @@ var Q={
     });
     $("#d-menu").addEventListener('click',function(){self.close();});
     if(pct>=80)this.confetti();
+    if(newPhase)setTimeout(function(){if(!modal.classList.contains('on'))goPhonicsPhases();},200);
   },
   confetti:function(){
     var b=$("#cconf");if(!b)return;
