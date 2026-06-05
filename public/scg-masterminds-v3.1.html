@@ -986,7 +986,7 @@ function goPhonicsPhases(){
   bc.appendChild(bcBtn('Masterminds',goHome));bc.appendChild(sep());bc.appendChild(bcSpan('Reception · Phonics'));
   var t=$("#sub-title",root);
   t.innerHTML='<div class="ey">Reception · Phonics</div><h2>Choose a Phase</h2>'
-    +'<p>Each phase builds on the last. Finish all 3 games with 70%+ to unlock the next phase.</p>';
+    +'<p>Each phase builds on the last. Score 70%+ on all games to unlock the next phase.</p>';
   var sg=$("#sub-grid",root);sg.innerHTML='';
   var pcols=['#7c3aed','#2563eb','#059669','#d97706','#dc2626'];
   PHONICS.forEach(function(ph,i){
@@ -1520,10 +1520,12 @@ var Q={
   genMaths:function(yr,k,diff){
     diff=diff||'medium';
     function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+    /* nb10 easy: a in [1..9] → only 9 distinct questions; cap at 9 to avoid infinite dedup loop */
+    var maxQ=(k==='nb10'&&diff==='easy')?9:10;
     var qs=[],seen={},attempts=0;
-    while(qs.length<10){
+    while(qs.length<maxQ){
       attempts++;
-      if(attempts>2000){seen={};attempts=0;}
+      if(attempts>200){seen={};attempts=0;}
       var a,b,ans,txt,e,noEq=false;
       if(k==='nb10'){
         if(diff==='easy'){a=ri(1,9);}else{a=ri(0,9);}
