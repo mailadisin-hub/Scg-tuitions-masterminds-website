@@ -1028,22 +1028,30 @@ function goPhonicsGames(phase,col){
   bc.appendChild(sep());bc.appendChild(bcSpan(phase.name));
   var body=$("#act-body",root),title=$("#act-title",root);
   body.innerHTML='';
+  var hasSW=phase.sw.length>0;
   title.innerHTML=
     '<div class="ey">Reception · '+phase.name+'</div>'+
     '<h2>'+phase.name+' · '+phase.desc+'</h2>'+
-    '<p>Three games to practise your phonics. Play them in order — sight words first, then listening games.</p>';
-  var games=[
+    '<p>'+(hasSW?'Three games to practise your phonics. Play them in order — sight words first, then listening games.':'Two games to practise your phonics. Play them in order.')+'</p>';
+  var games=hasSW?[
     {n:'Game 1 · Sight Words',ico:'👁️',
-     desc:phase.sw.length?'Learn the '+phase.sw.length+' key sight words for '+phase.name+'. Each word is read aloud for you.':'Phase 1 focuses on listening — no formal sight words yet. Jump to Game 2!',
-     action:function(){phase.sw.length?Q.startSightWords(phase,col):Q.startPhonicsChoose(phase,col);}},
+     desc:'Learn the '+phase.sw.length+' key sight words for '+phase.name+'. Each word is read aloud for you.',
+     action:function(){Q.startSightWords(phase,col);}},
     {n:'Game 2 · Hear & Choose',ico:'👂',
      desc:'Listen to the word and tap the correct spelling. Practise recognising '+phase.name+' words by ear.',
      action:function(){Q.startPhonicsChoose(phase,col);}},
     {n:'Game 3 · Hear & Spell',ico:'✏️',
      desc:'Listen to the word, then tap the letters in order to spell it.',
      action:function(){Q.startPhonicsSpell(phase,col);}}
+  ]:[
+    {n:'Game 1 · Hear & Choose',ico:'👂',
+     desc:'Listen to the word and tap the correct spelling. Practise recognising '+phase.name+' words by ear.',
+     action:function(){Q.startPhonicsChoose(phase,col);}},
+    {n:'Game 2 · Hear & Spell',ico:'✏️',
+     desc:'Listen to the word, then tap the letters in order to spell it.',
+     action:function(){Q.startPhonicsSpell(phase,col);}}
   ];
-  var gcols=[col,'#2563eb','#059669'];
+  var gcols=hasSW?[col,'#2563eb','#059669']:[col,'#2563eb'];
   var mgrid=document.createElement('div');mgrid.className='mop-grid';
   games.forEach(function(g,i){
     var mc=gcols[i];
@@ -1512,16 +1520,18 @@ var Q={
   genMaths:function(yr,k,diff){
     diff=diff||'medium';
     function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
-    var qs=[],seen={};
+    var qs=[],seen={},attempts=0;
     while(qs.length<10){
+      attempts++;
+      if(attempts>2000){seen={};attempts=0;}
       var a,b,ans,txt,e,noEq=false;
       if(k==='nb10'){
-        if(diff==='easy'){a=ri(6,9);}else{a=ri(0,9);}
+        if(diff==='easy'){a=ri(1,9);}else{a=ri(0,9);}
         b=10-a;ans=b;txt=a+' + __ = 10';
         e='The missing number is '+b+' because '+a+' + '+b+' = 10';noEq=true;
       }
       else if(k==='nb20'){
-        if(diff==='easy'){a=ri(10,15);}else if(diff==='medium'){a=ri(0,15);}else{a=ri(0,19);}
+        if(diff==='easy'){a=ri(5,15);}else if(diff==='medium'){a=ri(0,15);}else{a=ri(0,19);}
         b=20-a;ans=b;txt=a+' + __ = 20';
         e='The missing number is '+b+' because '+a+' + '+b+' = 20';noEq=true;
       }
@@ -1613,6 +1623,7 @@ var Q={
     function mkOpts(ans){
       var pool=[ans],d=1;
       while(pool.length<4){
+        if(d>20){while(pool.length<4)pool.push(ans+pool.length);break;}
         var hi=ans+d,lo=ans-d;
         if(pool.indexOf(hi)===-1&&hi>=0)pool.push(hi);
         if(pool.length<4&&pool.indexOf(lo)===-1&&lo>=0)pool.push(lo);
