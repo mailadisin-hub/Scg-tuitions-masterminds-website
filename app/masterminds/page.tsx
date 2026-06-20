@@ -6,7 +6,7 @@ export default function MastermindsPage() {
       <section className="bg-gray-50 border-b border-gray-200 py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-2">SCG Masterminds</p>
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">Free Learning Resources</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-3">Learning Resources</h1>
           <p className="text-gray-500 text-base max-w-xl">
             Choose your year group to begin. Stories are read aloud by your device, then your child answers five questions. Results are emailed to the parent.
           </p>
@@ -26,7 +26,6 @@ export default function MastermindsPage() {
                 <p className="text-sm text-gray-500 mb-4">5 read-aloud stories, 5 questions each. Results emailed to parent.</p>
                 <div className="flex items-center gap-2">
                   <span className="bg-blue-50 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">5 quizzes</span>
-                  <span className="bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">Free</span>
                 </div>
               </div>
             </Link>
@@ -50,7 +49,6 @@ export default function MastermindsPage() {
                 <p className="text-sm text-gray-500 mb-4">5 read-aloud passages including fiction and non-fiction, 5 questions each.</p>
                 <div className="flex items-center gap-2">
                   <span className="bg-blue-50 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full">5 quizzes</span>
-                  <span className="bg-green-50 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">Free</span>
                 </div>
               </div>
             </Link>
