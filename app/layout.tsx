@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
 
 export const metadata: Metadata = {
-  title: "SCG Tuitions — Masterminds",
+  title: "SCG Masterminds",
   description:
-    "SCG Tuitions Masterminds — Free comprehension quizzes for Year 2 and Year 3. Personalised learning to help every child succeed.",
+    "SCG Masterminds — learning quizzes from SCG Tuitions: phonics, English comprehension and maths for Reception to Year 6.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
