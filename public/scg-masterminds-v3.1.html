@@ -1800,10 +1800,10 @@ var Q={
   },
   renderPhLetterRec:function(){
     var s=this.st;
-    if(s.qi>=s.qs.length){this.renderDone();return;}
+    if(s.qi>=s.qs.length){this.renderForm();return;}
     var target=s.qs[s.qi];
     var ltrs=s.phase.letters||['s','a','t','p','i','n'];
-    var body=$('#m-body',root);
+    var body=mbody;
     var self=this;
     /* speak the letter sound */
     setTimeout(function(){Sp.speak(target);},300);
@@ -1838,7 +1838,6 @@ var Q={
         setTimeout(function(){self.renderPhLetterRec();},1100);
       });
     });
-    Store.save(s);
   },
 
   /* ── PHASE 1: HEAR & CHOOSE LETTER ── */
@@ -1854,13 +1853,13 @@ var Q={
   },
   renderPhLetterChoose:function(){
     var s=this.st;
-    if(s.qi>=s.qs.length){this.renderDone();return;}
+    if(s.qi>=s.qs.length){this.renderForm();return;}
     var target=s.qs[s.qi];
     var ltrs=s.phase.letters||['s','a','t','p','i','n'];
     /* 4 options: target + 3 distractors */
     var distractors=shuffle(ltrs.filter(function(l){return l!==target;})).slice(0,3);
     var opts=shuffle([target].concat(distractors));
-    var body=$('#m-body',root);
+    var body=mbody;
     var self=this;
     setTimeout(function(){Sp.speak(target);},300);
     body.innerHTML=
@@ -1893,7 +1892,6 @@ var Q={
         setTimeout(function(){self.renderPhLetterChoose();},1100);
       });
     });
-    Store.save(s);
   },
 
   /* ── HEAR & CHOOSE ── */
