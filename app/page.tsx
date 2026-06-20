@@ -5,7 +5,7 @@ export default function Home() {
     <div>
       {/* Hero — matches SCG Tuitions style: full-width image + overlay */}
       <section
-        className="relative text-white text-center py-28 px-6"
+        className="text-white text-center py-28 px-6"
         style={{
           background: "linear-gradient(rgba(0,0,0,0.52), rgba(0,0,0,0.52)), url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1400&q=80') center/cover no-repeat",
         }}
@@ -15,7 +15,7 @@ export default function Home() {
             SCG Masterminds
           </h1>
           <p className="text-lg text-gray-200 mb-8">
-            Free comprehension quizzes for Year 2 &amp; Year 3 — read aloud, answered, and results emailed to parents.
+            Comprehension quizzes for Year 2 &amp; Year 3 — read aloud, answered, and results emailed to parents.
           </p>
           <Link
             href="/masterminds"
@@ -23,24 +23,6 @@ export default function Home() {
           >
             Start Learning
           </Link>
-        </div>
-
-        {/* Feature strip — matches SCG Tuitions 3-panel strip */}
-        <div className="absolute bottom-0 left-0 right-0 grid grid-cols-3 text-sm">
-          {[
-            { title: "AI Read-Aloud", desc: "Stories read clearly by your device's voice" },
-            { title: "5 Questions", desc: "Multiple-choice comprehension quiz" },
-            { title: "Email Results", desc: "Score sent directly to parents" },
-          ].map((f) => (
-            <div
-              key={f.title}
-              className="py-5 px-4 text-center"
-              style={{ backgroundColor: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)" }}
-            >
-              <p className="font-semibold text-white">{f.title}</p>
-              <p className="text-gray-300 text-xs mt-1">{f.desc}</p>
-            </div>
-          ))}
         </div>
       </section>
 
@@ -52,7 +34,7 @@ export default function Home() {
               Empowering Every Child&apos;s Potential
             </h2>
             <p className="text-gray-500 leading-relaxed mb-4">
-              SCG Masterminds is a free resource from SCG Tuitions, designed to build reading comprehension for children in Year 2 and Year 3.
+              SCG Masterminds is a resource from SCG Tuitions, designed to build reading comprehension for children in Year 2 and Year 3.
             </p>
             <p className="text-gray-500 leading-relaxed mb-6">
               Each comprehension is read aloud by the browser — no apps or downloads needed. Children listen, then answer five multiple-choice questions. Their score is emailed directly to the parent.
@@ -78,7 +60,7 @@ export default function Home() {
       <section className="py-16 px-6 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Choose Your Year Group</h2>
-          <p className="text-gray-500 text-center mb-10 text-sm">Free comprehension quizzes, each read aloud with five questions</p>
+          <p className="text-gray-500 text-center mb-10 text-sm">Comprehension quizzes, each read aloud with five questions</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Link href="/masterminds/year-2/english">
@@ -118,7 +100,7 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">Frequently Asked Questions</h2>
           <div className="space-y-3">
             {[
-              { q: "Is this free to use?", a: "Yes — all comprehension quizzes are completely free. No account needed." },
+              { q: "Do I need an account?", a: "No — all comprehension quizzes are available with no account or sign-up needed." },
               { q: "How does the read-aloud work?", a: "We use your browser's built-in text-to-speech. Click 'Read to Me' and the passage is read clearly. Make sure your volume is on." },
               { q: "Will my child's results be emailed?", a: "Yes. After answering all questions, enter a parent name and email and the results — score plus per-question breakdown — are sent immediately." },
               { q: "What year groups are available?", a: "Year 2 (ages 6–7) and Year 3 (ages 7–8) English comprehension are live. Year 6 SATs prep is coming soon." },
