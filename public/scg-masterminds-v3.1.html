@@ -105,10 +105,11 @@
 #scgmm .stitle p{color:var(--mid);font-size:15px;margin-top:8px;max-width:580px;}
 
 /* ═══════ YEAR CARDS ═══════ */
-#scgmm .yr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px;padding-bottom:54px;}
+#scgmm .yr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding-bottom:54px;}
+@media(max-width:720px){#scgmm .yr-grid{grid-template-columns:1fr;}}
 #scgmm .yc{
   position:relative;border-radius:22px;padding:34px 30px 32px;overflow:hidden;
-  cursor:pointer;color:#fff;min-height:270px;
+  cursor:pointer;color:#fff;min-height:290px;
   display:flex;flex-direction:column;justify-content:flex-end;
   transition:transform .28s cubic-bezier(.2,.8,.3,1),box-shadow .28s;
 }
@@ -465,9 +466,6 @@
 
 #scgmm .yc.pu{background:linear-gradient(135deg,#5b21b6,#7c3aed);}
 #scgmm .yc.or{background:linear-gradient(135deg,#b45309,#d97706);}
-#scgmm .yc.pu{min-height:320px;}
-#scgmm .yc.pu h2{font-size:52px;}
-#scgmm .yc.pu .ytag{font-size:14px;padding:7px 16px;}
 #scgmm .phs-tile{
   width:68px;height:68px;border-radius:12px;border:2px solid #cbd5e1;
   background:#fff;font-size:26px;font-weight:700;cursor:pointer;
