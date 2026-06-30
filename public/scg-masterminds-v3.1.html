@@ -105,11 +105,11 @@
 #scgmm .stitle p{color:var(--mid);font-size:15px;margin-top:8px;max-width:580px;}
 
 /* ═══════ YEAR CARDS ═══════ */
-#scgmm .yr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding-bottom:54px;}
+#scgmm .yr-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:22px;padding-bottom:54px;}
 @media(max-width:720px){#scgmm .yr-grid{grid-template-columns:1fr;}}
 #scgmm .yc{
   position:relative;border-radius:22px;padding:34px 30px 32px;overflow:hidden;
-  cursor:pointer;color:#fff;min-height:290px;
+  cursor:pointer;color:#fff;height:140px;
   display:flex;flex-direction:column;justify-content:flex-end;
   transition:transform .28s cubic-bezier(.2,.8,.3,1),box-shadow .28s;
 }
@@ -554,8 +554,9 @@
   <div class="orb1"></div><div class="orb2"></div><div class="orb3"></div>
   <div class="dots"></div>
   <div class="wrap">
-    <h1>Practice that's <em>read aloud</em>,<br>marked &amp; saved for you</h1>
-    <p class="h-lead">Pick a year group, choose a subject, and your child's device reads the story aloud, sentence by sentence. Questions mark instantly, results are saved for the parent.</p>
+    <h1>SCG Masterminds</h1>
+    <p class="h-lead">Practice makes perfect.</p>
+    <div class="hero-img-placeholder"></div>
     <div class="h-stats">
       <div class="h-stat"><b>15</b><span>Comprehensions</span></div>
       <div class="h-stat"><b>Phonics</b><span>Phases 1–5</span></div>

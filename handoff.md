@@ -136,6 +136,7 @@ Five phases, each with multiple games. **Phase progression is gated** — you un
 - Reception Phases 1–5; Phase 1 redesigned to SATPIN letter games (empty-modal bug fixed).
 - Year 1 (English + topic maths), Year 2 & 3 (English + generated maths), Year 3 11+ FSCE bank.
 - Year cards equal-sized grid; "Free" branding removed; Year 6 "coming soon".
+- Hero updated: heading "SCG Masterminds" + subheading "Practice makes perfect." + hero-img-placeholder div. **[Task 1 complete — 2026-06-30]**
 - Repo cleaned of legacy Next.js/TypeScript code.
 
 **🔲 Open / next**
