@@ -2049,14 +2049,14 @@ var Q={
     var col=this.scoreColor(pct);
     mbody.innerHTML=
       '<div class="pform">'+
-        '<div class="spre"><div class="sring" style="background:'+col+'">'+s.correct+'/'+tot+'</div>'+
-          '<h2 style="margin-top:14px">Almost there!</h2>'+
-          '<p style="color:var(--mid);font-size:14px">Enter the parent\'s details to reveal the full report.</p></div>'+
+        '<div class="spre"><div style="width:86px;height:86px;border-radius:50%;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;margin:0 auto 16px;">?</div>'+
+          '<h2 style="margin-top:14px">How did you do?</h2>'+
+          '<p style="color:var(--mid);font-size:14px">Enter your email and we\'ll send your score straight to your inbox.</p></div>'+
         '<div class="fld" id="fd-ch"><label>Child\'s first name</label><input id="i-ch" placeholder="e.g. Olivia" value="'+(sv.childName||'')+'"><div class="fe">Please enter a name.</div></div>'+
         '<div class="fld" id="fd-pn"><label>Parent\'s name</label><input id="i-pn" placeholder="e.g. Sarah Khan" value="'+(sv.parentName||'')+'"><div class="fe">Please enter a name.</div></div>'+
         '<div class="fld" id="fd-em"><label>Parent\'s email address</label><input id="i-em" type="email" placeholder="you@email.com" value="'+(sv.parentEmail||'')+'"><div class="fe">Please enter a valid email address.</div></div>'+
         '<label class="cons"><input type="checkbox" id="i-cons" checked><span>I\'m happy for SCG Tuitions to save these results and to send me updates about SCG courses and resources.</span></label>'+
-        '<button class="subbtn" id="m-sub">Reveal results →</button>'+
+        '<button class="subbtn" id="m-sub">Send my score →</button>'+
         '<p class="snote">Results are saved on this device for SCG Tuitions.</p>'+
       '</div>';
     var self=this,re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
