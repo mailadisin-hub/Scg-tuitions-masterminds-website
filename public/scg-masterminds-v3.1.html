@@ -513,12 +513,61 @@
 #scgmm .qquote{background:#f0fdf4;border-left:4px solid #27ae60;border-radius:0 8px 8px 0;padding:10px 14px;font-size:14px;font-style:italic;color:#374151;margin-bottom:14px;line-height:1.55;}
 
 @media(max-width:480px){#scgmm .diff-grid{grid-template-columns:1fr;}}
+
+/* ── Mobile responsive (< 600px) ── */
 @media(max-width:600px){
-  #scgmm .hero{padding:44px 0 52px;}
+  /* 1. Year group grid */
+  #scgmm .yr-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  #scgmm .yc{height:160px!important;min-height:160px!important;padding:16px;}
+  #scgmm .yc h2{font-size:20px;}
+  #scgmm .yc .yages{font-size:12px;}
+  #scgmm .yc .ytags{gap:4px;margin-bottom:10px;}
+  #scgmm .yc .ytag{font-size:10px;padding:3px 8px;}
+
+  /* 2. Hero */
+  #scgmm .hero{padding:32px 0 36px;}
+  #scgmm .hero h1{font-size:28px;}
+  #scgmm .h-lead{font-size:14px;}
+  #scgmm .h-stats{gap:8px;}
+  #scgmm .h-stat{padding:10px 14px;}
+  #scgmm .h-stat b{font-size:16px;}
+
+  /* 3. Modal (quiz screen) */
+  #scgmm-modal{padding:0;align-items:flex-end;}
+  #scgmm-modal .sheet{border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;}
   #scgmm-modal .mb{padding:20px 18px 28px;}
-  #scgmm .qtext{font-size:17.5px;}
-  #scgmm .msum{font-size:34px;}
-  #scgmm .fsce-card{padding:28px 22px;}
+  #scgmm .qtext{font-size:16px;}
+  #scgmm .qopt{font-size:20px;min-height:56px;}
+  #scgmm .qo{font-size:13px;padding:12px 14px;}
+
+  /* 4. Quiz letter tiles (phonics) */
+  #scgmm .phs-tile{width:52px;height:52px;font-size:20px;}
+  #scgmm .sw-word{font-size:clamp(40px,10vw,60px);}
+
+  /* 5. Subject / activity / maths cards */
+  #scgmm .sub-grid{grid-template-columns:1fr;}
+  #scgmm .act-grid{grid-template-columns:1fr;}
+  #scgmm .mop-grid{grid-template-columns:1fr 1fr;}
+
+  /* 6. Results / parent form */
+  #scgmm .pform h2{font-size:18px;}
+  #scgmm .fld input{font-size:16px;}
+  #scgmm .subbtn{font-size:14px;padding:13px;}
+
+  /* 7. Subscribe modal */
+  #scgmm-subscribe>div{padding:28px 20px;border-radius:20px;}
+  #sub-btn-english,#sub-btn-both{font-size:14px;padding:13px 16px;}
+
+  /* 8. Navigation / breadcrumb */
+  #scgmm .back-btn{font-size:13px;padding:8px 12px;}
+  #scgmm .bc{font-size:12px;}
+  #scgmm .wrap{padding:0 14px;}
+
+  /* 9. Footer */
+  #scgmm .foot{padding:24px 0;font-size:12px;}
+
+  /* 10. iOS zoom prevention on inputs */
+  #scgmm input,#scgmm textarea{font-size:16px!important;}
 }
 #scgmm-subscribe #sub-btn-english:hover { filter: brightness(1.12); }
 #scgmm-subscribe #sub-btn-both:hover { filter: brightness(1.08); }
