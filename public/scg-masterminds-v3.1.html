@@ -1432,7 +1432,7 @@ var Q={
       var ok=(ch===q.c);
       s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
-      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
+      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       // no feedback shown — silently advance after 400ms
       setTimeout(function(){
         s.qi++;
@@ -1492,7 +1492,7 @@ var Q={
       var ok=(ch===q.c);
       s.answers.push({q:'['+q._story+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
-      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
+      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       // no feedback shown — silently advance after 400ms
       setTimeout(function(){
         s.qi++;
@@ -1684,8 +1684,6 @@ var Q={
       if(ok)s.correct++;
       $$('.mopt',mbody).forEach(function(b,j){
         b.classList.add('locked');
-        if(parseInt(b.dataset.v,10)===q.ans)b.classList.add('ok');
-        else if(j===ch)b.classList.add('ng');
       });
       var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
       fb.innerHTML=ok
@@ -1748,7 +1746,7 @@ var Q={
       var ok=(ch===q.c);
       s.answers.push({q:'['+q.s+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
-      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
+      $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
       fb.innerHTML=ok
         ?'<div class="qfb-main">✅ Correct!</div>'
@@ -1959,7 +1957,6 @@ var Q={
         s.answers.push({q:q.word,chosen:q.opts[chosen],correct:q.opts[q.c],ok:ok});
         $$('.qopt',mbody).forEach(function(b){
           var bi=parseInt(b.getAttribute('data-i'));b.disabled=true;
-          if(bi===q.c)b.classList.add('ok');else if(bi===chosen&&!ok)b.classList.add('ng');
         });
         var fb=document.getElementById('qfb');fb.className='qfb show '+(ok?'ok':'ng');
         fb.innerHTML=ok
