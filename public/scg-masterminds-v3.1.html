@@ -558,7 +558,7 @@
   <div class="dots"></div>
   <div class="wrap">
     <h1>SCG Masterminds</h1>
-    <p class="h-lead">Practice makes perfect.</p>
+    <p class="h-lead">Built by tutors. Loved by kids.</p>
     <div class="hero-img-placeholder"></div>
     <div class="h-stats">
       <div class="h-stat"><b>15</b><span>Comprehensions</span></div>
@@ -572,8 +572,8 @@
 <div class="scr fwd" id="s-consent">
   <div class="consent-wrap">
     <div class="consent-logo">🧠</div>
-    <h2>Welcome to SCG Masterminds!</h2>
-    <p class="cl">Before you start, please take a moment to let us know you're happy with how we use your information.</p>
+    <h2>One quick thing before you start</h2>
+    <p class="cl">We save your child's results on this device so you can track progress. Here's what that means:</p>
     <ul class="consent-bullets">
       <li>We collect your <strong>name, email and your child's first name</strong> when you save results.</li>
       <li>Results are <strong>saved on this device</strong> so you can track progress over time.</li>
@@ -586,7 +586,7 @@
         I agree to the <a href="/privacy.html" target="_blank">Privacy Policy</a> and <a href="/terms.html" target="_blank">Terms of Service</a>. I am the parent or guardian using this platform.
       </label>
     </div>
-    <button id="consent-btn" disabled>Let's go! →</button>
+    <button id="consent-btn" disabled>Start practising →</button>
     <p class="consent-note">You only need to do this once. Your choice is saved on this device.</p>
   </div>
 </div>
@@ -594,10 +594,10 @@
 <!-- ═══ SCREEN 1: Home ═══ -->
 <div class="scr" id="s-home">
   <div class="wrap">
-    <div class="stitle"><div class="ey">Step 1: Choose a year group</div><h2>Who is practising today?</h2><p>Each year group has English comprehensions, Maths skills, and more.</p></div>
+    <div class="stitle"><div class="ey">Year Group</div><h2>Choose a year group</h2><p>Phonics, comprehension and maths — structured the way tutors actually teach.</p></div>
     <div class="yr-grid" id="yrgrid"></div>
     <div class="faq-section">
-      <button class="faq-btn" id="faq-tog">💬 Frequently asked questions</button>
+      <button class="faq-btn" id="faq-tog">Got questions?</button>
       <div id="faq-box" style="display:none"><div class="faq-wrap" id="faq-inner" style="margin-top:22px;text-align:left"></div></div>
     </div>
   </div>
@@ -625,7 +625,7 @@
 <div class="foot">
   <div class="wrap">
     <div class="flog"><span>11</span><span class="gp">+</span> SCG <span class="gp">Masterminds</span></div>
-    Part of SCG Tuitions · Helping every child read, reason and shine.
+    Part of SCG Tuitions · Structured tuition, online. Free to start.
   </div>
 </div>
 
@@ -998,7 +998,7 @@ function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.flo
   btn.addEventListener('click',function(){
     var open=fb.style.display==='block';
     fb.style.display=open?'none':'block';
-    btn.textContent=open?'💬 Frequently asked questions':'💬 Hide FAQ ↑';
+    btn.textContent=open?'Got questions?':'Got questions?';
     if(!open)fb.scrollIntoView({behavior:'smooth',block:'start'});
   });
 })();
@@ -1107,7 +1107,7 @@ function goSubjects(year){
   var t=$("#sub-title",root);
   var _ages=year===1?'Ages 5–6':(year===2?'Ages 6–7':'Ages 7–8');
   var _desc=year===1?'Simple stories and number skills pitched perfectly for Year 1.':(year===2?'Short stories and number skills pitched perfectly for Year 2.':'Longer passages, richer vocabulary, and more complex maths for Year 3.');
-  t.innerHTML='<div class="ey">Step 2: Choose a subject</div><h2>Year '+year+' <span style="font-weight:500;font-size:20px;color:var(--mid)">· '+_ages+'</span></h2><p>'+_desc+'</p>';
+  t.innerHTML='<div class="ey">Subject</div><h2>Year '+year+' <span style="font-weight:500;font-size:20px;color:var(--mid)">· '+_ages+'</span></h2><p>'+_desc+'</p>';
   var sg=$("#sub-grid",root); sg.innerHTML='';
   var subjects=[
     {ico:'📜',bg:as,name:'English',
