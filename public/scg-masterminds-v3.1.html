@@ -9,6 +9,9 @@
 
 <!-- SCGMM:START -->
 <div id="scgmm">
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,600;0,700;0,800;0,900;1,700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -575,6 +578,12 @@
 
 <!-- ═══ HERO ═══ -->
 <div class="hero">
+  <div style="position:absolute;top:16px;right:22px;z-index:10;">
+    <button id="auth-nav-btn" onclick="openAuthModal('signin')"
+      style="background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer;transition:background .15s;">
+      Sign in
+    </button>
+  </div>
   <div class="wrap">
     <h1>SCG Masterminds</h1>
     <p class="h-lead">Built by tutors. Loved by kids.</p>
@@ -678,6 +687,26 @@
 <script>
 (function(){
 "use strict";
+
+// Firebase init
+firebase.initializeApp({
+  apiKey: "AIzaSyCvaBhQJL2LPU8c3Bb8LU7rSxg8K1WmiEs",
+  authDomain: "scg-masterminds.firebaseapp.com",
+  projectId: "scg-masterminds",
+  storageBucket: "scg-masterminds.firebasestorage.app",
+  messagingSenderId: "458885933158",
+  appId: "1:458885933158:web:b0f70ce61ea892af70a5a7"
+});
+var auth = firebase.auth();
+var db = firebase.firestore();
+var googleProvider = new firebase.auth.GoogleAuthProvider();
+var currentUser = null;
+
+// Track auth state
+auth.onAuthStateChanged(function(user) {
+  currentUser = user;
+  updateAuthNav();
+});
 
 /* ═══ CONFIG ═══════════════════════════════════════════════════════════════ */
 var ENDPOINT = "https://script.google.com/macros/s/AKfycbxC-xu7so3anuhrzgvmB91QgApHVK7Fa4ikAwHOQLf9Z25nz-7Z1QuUsn6aWIGCyk4F/exec";
@@ -949,6 +978,81 @@ function showSubscribeModal() {
     m.style.display = 'none';
     Q.renderForm();
   });
+}
+
+function updateAuthNav() {
+  var btn = document.getElementById('auth-nav-btn');
+  if (!btn) return;
+  if (currentUser) {
+    var name = currentUser.displayName || currentUser.email.split('@')[0];
+    btn.textContent = '👤 ' + name;
+    btn.onclick = openAccountModal;
+  } else {
+    btn.textContent = 'Sign in';
+    btn.onclick = function() { openAuthModal('signin'); };
+  }
+}
+
+function openAuthModal(view) {
+  document.getElementById('scgmm-auth').style.display = 'flex';
+  document.getElementById('auth-signin-view').style.display = view === 'signin' ? 'block' : 'none';
+  document.getElementById('auth-signup-view').style.display = view === 'signup' ? 'block' : 'none';
+  document.getElementById('auth-error').style.display = 'none';
+  document.getElementById('auth-signup-error').style.display = 'none';
+}
+
+function signInWithGoogle() {
+  auth.signInWithPopup(googleProvider).then(function() {
+    document.getElementById('scgmm-auth').style.display = 'none';
+  }).catch(function(err) {
+    showAuthError(err.message);
+  });
+}
+
+function signInWithEmail() {
+  var email = document.getElementById('auth-email').value.trim();
+  var password = document.getElementById('auth-password').value;
+  if (!email || !password) { showAuthError('Please fill in all fields.'); return; }
+  auth.signInWithEmailAndPassword(email, password).then(function() {
+    document.getElementById('scgmm-auth').style.display = 'none';
+  }).catch(function(err) {
+    showAuthError(err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found'
+      ? 'Incorrect email or password.' : err.message);
+  });
+}
+
+function signUpWithEmail() {
+  var name = document.getElementById('auth-signup-name').value.trim();
+  var email = document.getElementById('auth-signup-email').value.trim();
+  var password = document.getElementById('auth-signup-password').value;
+  if (!name || !email || !password) { showAuthSignupError('Please fill in all fields.'); return; }
+  if (password.length < 6) { showAuthSignupError('Password must be at least 6 characters.'); return; }
+  auth.createUserWithEmailAndPassword(email, password).then(function(result) {
+    return result.user.updateProfile({ displayName: name });
+  }).then(function() {
+    document.getElementById('scgmm-auth').style.display = 'none';
+    updateAuthNav();
+  }).catch(function(err) {
+    showAuthSignupError(err.code === 'auth/email-already-in-use'
+      ? 'An account with this email already exists.' : err.message);
+  });
+}
+
+function showAuthError(msg) {
+  var el = document.getElementById('auth-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+function showAuthSignupError(msg) {
+  var el = document.getElementById('auth-signup-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function openAccountModal() {
+  if (!currentUser) return;
+  var name = currentUser.displayName || currentUser.email.split('@')[0];
+  if (confirm('Signed in as ' + name + '\n\nSign out?')) {
+    auth.signOut();
+  }
 }
 
 /* ═══ NAVIGATION ════════════════════════════════════════════════════════ */
@@ -2116,6 +2220,26 @@ var Q={
   renderDone:function(par){
     var s=this.st,tot=this.total(),pct=Math.round((s.correct/tot)*100);
     this.prog(100);
+
+    if (!currentUser) {
+      mbody.innerHTML =
+        '<div style="text-align:center;padding:20px 0">' +
+        '<div style="font-size:48px;margin-bottom:12px;">🎉</div>' +
+        '<h2 style="font-family:\'Poppins\',sans-serif;font-size:20px;font-weight:900;color:#0d1b2a;margin-bottom:8px;">Nice work, ' + par.childName + '!</h2>' +
+        '<p style="font-size:14px;color:#4b5673;margin-bottom:6px;">Create a free account to:</p>' +
+        '<ul style="text-align:left;max-width:260px;margin:0 auto 20px;font-size:14px;color:#4b5673;line-height:2;">' +
+        '<li>✅ Save your progress</li>' +
+        '<li>🔥 Build a daily streak</li>' +
+        '<li>📊 Access 1,000s of questions</li>' +
+        '<li>🚀 New features dropping soon</li>' +
+        '</ul>' +
+        '<button onclick="openAuthModal(\'signup\')" style="width:100%;background:#1d4ed8;color:#fff;font-weight:700;font-size:15px;padding:14px;border-radius:12px;border:none;cursor:pointer;margin-bottom:10px;">Create free account →</button>' +
+        '<button onclick="openAuthModal(\'signin\')" style="width:100%;background:#f4f6fc;color:#1d4ed8;font-weight:600;font-size:14px;padding:12px;border-radius:12px;border:none;cursor:pointer;margin-bottom:14px;">I already have an account</button>' +
+        '<a onclick="document.getElementById(\'scgmm-modal\').classList.remove(\'on\')" style="font-size:13px;color:#8692a6;cursor:pointer;display:block;">Skip for now</a>' +
+        '</div>';
+      return;
+    }
+
     mbody.innerHTML =
       '<div style="text-align:center;padding:20px 0">' +
       '<div style="font-size:52px;margin-bottom:12px;">🎉</div>' +
@@ -2233,6 +2357,78 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
       </button>
     </div>
     <p style="font-size:12px;color:#8692a6;">Cancel anytime. Secure payment via Stripe.</p>
+  </div>
+</div>
+<div id="scgmm-auth" style="display:none;position:fixed;inset:0;z-index:99997;align-items:center;justify-content:center;background:rgba(12,18,52,.65);backdrop-filter:blur(6px);padding:20px;">
+  <div style="background:#fff;border-radius:24px;max-width:420px;width:100%;padding:36px 32px;position:relative;box-shadow:0 32px 80px -20px rgba(12,18,52,.5);">
+    <button onclick="document.getElementById('scgmm-auth').style.display='none'"
+      style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f4f6fc;border:none;font-size:18px;cursor:pointer;color:#8692a6;">✕</button>
+
+    <!-- Sign in view -->
+    <div id="auth-signin-view">
+      <h2 style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:900;color:#0d1b2a;margin-bottom:4px;">Welcome back</h2>
+      <p style="font-size:14px;color:#4b5673;margin-bottom:24px;">Sign in to your SCG Masterminds account</p>
+
+      <button onclick="signInWithGoogle()"
+        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1.5px solid #e4e8f5;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;transition:background .15s;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
+        Continue with Google
+      </button>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;height:1px;background:#e4e8f5;"></div>
+        <span style="font-size:12px;color:#8692a6;">or</span>
+        <div style="flex:1;height:1px;background:#e4e8f5;"></div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <input id="auth-email" type="email" placeholder="Email address"
+          style="width:100%;padding:12px 14px;border:1.5px solid #e4e8f5;border-radius:11px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;">
+        <input id="auth-password" type="password" placeholder="Password"
+          style="width:100%;padding:12px 14px;border:1.5px solid #e4e8f5;border-radius:11px;font-size:14px;font-family:inherit;outline:none;">
+      </div>
+      <p id="auth-error" style="color:#e57373;font-size:13px;margin-bottom:10px;display:none;"></p>
+      <button onclick="signInWithEmail()"
+        style="width:100%;background:#1d4ed8;color:#fff;font-weight:700;font-size:15px;padding:14px;border-radius:12px;border:none;cursor:pointer;margin-bottom:14px;">
+        Sign in
+      </button>
+      <p style="text-align:center;font-size:13px;color:#4b5673;">
+        No account? <a onclick="openAuthModal('signup')" style="color:#1d4ed8;font-weight:700;cursor:pointer;">Create one free →</a>
+      </p>
+    </div>
+
+    <!-- Sign up view -->
+    <div id="auth-signup-view" style="display:none;">
+      <h2 style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:900;color:#0d1b2a;margin-bottom:4px;">Create your account</h2>
+      <p style="font-size:14px;color:#4b5673;margin-bottom:24px;">Free to start. No card required.</p>
+
+      <button onclick="signInWithGoogle()"
+        style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1.5px solid #e4e8f5;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" height="18" alt="Google">
+        Sign up with Google
+      </button>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;height:1px;background:#e4e8f5;"></div>
+        <span style="font-size:12px;color:#8692a6;">or</span>
+        <div style="flex:1;height:1px;background:#e4e8f5;"></div>
+      </div>
+
+      <input id="auth-signup-name" type="text" placeholder="Your name"
+        style="width:100%;padding:12px 14px;border:1.5px solid #e4e8f5;border-radius:11px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;">
+      <input id="auth-signup-email" type="email" placeholder="Email address"
+        style="width:100%;padding:12px 14px;border:1.5px solid #e4e8f5;border-radius:11px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;">
+      <input id="auth-signup-password" type="password" placeholder="Password (min 6 characters)"
+        style="width:100%;padding:12px 14px;border:1.5px solid #e4e8f5;border-radius:11px;font-size:14px;font-family:inherit;outline:none;margin-bottom:12px;">
+      <p id="auth-signup-error" style="color:#e57373;font-size:13px;margin-bottom:10px;display:none;"></p>
+      <button onclick="signUpWithEmail()"
+        style="width:100%;background:#1d4ed8;color:#fff;font-weight:700;font-size:15px;padding:14px;border-radius:12px;border:none;cursor:pointer;margin-bottom:14px;">
+        Create account
+      </button>
+      <p style="text-align:center;font-size:13px;color:#4b5673;">
+        Already have one? <a onclick="openAuthModal('signin')" style="color:#1d4ed8;font-weight:700;cursor:pointer;">Sign in →</a>
+      </p>
+    </div>
   </div>
 </div>
 <!-- SCGMM:END -->
