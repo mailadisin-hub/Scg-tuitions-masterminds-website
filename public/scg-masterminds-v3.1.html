@@ -1055,6 +1055,13 @@ function openAccountModal() {
   }
 }
 
+// Expose auth functions to global scope for inline onclick handlers
+window.openAuthModal   = openAuthModal;
+window.signInWithGoogle = signInWithGoogle;
+window.signInWithEmail = signInWithEmail;
+window.signUpWithEmail = signUpWithEmail;
+window.openAccountModal = openAccountModal;
+
 /* ═══ NAVIGATION ════════════════════════════════════════════════════════ */
 var navStack=[]; // track history for directional transitions
 function showScr(id,dir){
