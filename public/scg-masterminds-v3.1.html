@@ -858,7 +858,9 @@ var FreeUsage = {
   _key: 'scgMM2_free_used',
   get: function() { try { return JSON.parse(localStorage.getItem(this._key) || '{"english":0,"maths":0}'); } catch(e) { return {english:0,maths:0}; } },
   inc: function(type) { var d=this.get(); d[type]=(d[type]||0)+1; try{localStorage.setItem(this._key,JSON.stringify(d));}catch(e){} },
-  hasUsedFree: function(type) { return this.get()[type] >= 1; }
+  hasUsedFree: function(type) { return this.get()[type] >= 1; },
+  mathsQUsed: function() { return this.get().maths || 0; },
+  incMaths: function() { this.inc('maths'); }
 };
 
 /* ═══ PHONICS UNLOCK STATE ══════════════════════════════════════════════ */
@@ -1112,8 +1114,8 @@ function goSubjects(year){
      desc:year===1?'Simple read-aloud stories for Year 1. Listen to the story then answer questions.':'Read-aloud comprehension stories. The device reads to your child sentence by sentence, then questions follow.',
      cnt:'5 stories',action:function(){goActivities(year,'english');}},
     {ico:'🔢',bg:as,name:'Maths',
-     desc:year===1?'Number bonds to 10 and 20, plus 10 more and 10 less. 10 questions each.':'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',
-     cnt:'4 skills',action:function(){goActivities(year,'maths');}}
+     desc:year===1?'Number bonds to 10. Try to get all 9 right!':'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',
+     cnt:year===1?'1 skill':'4 skills',action:function(){goActivities(year,'maths');}}
   ];
   if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper, Maths Reasoning and Comprehension. 10 questions chosen at random from a bank of 66.',cnt:'66-Q bank',action:function(){goActivities(year,'fsce');}});
   subjects.forEach(function(sub){
@@ -1209,7 +1211,7 @@ function goActivities(year,subj){
     title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check, or press Enter.</p>';
     var mgrid=document.createElement('div');mgrid.className='mop-grid';
     var mcols=['#1a2870','#27ae60','#00b4c8','#e8781a'];
-    var ops=year===1?Y1MOPS:MOPS;
+    var ops=year===1?[Y1MOPS[0]]:MOPS;
     ops.forEach(function(op,i){
       var mc=mcols[i];
       var card=document.createElement('div');card.className='mop';card.style.setProperty('--mc',mc);
@@ -1505,11 +1507,13 @@ var Q={
 
   /* ── MATHS ── */
   startMaths:function(year,op,ac){
+    var self=this;
     this.st={type:'maths',ac:ac,year:year,op:op,
       section:'Maths (Year '+year+')',quizTitle:op.n+', Year '+year,
-      qs:[],qi:0,answers:[],correct:0};
-    this.open(ac,op.s,op.n+' · Year '+year,'Choose difficulty');
-    this.renderDifficultyPick();
+      diff:'medium',qs:[],qi:0,answers:[],correct:0};
+    this.open(ac,op.s,op.n+' · Year '+year,'Maths');
+    this.st.qs=this.genMaths(year,op.k,'medium');
+    this.renderMathsIntro();
   },
   renderDifficultyPick:function(){
     var s=this.st,self=this,yr=s.year;
@@ -1685,6 +1689,11 @@ var Q={
       $$('.mopt',mbody).forEach(function(b,j){
         b.classList.add('locked');
       });
+      FreeUsage.incMaths();
+      if(FreeUsage.mathsQUsed()>=5){
+        setTimeout(function(){showSubscribeModal();},400);
+        return;
+      }
       var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
       fb.innerHTML=ok
         ?'<div class="qfb-main">✅ Correct!</div>'
