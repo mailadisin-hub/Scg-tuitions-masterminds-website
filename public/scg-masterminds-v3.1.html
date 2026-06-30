@@ -1792,11 +1792,10 @@ var Q={
     if(s.qi>=s.qs.length){this.renderForm();return;}
     var target=s.qs[s.qi];
     var ltrs=s.phase.letters||['s','a','t','p','i','n'];
-    var body=mbody;
     var self=this;
-    /* speak the letter sound */
-    setTimeout(function(){Sp.speak(target);},300);
-    body.innerHTML=
+    var mb=document.getElementById('mbody');
+    setTimeout(function(){Sp.speak([target]);},300);
+    mb.innerHTML=
       '<div style="text-align:center;padding:28px 16px 0">'+
         '<p style="font-size:16px;color:#666;margin-bottom:10px">Question '+(s.qi+1)+' of '+s.qs.length+'</p>'+
         '<p style="font-size:20px;font-weight:700;color:#1a2870;margin-bottom:18px">Tap the letter you hear</p>'+
@@ -1808,7 +1807,7 @@ var Q={
         '</div>'+
         '<div id="plr-fb" style="margin-top:22px;min-height:48px"></div>'+
       '</div>';
-    document.getElementById('plr-speak').addEventListener('click',function(){Sp.speak(target);});
+    document.getElementById('plr-speak').addEventListener('click',function(){Sp.speak([target]);});
     var tiles=document.querySelectorAll('#plr-tiles button');
     tiles.forEach(function(btn){
       btn.addEventListener('click',function(){
@@ -1845,13 +1844,12 @@ var Q={
     if(s.qi>=s.qs.length){this.renderForm();return;}
     var target=s.qs[s.qi];
     var ltrs=s.phase.letters||['s','a','t','p','i','n'];
-    /* 4 options: target + 3 distractors */
     var distractors=shuffle(ltrs.filter(function(l){return l!==target;})).slice(0,3);
     var opts=shuffle([target].concat(distractors));
-    var body=mbody;
     var self=this;
-    setTimeout(function(){Sp.speak(target);},300);
-    body.innerHTML=
+    var mb=document.getElementById('mbody');
+    setTimeout(function(){Sp.speak([target]);},300);
+    mb.innerHTML=
       '<div style="text-align:center;padding:28px 16px 0">'+
         '<p style="font-size:16px;color:#666;margin-bottom:10px">Question '+(s.qi+1)+' of '+s.qs.length+'</p>'+
         '<p style="font-size:20px;font-weight:700;color:#1a2870;margin-bottom:18px">Which letter makes this sound?</p>'+
@@ -1863,7 +1861,7 @@ var Q={
         '</div>'+
         '<div id="plc-fb" style="margin-top:22px;min-height:48px"></div>'+
       '</div>';
-    document.getElementById('plc-speak').addEventListener('click',function(){Sp.speak(target);});
+    document.getElementById('plc-speak').addEventListener('click',function(){Sp.speak([target]);});
     var btns=document.querySelectorAll('#plc-opts button');
     btns.forEach(function(btn){
       btn.addEventListener('click',function(){
