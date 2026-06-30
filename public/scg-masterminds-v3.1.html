@@ -1042,21 +1042,21 @@ function goPhonicsGames(phase,col){
      desc:'Listen to a letter sound and choose the correct letter from 4 options.',
      action:function(){Q.startPhonicsLetterChoose(phase,col);}}
   ]:hasSW?[
-    {n:'Game 1 · Sight Words',ico:'👁️',
-     desc:'Learn the '+phase.sw.length+' key sight words for '+phase.name+'. Each word is read aloud for you.',
+    {n:'Sight Word List',ico:'👁️',
+     desc:'Listen to each word read aloud',
      action:function(){Q.startSightWords(phase,col);}},
-    {n:'Game 2 · Hear & Choose',ico:'👂',
-     desc:'Listen to the word and tap the correct spelling. Practise recognising '+phase.name+' words by ear.',
+    {n:'Hear & Choose',ico:'👂',
+     desc:'Hear a word — pick the right spelling',
      action:function(){Q.startPhonicsChoose(phase,col);}},
-    {n:'Game 3 · Hear & Spell',ico:'✏️',
-     desc:'Listen to the word, then tap the letters in order to spell it.',
+    {n:'Hear & Spell',ico:'✏️',
+     desc:'Hear a word — tap the letters to spell it',
      action:function(){Q.startPhonicsSpell(phase,col);}}
   ]:[
-    {n:'Game 1 · Hear & Choose',ico:'👂',
-     desc:'Listen to the word and tap the correct spelling. Practise recognising '+phase.name+' words by ear.',
+    {n:'Hear & Choose',ico:'👂',
+     desc:'Hear a word — pick the right spelling',
      action:function(){Q.startPhonicsChoose(phase,col);}},
-    {n:'Game 2 · Hear & Spell',ico:'✏️',
-     desc:'Listen to the word, then tap the letters in order to spell it.',
+    {n:'Hear & Spell',ico:'✏️',
+     desc:'Hear a word — tap the letters to spell it',
      action:function(){Q.startPhonicsSpell(phase,col);}}
   ];
   var gcols=(phase.id===1)?[col,'#2563eb']:hasSW?[col,'#2563eb','#059669']:[col,'#2563eb'];
@@ -1741,50 +1741,38 @@ var Q={
 
   /* ── SIGHT WORDS ── */
   startSightWords:function(phase,col){
-    var queue=phase.sw.slice();
-    this.st={type:'sight',ac:col,phase:phase,queue:queue,orig:queue.length,known:0,
-      section:'Phonics '+phase.name,quizTitle:phase.name+' Sight Words'};
-    this.open(col,'👁️',phase.name+' · Sight Words','Flashcard practice');
-    this.renderSightCard();
-  },
-  renderSightCard:function(){
-    var s=this.st,w=s.queue[0];
-    this.prog(10+((s.orig-s.queue.length)/s.orig)*80);
-    mbody.innerHTML=
-      '<div style="text-align:center;padding:8px 0">'+
-      '<div style="font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px">'+
-        'Word '+(s.orig-s.queue.length+1)+' of '+s.orig+'</div>'+
-      '<div class="sw-word" style="color:'+s.ac+'">'+w+'</div>'+
-      '<button id="sw-hear" style="background:transparent;border:2px solid '+s.ac+';color:'+s.ac+';border-radius:999px;padding:7px 20px;font-size:13px;font-weight:600;cursor:pointer;margin-bottom:22px">🔊 Hear it again</button>'+
-      '<div class="sw-btns">'+
-        '<button class="sw-know" style="--sw-ac:'+s.ac+'">&#x2713; I know it!</button>'+
-        '<button class="sw-skip">🔁 Show again</button>'+
-      '</div></div>';
     var self=this;
-    Sp.speak([w],null,null);
-    document.getElementById('sw-hear').addEventListener('click',function(){Sp.speak([w],null,null);});
-    document.querySelector('#scgmm-modal .sw-know').addEventListener('click',function(){
-      s.known++;s.queue.shift();
-      if(s.queue.length)self.renderSightCard();else self.renderSightResult();
-    });
-    document.querySelector('#scgmm-modal .sw-skip').addEventListener('click',function(){
-      s.queue.push(s.queue.shift());
-      self.renderSightCard();
-    });
-  },
-  renderSightResult:function(){
-    var s=this.st;this.prog(100);
-    var pct=Math.round(s.known/s.orig*100);
-    mbody.innerHTML=
-      '<div style="text-align:center;padding:20px 0">'+
-      '<div style="font-size:52px;margin-bottom:8px">'+(pct>=80?'🌟':'⭐')+'</div>'+
-      '<h2 style="margin-bottom:6px">'+pct+'% known!</h2>'+
-      '<p style="color:#64748b;margin-bottom:24px">You knew '+s.known+' out of '+s.orig+' '+s.phase.name+' sight words.</p>'+
-      (pct<100?'<p style="font-size:14px;color:#94a3b8;margin-bottom:20px">Practise the tricky ones and try again!</p>':'')+
-      '<button id="sw-replay" style="background:'+s.ac+';color:#fff;border:none;border-radius:12px;padding:13px 30px;font-size:15px;font-weight:700;cursor:pointer">Play again</button>'+
-      '</div>';
-    var self=this;
-    document.getElementById('sw-replay').addEventListener('click',function(){self.startSightWords(s.phase,s.ac);});
+    var words=phase.sw;
+    var idx=0;
+    this.st={phase:phase,section:'Phonics '+phase.name,quizTitle:phase.name+' · Sight Words'};
+    this.open(col,'📖','Sight Word List',phase.name+' · Sight Words');
+
+    function showWord(){
+      if(idx>=words.length){
+        document.getElementById('mbody').innerHTML=
+          '<div style="text-align:center;padding:20px 0">'+
+          '<p style="font-size:15px;color:#4b5673;margin-bottom:24px">Great work! You\'ve heard all the sight words.</p>'+
+          '<button class="btn-g" id="sw-next">Start Hear &amp; Choose →</button>'+
+          '</div>';
+        document.getElementById('sw-next').addEventListener('click',function(){
+          Q.startPhonicsChoose(phase,col);
+        });
+        return;
+      }
+      var word=words[idx];
+      document.getElementById('mbody').innerHTML=
+        '<div style="text-align:center;padding:16px 0">'+
+        '<div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8692a6;margin-bottom:12px">Word '+(idx+1)+' of '+words.length+'</div>'+
+        '<div class="sw-word">'+word+'</div>'+
+        '<div class="sw-btns">'+
+        '<button class="sw-skip" id="sw-hear">🔊 Hear Again</button>'+
+        '<button class="sw-know" id="sw-next-word">Next Word →</button>'+
+        '</div></div>';
+      Sp.speak([word]);
+      document.getElementById('sw-hear').addEventListener('click',function(){Sp.speak([word]);});
+      document.getElementById('sw-next-word').addEventListener('click',function(){idx++;showWord();});
+    }
+    showWord();
   },
 
   /* ── PHASE 1: LETTER RECOGNISE ── */

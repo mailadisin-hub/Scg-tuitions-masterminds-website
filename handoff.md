@@ -137,6 +137,7 @@ Five phases, each with multiple games. **Phase progression is gated** — you un
 - Year 1 (English + topic maths), Year 2 & 3 (English + generated maths), Year 3 11+ FSCE bank.
 - Year cards equal-sized grid; "Free" branding removed; Year 6 "coming soon".
 - Hero updated: heading "SCG Masterminds" + subheading "Practice makes perfect." + hero-img-placeholder div. **[Task 1 complete — 2026-06-30]**
+- Phonics game labels restructured (Sight Word List / Hear & Choose / Hear & Spell); new sequential sight word reader added. **[Task 2 complete — 2026-06-30]**
 - Repo cleaned of legacy Next.js/TypeScript code.
 
 **🔲 Open / next**
