@@ -1049,10 +1049,63 @@ function showAuthSignupError(msg) {
 
 function openAccountModal() {
   if (!currentUser) return;
+
   var name = currentUser.displayName || currentUser.email.split('@')[0];
-  if (confirm('Signed in as ' + name + '\n\nSign out?')) {
-    auth.signOut();
+  var email = currentUser.email;
+  var initials = name.split(' ').map(function(w){ return w[0]; }).join('').toUpperCase().slice(0,2);
+
+  // Fill header
+  document.getElementById('acct-avatar').textContent = initials;
+  document.getElementById('acct-name').textContent = name;
+  document.getElementById('acct-email').textContent = email;
+
+  // Tier — read from localStorage key 'scgMM2_tier' (set by subscription flow later)
+  // Values: 'free' | 'english' | 'max'
+  var tier = localStorage.getItem('scgMM2_tier') || 'free';
+  var tierEl = document.getElementById('acct-tier');
+  var upgradeEl = document.getElementById('acct-tier-upgrade');
+  if (tier === 'max') {
+    tierEl.style.background = '#fef3c7';
+    tierEl.style.color = '#92400e';
+    tierEl.innerHTML = '⭐ Max Tier';
+    upgradeEl.style.display = 'none';
+  } else if (tier === 'english') {
+    tierEl.style.background = '#dbeafe';
+    tierEl.style.color = '#1e40af';
+    tierEl.innerHTML = '📘 English Tier';
+    upgradeEl.style.display = 'none';
+  } else {
+    tierEl.style.background = '#f4f6fc';
+    tierEl.style.color = '#4b5673';
+    tierEl.innerHTML = '🆓 Free Tier';
+    upgradeEl.style.display = 'block';
   }
+
+  // Recent scores from Store.bests()
+  var bests = Store.bests();
+  var scoresEl = document.getElementById('acct-scores');
+  var keys = Object.keys(bests);
+  if (keys.length === 0) {
+    scoresEl.innerHTML = '<p style="font-size:13px;color:#8692a6;">No quizzes completed yet.</p>';
+  } else {
+    scoresEl.innerHTML = keys.slice(0, 5).map(function(k) {
+      var b = bests[k];
+      var pct = Math.round((b.score / b.total) * 100);
+      var col = pct >= 80 ? '#27ae60' : pct >= 60 ? '#e8781a' : '#e57373';
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#f8faff;border-radius:10px;">' +
+        '<span style="font-size:13px;color:#1c2035;font-weight:600;">' + k + '</span>' +
+        '<span style="font-size:13px;font-weight:800;color:' + col + ';">' + pct + '%</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  document.getElementById('scgmm-account').style.display = 'flex';
+}
+
+function scgmmSignOut() {
+  auth.signOut().then(function() {
+    document.getElementById('scgmm-account').style.display = 'none';
+  });
 }
 
 // Expose auth functions to global scope for inline onclick handlers
@@ -1061,6 +1114,7 @@ window.signInWithGoogle = signInWithGoogle;
 window.signInWithEmail = signInWithEmail;
 window.signUpWithEmail = signUpWithEmail;
 window.openAccountModal = openAccountModal;
+window.scgmmSignOut    = scgmmSignOut;
 
 /* ═══ NAVIGATION ════════════════════════════════════════════════════════ */
 var navStack=[]; // track history for directional transitions
@@ -2435,6 +2489,59 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
       <p style="text-align:center;font-size:13px;color:#4b5673;">
         Already have one? <a onclick="openAuthModal('signin')" style="color:#1d4ed8;font-weight:700;cursor:pointer;">Sign in →</a>
       </p>
+    </div>
+  </div>
+</div>
+<div id="scgmm-account" style="display:none;position:fixed;inset:0;z-index:99997;align-items:center;justify-content:center;background:rgba(12,18,52,.65);backdrop-filter:blur(6px);padding:20px;">
+  <div style="background:#fff;border-radius:24px;max-width:440px;width:100%;padding:0;position:relative;box-shadow:0 32px 80px -20px rgba(12,18,52,.5);overflow:hidden;">
+
+    <!-- Header strip -->
+    <div style="background:#0d1b2a;padding:28px 32px 24px;display:flex;align-items:center;gap:16px;">
+      <div id="acct-avatar" style="width:52px;height:52px;border-radius:50%;background:#1d4ed8;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:20px;font-weight:900;color:#fff;flex-shrink:0;">A</div>
+      <div>
+        <div id="acct-name" style="font-family:'Poppins',sans-serif;font-size:17px;font-weight:800;color:#fff;margin-bottom:2px;">Name</div>
+        <div id="acct-email" style="font-size:13px;color:#94a3b8;">email</div>
+      </div>
+      <button onclick="document.getElementById('scgmm-account').style.display='none'"
+        style="position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;font-size:16px;cursor:pointer;color:#94a3b8;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+
+    <div style="padding:24px 32px 28px;">
+
+      <!-- Tier badge -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8692a6;margin-bottom:8px;">Your Plan</div>
+        <div id="acct-tier" style="display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:700;">
+          <!-- filled by openAccountModal() -->
+        </div>
+        <div id="acct-tier-upgrade" style="margin-top:10px;display:none;">
+          <a href="#stripe-english" style="font-size:13px;color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:none;">Upgrade to English tier →</a>
+        </div>
+      </div>
+
+      <!-- Streak -->
+      <div style="margin-bottom:20px;padding:14px 16px;background:#f8faff;border-radius:14px;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:26px;">🔥</span>
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#1c2035;">Daily Streak</div>
+          <div style="font-size:13px;color:#8692a6;">Coming soon — keep practising!</div>
+        </div>
+      </div>
+
+      <!-- Recent scores -->
+      <div style="margin-bottom:20px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#8692a6;margin-bottom:8px;">Recent Best Scores</div>
+        <div id="acct-scores" style="display:flex;flex-direction:column;gap:6px;">
+          <!-- filled by openAccountModal() -->
+        </div>
+      </div>
+
+      <!-- Sign out -->
+      <button onclick="scgmmSignOut()"
+        style="width:100%;background:#f4f6fc;color:#e57373;font-weight:700;font-size:14px;padding:12px;border-radius:12px;border:none;cursor:pointer;">
+        Sign out
+      </button>
+
     </div>
   </div>
 </div>
