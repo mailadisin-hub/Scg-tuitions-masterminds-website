@@ -1300,17 +1300,14 @@ var Q={
   dots:function(total,qi,answers){
     var h='<div class="qdots">';
     for(var i=0;i<total;i++){
-      var cls='qdot'+(i===qi?' cur':i<qi?(answers[i].ok?' ok':' no'):'');
+      var cls='qdot'+(i===qi?' cur':'');
       h+='<span class="'+cls+'"></span>';
     }
     return h+'</div>';
   },
 
   /* live score strip */
-  lscore:function(correct,qi){
-    if(qi===0) return '';
-    return '<div class="lscore">Score so far: <span class="lsc-v">'+correct+' / '+qi+'</span></div>';
-  },
+  lscore:function(correct,qi){ return ''; },
 
   /* ── COMPREHENSION ── */
   startComp:function(c,ac,year){
@@ -1388,14 +1385,11 @@ var Q={
     var built=this.buildPassage(s.data);
     mbody.innerHTML=
       this.dots(total,s.qi,s.answers)+
-      this.lscore(s.correct,s.qi)+
       '<div class="qprog">Question '+(s.qi+1)+' of '+total+'</div>'+
       '<div class="qtext">'+q.q+'</div>'+
       '<div class="qopts">'+q.o.map(function(opt,i){
         return'<button class="qo" data-i="'+i+'"><span class="qk">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span></button>';
       }).join('')+'</div>'+
-      '<div class="qfb" id="qfb"></div>'+
-      '<button class="qnxt" id="qnxt">'+(s.qi===total-1?'See results →':'Next question →')+' '+arr()+'</button>'+
       '<div class="clr"></div>'+
       '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>'+
       '<div class="reread">'+
@@ -1439,19 +1433,13 @@ var Q={
       s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
-      var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
-      fb.innerHTML=ok
-        ?'<div class="qfb-main">✅ Correct! Well done.</div>'
-        :'<div class="qfb-main">❌ Not quite — the answer was <b>'+q.o[q.c]+'</b></div>'
-         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'')
-         +(q.quote?'<div class="qfb-quote">“'+q.quote+'”</div>':'');
-      $("#qnxt").classList.add('show');
+      // no feedback shown — silently advance after 400ms
+      setTimeout(function(){
+        s.qi++;
+        if(s.qi < total) self.renderQ(); else self.renderForm();
+      }, 400);
     }
     self._answerFn=answer;
-    $("#qnxt").addEventListener('click',function(){
-      if(!done)return;Sp.stop();s.qi++;
-      if(s.qi<total)self.renderQ();else self.renderForm();
-    });
   },
 
   /* ── MIXED ENGLISH ── */
@@ -1490,15 +1478,12 @@ var Q={
     var excerpt=q.quote?'<div class="qquote">📖 <em>'+q.quote+'</em></div>':'';
     mbody.innerHTML=
       this.dots(total,s.qi,s.answers)+
-      this.lscore(s.correct,s.qi)+
       '<div class="qprog">Question '+(s.qi+1)+' of '+total+' · '+q._story+'</div>'+
       excerpt+
       '<div class="qtext">'+q.q+'</div>'+
       '<div class="qopts">'+q.o.map(function(opt,i){
         return'<button class="qo" data-i="'+i+'"><span class="qk">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span></button>';
       }).join('')+'</div>'+
-      '<div class="qfb" id="qfb"></div>'+
-      '<button class="qnxt" id="qnxt">'+(s.qi===total-1?'See results →':'Next question →')+'</button>'+
       '<div class="clr"></div>'+
       '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>';
     var self=this,done=false;
@@ -1508,20 +1493,14 @@ var Q={
       s.answers.push({q:'['+q._story+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');var xi=+x.dataset.i;if(xi===q.c)x.classList.add('ok');else if(xi===ch)x.classList.add('ng');});
-      var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
-      fb.innerHTML=ok
-        ?'<div class="qfb-main">✅ Correct! Well done.</div>'
-        :'<div class="qfb-main">❌ Not quite — the answer was <b>'+q.o[q.c]+'</b></div>'
-         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'')
-         +(q.quote?'<div class="qfb-quote">“'+q.quote+'”</div>':'');
-      $("#qnxt").classList.add('show');
+      // no feedback shown — silently advance after 400ms
+      setTimeout(function(){
+        s.qi++;
+        if(s.qi < total) self.renderMixedQ(); else self.renderForm();
+      }, 400);
     }
     $$('.qo',mbody).forEach(function(b){b.addEventListener('click',function(){answer(+b.dataset.i);});});
     self._answerFn=answer;
-    $("#qnxt").addEventListener('click',function(){
-      if(!done)return;s.qi++;
-      if(s.qi<total)self.renderMixedQ();else self.renderForm();
-    });
   },
 
   /* ── MATHS ── */
@@ -2127,60 +2106,31 @@ var Q={
   renderDone:function(par){
     var s=this.st,tot=this.total(),pct=Math.round((s.correct/tot)*100);
     this.prog(100);
-    var col=this.scoreColor(pct);
-    var C=2*Math.PI*46;
-    var offset=C*(1-pct/100);
-    var stars=pct>=80?'⭐⭐⭐':pct>=60?'⭐⭐':'⭐';
-    var msg=pct>=80?'Brilliant work, '+par.childName+'! Shining star ⭐':
-            pct>=60?'Great effort, '+par.childName+'! Keep practising and you\'ll ace it 💪':
-            'Good try, '+par.childName+'! Every attempt helps you improve 📚';
-    var newPhase=Unlocks.checkAndUnlock(s);
-    var unlockBanner=newPhase
-      ?'<div class="unlock-banner">🔓 '+newPhase.name+' unlocked! 🎉</div>':'';
-    var rev=s.answers.map(function(a,i){
-      return'<div class="ri">'+
-        '<span class="ric '+(a.ok?'ok':'ng')+'">'+(a.ok?'✓':'✗')+'</span>'+
-        '<div><div class="riq">'+(i+1)+'. '+a.q+'</div>'+
-        '<div class="ria">Answered: '+a.chosen+(a.ok?'':' · Correct: <b>'+a.correct+'</b>')+'</div></div>'+
-      '</div>';
-    }).join('');
-    mbody.innerHTML=
-      '<div class="ph-done">'+
-        (pct>=80?'<div class="cconf" id="cconf"></div>':'')+
-        '<div class="ring-wrap">'+
-          '<svg width="130" height="130" viewBox="0 0 104 104">'+
-            '<circle cx="52" cy="52" r="46" fill="none" stroke="#e4e8f5" stroke-width="7"/>'+
-            '<circle id="ring-arc" cx="52" cy="52" r="46" fill="none" stroke="'+col+'" stroke-width="7"'+
-              ' stroke-linecap="round" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+C.toFixed(1)+'"'+
-              ' transform="rotate(-90 52 52)" style="transition:stroke-dashoffset 1s cubic-bezier(.25,.8,.3,1)"/>'+
-          '</svg>'+
-          '<div class="ring-inner"><span class="ring-pct" style="color:'+col+'">'+pct+'%</span>'+
-            '<span class="ring-sub">'+s.correct+' / '+tot+'</span></div>'+
-        '</div>'+
-        '<div class="star-row">'+stars+'</div>'+
-        unlockBanner+
-        '<h2>Results saved!</h2>'+
-        '<p class="dmsg">'+msg+'</p>'+
-        '<p style="font-size:13px;color:var(--muted);margin-bottom:4px">📩 Recorded for <b>'+par.parentEmail+'</b></p>'+
-        '<div class="review">'+rev+'</div>'+
-        '<div class="dacts">'+
-          '<button class="d-again" id="d-again">Try again</button>'+
-          '<button class="d-menu" id="d-menu">Back to menu</button>'+
-        '</div>'+
-      '</div>';
-    setTimeout(function(){
-      var arc=$("#ring-arc");if(arc)arc.style.strokeDashoffset=offset.toFixed(1);
-    },120);
-    var self=this;
-    $("#d-again").addEventListener('click',function(){
-      if(s.type==='comp')self.startComp(s.data,s.ac,s.year);
-      else if(s.type==='maths')self.startMaths(s.year,s.op,s.ac);
-      else if(s.type==='mixed')self.startMixedComp(s.comps,s.ac,s.year);
+    mbody.innerHTML =
+      '<div style="text-align:center;padding:20px 0">' +
+      '<div style="font-size:52px;margin-bottom:12px;">🎉</div>' +
+      '<h2 style="font-family:\'Poppins\',sans-serif;font-size:22px;font-weight:900;color:#1a2870;margin-bottom:8px;">Quiz complete, ' + par.childName + '!</h2>' +
+      '<p style="font-size:15px;color:#4b5673;margin-bottom:6px;line-height:1.6;">Your score has been sent to <b>' + par.parentEmail + '</b>.</p>' +
+      '<p style="font-size:13px;color:#8692a6;margin-bottom:28px;">Check your email for the full breakdown.</p>' +
+      '<div style="background:#f4f6fc;border-radius:16px;padding:20px 24px;margin-bottom:20px;">' +
+      '<p style="font-size:14px;font-weight:700;color:#1a2870;margin-bottom:14px;">Want daily practice? Subscribe below:</p>' +
+      '<div style="display:flex;flex-direction:column;gap:10px;">' +
+      '<a href="#stripe-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜 English only — £5/month</a>' +
+      '<a href="#stripe-maths-english" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜🔢 English + Maths — £8/month</a>' +
+      '</div></div>' +
+      '<div style="display:flex;gap:10px;justify-content:center;">' +
+      '<button class="d-again" id="d-again" style="background:#1a2870;color:#fff;font-weight:700;padding:12px 20px;border-radius:12px;font-size:14px;">Try again</button>' +
+      '<button class="d-menu" id="d-menu" style="background:#f4f6fc;color:#1a2870;border:1.5px solid #e4e8f5;font-weight:700;padding:12px 20px;border-radius:12px;font-size:14px;">Back to menu</button>' +
+      '</div></div>';
+
+    var self = this;
+    document.getElementById('d-again').addEventListener('click', function() {
+      if(s.type==='comp') self.startComp(s.data, s.ac, s.year);
+      else if(s.type==='maths') self.startMaths(s.year, s.op, s.ac);
+      else if(s.type==='mixed') self.startMixedComp(s.comps, s.ac, s.year);
       else self.startFsce();
     });
-    $("#d-menu").addEventListener('click',function(){self.close();});
-    if(pct>=80)this.confetti();
-    if(newPhase)setTimeout(function(){if(!modal.classList.contains('on'))goPhonicsPhases();},200);
+    document.getElementById('d-menu').addEventListener('click', function() { self.close(); });
   },
   confetti:function(){
     var b=$("#cconf");if(!b)return;
