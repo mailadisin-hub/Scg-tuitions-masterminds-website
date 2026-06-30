@@ -945,6 +945,10 @@ function showSubscribeModal() {
   m.addEventListener('click', function(e) {
     if (e.target === m) m.style.display = 'none';
   });
+  document.getElementById('sub-email-score').addEventListener('click', function() {
+    m.style.display = 'none';
+    Q.renderForm();
+  });
 }
 
 /* ═══ NAVIGATION ════════════════════════════════════════════════════════ */
@@ -1694,8 +1698,6 @@ var Q={
       '<div class="qopts">'+opts.map(function(o){
         return'<button class="qo mopt" data-v="'+o+'"><span>'+o+'</span></button>';
       }).join('')+'</div>'+
-      '<div class="qfb" id="qfb"></div>'+
-      '<button class="qnxt" id="qnxt">'+(s.qi===total-1?'See results →':'Next →')+'</button>'+
       '<div class="clr"></div>'+
       '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>';
     var self=this,done=false;
@@ -1712,20 +1714,12 @@ var Q={
         setTimeout(function(){showSubscribeModal();},400);
         return;
       }
-      var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
-      fb.innerHTML=ok
-        ?'<div class="qfb-main">✅ Correct!</div>'
-        :'<div class="qfb-main">❌ The answer is <b>'+q.ans+'</b></div>'
-         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'');
-      $("#qnxt").classList.add('show');
+      setTimeout(function(){s.qi++;if(s.qi<total)self.renderMathsQ();else self.renderForm();},400);
     }
     $$('.mopt',mbody).forEach(function(b,i){
       b.addEventListener('click',function(){answer(i);});
     });
     self._answerFn=answer;
-    $("#qnxt").addEventListener('click',function(){
-      s.qi++;if(s.qi<total)self.renderMathsQ();else self.renderForm();
-    });
   },
 
   /* ── FSCE ── */
@@ -1763,8 +1757,6 @@ var Q={
       '<div class="qopts">'+q.o.map(function(opt,i){
         return'<button class="qo" data-i="'+i+'"><span class="qk">'+String.fromCharCode(65+i)+'</span><span>'+opt+'</span></button>';
       }).join('')+'</div>'+
-      '<div class="qfb" id="qfb"></div>'+
-      '<button class="qnxt" id="qnxt">'+(s.qi===total-1?'See results →':'Next question →')+' '+arr()+'</button>'+
       '<div class="clr"></div>'+
       '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>';
     var self=this,done=false;
@@ -1774,16 +1766,10 @@ var Q={
       s.answers.push({q:'['+q.s+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
-      var fb=$("#qfb");fb.className='qfb show '+(ok?'ok':'ng');
-      fb.innerHTML=ok
-        ?'<div class="qfb-main">✅ Correct!</div>'
-        :'<div class="qfb-main">❌ The answer was <b>'+q.o[q.c]+'</b></div>'
-         +(q.e?'<div class="qfb-explain">'+q.e+'</div>':'');
-      $("#qnxt").classList.add('show');
+      setTimeout(function(){s.qi++;if(s.qi<total)self.renderFsceQ();else self.renderForm();},400);
     }
     $$('.qo',mbody).forEach(function(b){b.addEventListener('click',function(){answer(+b.dataset.i);});});
     self._answerFn=answer;
-    $("#qnxt").addEventListener('click',function(){if(!done)return;s.qi++;if(s.qi<total)self.renderFsceQ();else self.renderForm();});
   },
 
   /* ── SIGHT WORDS ── */
@@ -2239,6 +2225,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
       <a href="#stripe-english" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜 English only — £5/month</a>
       <a href="#stripe-maths-english" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜🔢 English + Maths — £8/month</a>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2d3a;">
+      <p style="font-size:13px;color:#8b90a8;margin-bottom:10px;">Just want your score?</p>
+      <button id="sub-email-score" style="width:100%;background:transparent;border:1.5px solid #4b5673;color:#e8eaf2;font-weight:600;font-size:14px;padding:12px 20px;border-radius:12px;cursor:pointer;">
+        📩 Email me my score
+      </button>
     </div>
     <p style="font-size:12px;color:#8692a6;">Cancel anytime. Secure payment via Stripe.</p>
   </div>
