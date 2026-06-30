@@ -548,6 +548,8 @@
   #scgmm .msum{font-size:34px;}
   #scgmm .fsce-card{padding:28px 22px;}
 }
+#scgmm-subscribe #sub-btn-english:hover { filter: brightness(1.12); }
+#scgmm-subscribe #sub-btn-both:hover { filter: brightness(1.08); }
 </style>
 
 <!-- ═══ HERO ═══ -->
@@ -852,6 +854,13 @@ var Store={
   clear:function(){try{localStorage.removeItem(SK);}catch(e){} Admin.refresh();}
 };
 
+var FreeUsage = {
+  _key: 'scgMM2_free_used',
+  get: function() { try { return JSON.parse(localStorage.getItem(this._key) || '{"english":0,"maths":0}'); } catch(e) { return {english:0,maths:0}; } },
+  inc: function(type) { var d=this.get(); d[type]=(d[type]||0)+1; try{localStorage.setItem(this._key,JSON.stringify(d));}catch(e){} },
+  hasUsedFree: function(type) { return this.get()[type] >= 1; }
+};
+
 /* ═══ PHONICS UNLOCK STATE ══════════════════════════════════════════════ */
 var Unlocks={
   get:function(){try{return JSON.parse(localStorage.getItem(UK)||'[1]');}catch(e){return[1];}},
@@ -905,6 +914,17 @@ $("#a-hi").addEventListener('click',function(){Admin.hide();});
 if(location.hash==='#scg-admin')Admin.show();
 window.addEventListener('hashchange',function(){if(location.hash==='#scg-admin')Admin.show();});
 document.addEventListener('keydown',function(e){if(e.ctrlKey&&e.shiftKey&&(e.key==='E'||e.key==='e')){e.preventDefault();Admin.show();}});
+
+function showSubscribeModal() {
+  var m = document.getElementById('scgmm-subscribe');
+  m.style.display = 'flex';
+  document.getElementById('scgmm-sub-close').onclick = function() {
+    m.style.display = 'none';
+  };
+  m.addEventListener('click', function(e) {
+    if (e.target === m) m.style.display = 'none';
+  });
+}
 
 /* ═══ NAVIGATION ════════════════════════════════════════════════════════ */
 var navStack=[]; // track history for directional transitions
@@ -1141,7 +1161,13 @@ function goActivities(year,subj){
       '<h4>🔀 Mixed Questions</h4>'+
       '<div class="apreview">Questions from all '+comps.length+' stories jumbled at random — great for revision!</div>'+
       '<div class="aft"><span>📝 10 questions · All stories</span><span class="ago">Start '+arr()+'</span></div>';
-    _mx.addEventListener('click',function(){Q.startMixedComp(comps,a,year);});
+    _mx.addEventListener('click', function() {
+      if (year === 1 && FreeUsage.hasUsedFree('english')) {
+        showSubscribeModal();
+        return;
+      }
+      Q.startMixedComp(comps, a, year);
+    });
     grid.appendChild(_mx);
     comps.forEach(function(c,i){
       var card=document.createElement('div');card.className='ac';
@@ -1157,7 +1183,24 @@ function goActivities(year,subj){
           '<span>🔊 Read-aloud · '+c.time+'</span>'+
           '<span class="ago">Start '+arr()+'</span>'+
         '</div>';
-      card.addEventListener('click',function(){Q.startComp(c,a,year);});
+      if (year === 1 && i > 0) {
+        card.querySelector('h4').innerHTML = '🔒 ' + card.querySelector('h4').innerHTML;
+        if (FreeUsage.hasUsedFree('english')) card.style.opacity = '0.6';
+      }
+      card.addEventListener('click', (function(idx, comp) {
+        return function() {
+          if (year === 1 && idx > 0) {
+            if (FreeUsage.hasUsedFree('english')) {
+              showSubscribeModal();
+              return;
+            }
+          }
+          if (year === 1 && idx === 0) {
+            FreeUsage.inc('english');
+          }
+          Q.startComp(comp, a, year);
+        };
+      })(i, c));
       grid.appendChild(card);
     });
     body.appendChild(grid);
@@ -2212,5 +2255,18 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
 
 })();
 </script>
+</div>
+<div id="scgmm-subscribe" style="display:none;position:fixed;inset:0;z-index:99998;align-items:center;justify-content:center;background:rgba(12,18,52,.65);backdrop-filter:blur(6px);padding:20px;">
+  <div style="background:#fff;border-radius:24px;max-width:480px;width:100%;padding:40px 32px;text-align:center;box-shadow:0 32px 80px -20px rgba(12,18,52,.5);position:relative;">
+    <button id="scgmm-sub-close" style="position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:#f4f6fc;border:none;font-size:18px;cursor:pointer;color:#8692a6;">✕</button>
+    <div style="font-size:48px;margin-bottom:12px;">🔒</div>
+    <h2 style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:900;color:#1a2870;margin-bottom:8px;">Unlock all activities</h2>
+    <p style="font-size:15px;color:#4b5673;margin-bottom:28px;line-height:1.6;">You've used your free activity. Subscribe to access all comprehensions and maths topics.</p>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
+      <a href="#stripe-english" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜 English only — £5/month</a>
+      <a href="#stripe-maths-english" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜🔢 English + Maths — £8/month</a>
+    </div>
+    <p style="font-size:12px;color:#8692a6;">Cancel anytime. Secure payment via Stripe.</p>
+  </div>
 </div>
 <!-- SCGMM:END -->
