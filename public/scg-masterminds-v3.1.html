@@ -711,6 +711,28 @@ auth.onAuthStateChanged(function(user) {
   updateAuthNav();
 });
 
+// Maps letter → string that TTS pronounces as the phoneme sound
+var PHONEME_MAP = {
+  // Phase 1 — SATPIN
+  's': 'ssss',   'a': 'ah',    't': 'tuh',
+  'p': 'puh',    'i': 'ih',    'n': 'nnn',
+  // Phase 2 — CKEHRMD
+  'c': 'cuh',    'k': 'cuh',   'e': 'eh',
+  'h': 'huh',    'r': 'rrr',   'm': 'mmm',   'd': 'duh',
+  // Phase 3 — GOULFB
+  'g': 'guh',    'o': 'oh',    'u': 'uh',
+  'l': 'lll',    'f': 'fff',   'b': 'buh',
+  // Phase 4 — AIJOSZ
+  'j': 'juh',    'v': 'vvv',   'w': 'wuh',
+  'x': 'ksss',   'y': 'yuh',   'z': 'zzz',
+  // Phase 5 — QU, digraphs treated as units
+  'q': 'kwuh'
+};
+
+function ph(letter) {
+  return PHONEME_MAP[letter.toLowerCase()] || letter;
+}
+
 /* ═══ CONFIG ═══════════════════════════════════════════════════════════════ */
 var ENDPOINT = "https://script.google.com/macros/s/AKfycbxC-xu7so3anuhrzgvmB91QgApHVK7Fa4ikAwHOQLf9Z25nz-7Z1QuUsn6aWIGCyk4F/exec";
 /* ══════════════════════════════════════════════════════════════════════════ */
@@ -2021,7 +2043,7 @@ var Q={
     var target=s.qs[s.qi];
     var self=this;
     var mb=document.getElementById('mbody');
-    setTimeout(function(){Sp.speak([target]);},300);
+    setTimeout(function(){Sp.speak([ph(target)]);},300);
     mb.innerHTML=
       '<div style="text-align:center;padding:32px 16px 0">'+
         '<p style="font-size:15px;color:#8692a6;margin-bottom:8px;">Letter '+((s.qi+1))+' of '+s.qs.length+'</p>'+
@@ -2034,7 +2056,7 @@ var Q={
           ((s.qi+1<s.qs.length)?'Next →':'Finish ✓')+
         '</button>'+
       '</div>';
-    document.getElementById('plr-speak').addEventListener('click',function(){Sp.speak([target]);});
+    document.getElementById('plr-speak').addEventListener('click',function(){Sp.speak([ph(target)]);});
     document.getElementById('plr-next').addEventListener('click',function(){
       s.qi++;
       self.renderPhLetterRec();
@@ -2061,7 +2083,7 @@ var Q={
     var opts=shuffle([target].concat(distractors));
     var self=this;
     var mb=document.getElementById('mbody');
-    setTimeout(function(){Sp.speak([target]);},300);
+    setTimeout(function(){Sp.speak([ph(target)]);},300);
     mb.innerHTML=
       '<div style="text-align:center;padding:28px 16px 0">'+
         '<p style="font-size:16px;color:#666;margin-bottom:10px">Question '+(s.qi+1)+' of '+s.qs.length+'</p>'+
@@ -2074,7 +2096,7 @@ var Q={
         '</div>'+
         '<div id="plc-fb" style="margin-top:22px;min-height:48px"></div>'+
       '</div>';
-    document.getElementById('plc-speak').addEventListener('click',function(){Sp.speak([target]);});
+    document.getElementById('plc-speak').addEventListener('click',function(){Sp.speak([ph(target)]);});
     var btns=document.querySelectorAll('#plc-opts button');
     btns.forEach(function(btn){
       btn.addEventListener('click',function(){
