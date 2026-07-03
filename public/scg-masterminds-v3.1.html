@@ -585,14 +585,9 @@
     </button>
   </div>
   <div class="wrap">
-    <h1>SCG Masterminds</h1>
-    <p class="h-lead">Built by tutors. Loved by kids.</p>
+    <img src="masterminds-logo.jpeg" alt="SCG Masterminds" style="height:60px;max-width:280px;object-fit:contain;margin-bottom:8px;">
+    <p class="h-lead">A tutor-led learning programme designed especially for children in Years 1, 2 and 3.</p>
     <div class="hero-img-placeholder"></div>
-    <div class="h-stats">
-      <div class="h-stat"><b>15</b><span>Comprehensions</span></div>
-      <div class="h-stat"><b>Phonics</b><span>Phases 1–5</span></div>
-      <div class="h-stat"><b>12</b><span>Maths topics</span></div>
-    </div>
   </div>
 </div>
 
@@ -796,6 +791,7 @@ var PHONICS=[
 var Y1MOPS=[
   {k:"nb10",n:"Number Bonds to 10",s:"= 10",d:"Find the missing number that makes 10"},
   {k:"nb20",n:"Number Bonds to 20",s:"= 20",d:"Find the missing number that makes 20"},
+  {k:"nb100",n:"Number Bonds to 100",s:"= 100",d:"Find the missing number that makes 100"},
   {k:"10more",n:"10 More",s:"+10",d:"Add 10 to numbers up to 90"},
   {k:"10less",n:"10 Less",s:"−10",d:"Take away 10 from numbers up to 100"}
 ];
@@ -875,13 +871,13 @@ var FQ_BANK=[
 
 /* ═══ DATA: FAQ ═════════════════════════════════════════════════════════ */
 var FAQ=[
-["🆓","Is SCG Masterminds really free?","Yes, every comprehension, maths round and the 11+ mini-paper is completely free. It's our way of supporting families building strong early foundations."],
+["🆓","Is SCG Masterminds really free?","Reception phonics games are completely free with no account needed. For Year 1 and above, a free account gives you 5 questions to try. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
 ["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
-["📊","What happens to my child's score?","After each quiz you enter the parent's name and email. A full results report, including a question-by-question breakdown, is saved on the device and can be downloaded as a spreadsheet at any time."],
-["📅","Which year groups are covered?","Reception (Phonics Phases 1–5 with 3 games each), Year 1 (5 comprehensions + 4 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions + 4 maths topics). A Year 6 SATs section and full 11+ FSCE programme are coming soon."],
+["📊","What happens to my child's score?","At the end of each quiz a full results report — including a question-by-question breakdown — is emailed directly to you. Create a free account to save progress and track scores over time."],
+["📅","Which year groups are covered?","Reception (Phonics Phases 1–5 with 3 games each), Year 1 (5 comprehensions + 4 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions + 4 maths topics). Year 6 SATs and 11+ FSCE sections are coming soon."],
 ["🔁","Can my child do a quiz more than once?","Absolutely. Practice makes progress! Any story or maths round can be replayed as many times as you like."],
-["📱","Will it work on a phone or tablet?","Yes, the whole section is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
-["✉️","How is my email used?","Your email is used to save your child's results and keep you informed about SCG Tuitions courses and resources. You can ask to be removed at any time."]
+["📱","Will it work on a phone or tablet?","Yes, the whole platform is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
+["✉️","How is my email used?","Your email is used to create your account and to receive your child's score reports after each quiz. We never share it with third parties. You can ask to be removed at any time."]
 ];
 
 /* ═══ STORAGE ═══════════════════════════════════════════════════════════ */
@@ -978,7 +974,29 @@ function showSubscribeModal() {
     m.style.display = 'none';
     Q.renderForm();
   });
+  initSubTC();
 }
+
+function initSubTC() {
+  var cb = document.getElementById('sub-tc-check');
+  if (!cb) return;
+  cb.checked = false;
+  ['sub-btn-english','sub-btn-both'].forEach(function(id){
+    var btn = document.getElementById(id);
+    if(btn){ btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
+  });
+  cb.addEventListener('change', function() {
+    ['sub-btn-english','sub-btn-both'].forEach(function(id){
+      var btn = document.getElementById(id);
+      if(btn){ btn.disabled = !cb.checked; btn.style.opacity = cb.checked ? '1' : '0.5'; btn.style.pointerEvents = cb.checked ? 'auto' : 'none'; }
+    });
+  });
+}
+
+function openTCModal() {
+  alert('Terms & Conditions\n\nBy subscribing you agree to:\n• Monthly rolling subscription, cancel any time\n• No refunds for partial months\n• Access is for personal/family use only\n• SCG Tuitions reserves the right to update content\n\nFor queries: info@scgtuitions.co.uk');
+}
+window.openTCModal = openTCModal;
 
 function updateAuthNav() {
   var btn = document.getElementById('auth-nav-btn');
@@ -1240,8 +1258,8 @@ function goSubjects(year){
      desc:year===1?'Simple read-aloud stories for Year 1. Listen to the story then answer questions.':'Read-aloud comprehension stories. The device reads to your child sentence by sentence, then questions follow.',
      cnt:'5 stories',action:function(){goActivities(year,'english');}},
     {ico:'🔢',bg:as,name:'Maths',
-     desc:year===1?'Number bonds to 10. Try to get all 9 right!':'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',
-     cnt:year===1?'1 skill':'4 skills',action:function(){goActivities(year,'maths');}}
+     desc:year===1?'Number bonds to 10, 20 and 100. Try to get all questions right!':'Quick-fire number skills: addition, subtraction, multiplication and division. 10 questions each.',
+     cnt:year===1?'3 skills':'4 skills',action:function(){goActivities(year,'maths');}}
   ];
   if(year===3) subjects.push({ico:'🎓',bg:'#eef2ff',name:'11+ FSCE',desc:'Mixed mini-paper, Maths Reasoning and Comprehension. 10 questions chosen at random from a bank of 66.',cnt:'66-Q bank',action:function(){goActivities(year,'fsce');}});
   subjects.forEach(function(sub){
@@ -1296,7 +1314,6 @@ function goActivities(year,subj){
       }
       Q.startMixedComp(comps, a, year);
     });
-    grid.appendChild(_mx);
     comps.forEach(function(c,i){
       var card=document.createElement('div');card.className='ac';
       card.style.setProperty('--ac',a);card.style.setProperty('--acs',as);
@@ -1331,13 +1348,14 @@ function goActivities(year,subj){
       })(i, c));
       grid.appendChild(card);
     });
+    grid.appendChild(_mx);
     body.appendChild(grid);
 
   } else if(subj==='maths'){
     title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check, or press Enter.</p>';
     var mgrid=document.createElement('div');mgrid.className='mop-grid';
     var mcols=['#1a2870','#27ae60','#00b4c8','#e8781a'];
-    var ops=year===1?[Y1MOPS[0]]:MOPS;
+    var ops=year===1?[Y1MOPS[0],Y1MOPS[1],Y1MOPS[2]]:MOPS;
     ops.forEach(function(op,i){
       var mc=mcols[i];
       var card=document.createElement('div');card.className='mop';card.style.setProperty('--mc',mc);
@@ -1697,6 +1715,11 @@ var Q={
         b=20-a;ans=b;txt=a+' + __ = 20';
         e='The missing number is '+b+' because '+a+' + '+b+' = 20';noEq=true;
       }
+      else if(k==='nb100'){
+        if(diff==='easy'){a=ri(10,60);}else if(diff==='medium'){a=ri(0,80);}else{a=ri(0,99);}
+        b=100-a;ans=b;txt=a+' + __ = 100';
+        e='The missing number is '+b+' because '+a+' + '+b+' = 100';noEq=true;
+      }
       else if(k==='10more'){
         if(diff==='easy'){a=ri(1,29);}else if(diff==='medium'){a=ri(1,59);}else{a=ri(1,89);}
         ans=a+10;txt='10 more than '+a;
@@ -1813,10 +1836,12 @@ var Q={
       $$('.mopt',mbody).forEach(function(b,j){
         b.classList.add('locked');
       });
-      FreeUsage.incMaths();
-      if(FreeUsage.mathsQUsed()>=5){
-        setTimeout(function(){showSubscribeModal();},400);
-        return;
+      if(s.year===1){
+        FreeUsage.incMaths();
+        if(FreeUsage.mathsQUsed()>=5){
+          setTimeout(function(){showSubscribeModal();},400);
+          return;
+        }
       }
       setTimeout(function(){s.qi++;if(s.qi<total)self.renderMathsQ();else self.renderForm();},400);
     }
@@ -1829,7 +1854,7 @@ var Q={
   /* ── FSCE ── */
   startFsce:function(){
     this.st={type:'fsce',ac:'#1a2870',section:'11+ FSCE',quizTitle:'FSCE Mini-Paper',
-      qs:shuffle(FQ_BANK).slice(0,10),qi:0,answers:[],correct:0};
+      qs:shuffle(FQ_BANK.slice()).slice(0,10),qi:0,answers:[],correct:0};
     this.open('#1a2870','🎓','FSCE Mini-Paper','11+ · mixed sections');
     this.renderFsceIntro();
   },
@@ -1915,10 +1940,7 @@ var Q={
   /* ── PHASE 1: LETTER RECOGNISE ── */
   startPhonicsLetterRecognise:function(phase,col){
     var ltrs=phase.letters||['s','a','t','p','i','n'];
-    /* build 10 rounds cycling through letters */
-    var qs=[];
-    while(qs.length<10){qs=qs.concat(shuffle(ltrs.slice()));}
-    qs=qs.slice(0,10);
+    var qs=ltrs.slice();
     this.st={type:'phletterrec',ac:col,phase:phase,qs:qs,qi:0,correct:0,answers:[],
       section:'Phonics '+phase.name,quizTitle:phase.name+' · Recognise Sounds'};
     this.open(col,'🔤','Recognise Sounds','Phase 1 · Letters');
@@ -1928,40 +1950,25 @@ var Q={
     var s=this.st;
     if(s.qi>=s.qs.length){this.renderForm();return;}
     var target=s.qs[s.qi];
-    var ltrs=s.phase.letters||['s','a','t','p','i','n'];
     var self=this;
     var mb=document.getElementById('mbody');
     setTimeout(function(){Sp.speak([target]);},300);
     mb.innerHTML=
-      '<div style="text-align:center;padding:28px 16px 0">'+
-        '<p style="font-size:16px;color:#666;margin-bottom:10px">Question '+(s.qi+1)+' of '+s.qs.length+'</p>'+
-        '<p style="font-size:20px;font-weight:700;color:#1a2870;margin-bottom:18px">Tap the letter you hear</p>'+
-        '<button style="background:#1a2870;color:#fff;border:none;border-radius:12px;padding:10px 26px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:28px" id="plr-speak">🔊 Hear it again</button>'+
-        '<div style="display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:360px;margin:0 auto" id="plr-tiles">'+
-        ltrs.map(function(l){
-          return '<button style="width:72px;height:72px;border-radius:14px;font-size:36px;font-weight:800;background:#f4f6fc;border:2px solid #e4e8f5;cursor:pointer;color:#1a2870;transition:transform .1s,background .1s" data-l="'+l+'">'+l+'</button>';
-        }).join('')+
+      '<div style="text-align:center;padding:32px 16px 0">'+
+        '<p style="font-size:15px;color:#8692a6;margin-bottom:8px;">Letter '+((s.qi+1))+' of '+s.qs.length+'</p>'+
+        '<div style="width:160px;height:160px;border-radius:24px;background:#1a2870;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;box-shadow:0 8px 0 rgba(0,0,0,0.2);">'+
+          '<span style="font-size:80px;font-weight:900;color:#fff;font-family:Poppins,sans-serif;">'+target+'</span>'+
         '</div>'+
-        '<div id="plr-fb" style="margin-top:22px;min-height:48px"></div>'+
+        '<button id="plr-speak" style="background:#f4f6fc;border:2px solid #e4e8f5;border-radius:12px;padding:10px 22px;font-size:15px;font-weight:700;cursor:pointer;color:#1a2870;margin-bottom:28px;">🔊 Hear it again</button>'+
+        '<br>'+
+        '<button id="plr-next" style="background:#27ae60;color:#fff;border:none;border-radius:12px;padding:14px 36px;font-size:16px;font-weight:700;cursor:pointer;">'+
+          ((s.qi+1<s.qs.length)?'Next →':'Finish ✓')+
+        '</button>'+
       '</div>';
     document.getElementById('plr-speak').addEventListener('click',function(){Sp.speak([target]);});
-    var tiles=document.querySelectorAll('#plr-tiles button');
-    tiles.forEach(function(btn){
-      btn.addEventListener('click',function(){
-        tiles.forEach(function(b){b.disabled=true;});
-        var chosen=this.getAttribute('data-l');
-        var correct=(chosen===target);
-        if(correct){s.correct++;this.style.background='#22c55e';this.style.color='#fff';this.style.borderColor='#16a34a';}
-        else{this.style.background='#ef4444';this.style.color='#fff';this.style.borderColor='#dc2626';
-          /* highlight correct */
-          tiles.forEach(function(b){if(b.getAttribute('data-l')===target){b.style.background='#22c55e';b.style.color='#fff';b.style.borderColor='#16a34a';}});
-        }
-        s.answers.push({q:'Sound: '+target,correct:correct,chosen:chosen});
-        var fb=document.getElementById('plr-fb');
-        fb.innerHTML='<p style="font-size:22px;font-weight:800;color:'+(correct?'#16a34a':'#dc2626')+'">'+(correct?'✅ Correct!':'❌ The answer was '+target)+'</p>';
-        s.qi++;
-        setTimeout(function(){self.renderPhLetterRec();},1100);
-      });
+    document.getElementById('plr-next').addEventListener('click',function(){
+      s.qi++;
+      self.renderPhLetterRec();
     });
   },
 
@@ -2346,9 +2353,15 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
     <div style="font-size:48px;margin-bottom:12px;">🔒</div>
     <h2 style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:900;color:#e8eaf2;margin-bottom:8px;">Unlock all activities</h2>
     <p style="font-size:15px;color:#8b90a8;margin-bottom:28px;line-height:1.6;">You've used your free activity. Subscribe to access all comprehensions and maths topics.</p>
+    <div style="margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;">
+      <input type="checkbox" id="sub-tc-check" style="margin-top:3px;width:16px;height:16px;cursor:pointer;flex-shrink:0;">
+      <label for="sub-tc-check" style="font-size:13px;color:#8b90a8;cursor:pointer;line-height:1.5;">
+        I agree to the <a href="#" onclick="openTCModal();return false;" style="color:#60a5fa;font-weight:700;">Terms &amp; Conditions</a>
+      </label>
+    </div>
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
-      <a href="#stripe-english" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜 English only — £5/month</a>
-      <a href="#stripe-maths-english" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;">📜🔢 English + Maths — £8/month</a>
+      <a href="#stripe-english" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜 English only — £5/month</a>
+      <a href="#stripe-maths-english" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜🔢 English + Maths — £8/month</a>
     </div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2d3a;">
       <p style="font-size:13px;color:#8b90a8;margin-bottom:10px;">Just want your score?</p>
