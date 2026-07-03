@@ -48,27 +48,18 @@
 
 /* ═══════ HERO ═══════ */
 #scgmm .hero{
-  position:relative;overflow:hidden;padding:60px 0 70px;color:#fff;
-  background:#0d1b2a;
+  position:relative;overflow:hidden;padding:60px 0 70px;color:#0d1b2a;
+  background:#f6fbf8;
 }
 #scgmm .hero .wrap{position:relative;z-index:2;}
 #scgmm .hero h1{
-  color:#fff;font-size:clamp(32px,5.5vw,56px);font-weight:900;
+  color:#0d1b2a;font-size:clamp(32px,5.5vw,56px);font-weight:900;
   letter-spacing:-.02em;margin-bottom:14px;
 }
 #scgmm .hero h1 em{
-  font-style:normal;color:#fff;
+  font-style:normal;color:#0d1b2a;
 }
-#scgmm .h-lead{font-size:clamp(15px,1.8vw,18px);color:#8b90a8;max-width:580px;margin-bottom:32px;}
-#scgmm .h-stats{display:flex;flex-wrap:wrap;gap:12px;}
-#scgmm .h-stat{
-  background:#1a2e44;border:1.5px solid #2a4a6b;
-  border-radius:14px;padding:14px 18px;
-  transition:background .2s,border-color .2s;
-}
-#scgmm .h-stat:hover{background:#1f3550;border-color:#3a5a7b;}
-#scgmm .h-stat b{display:block;font-family:'Poppins';font-size:22px;font-weight:800;color:#60a5fa;line-height:1.1;}
-#scgmm .h-stat span{font-size:12px;color:#94a3b8;}
+#scgmm .h-lead{font-size:clamp(15px,1.8vw,18px);color:#4b5673;max-width:580px;margin-bottom:32px;}
 
 /* ═══════ BREADCRUMB ═══════ */
 #scgmm .bc{display:flex;align-items:center;flex-wrap:wrap;gap:5px;padding:18px 0 2px;font-size:13.5px;color:var(--muted);}
@@ -529,11 +520,9 @@
 
   /* 2. Hero */
   #scgmm .hero{padding:32px 0 36px;}
-  #scgmm .hero h1{font-size:28px;}
+  #scgmm .hero .wrap > div { flex-direction: column !important; }
+  #scgmm .hero .wrap > div > div:last-child { width: 100% !important; max-width: 100% !important; }
   #scgmm .h-lead{font-size:14px;}
-  #scgmm .h-stats{gap:8px;}
-  #scgmm .h-stat{padding:10px 14px;}
-  #scgmm .h-stat b{font-size:16px;}
 
   /* 3. Modal (quiz screen) */
   #scgmm-modal{padding:0;align-items:flex-end;}
@@ -580,14 +569,33 @@
 <div class="hero">
   <div style="position:absolute;top:16px;right:22px;z-index:10;">
     <button id="auth-nav-btn" onclick="openAuthModal('signin')"
-      style="background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.2);color:#fff;font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer;transition:background .15s;">
+      style="background:#1a2870;border:none;color:#fff;font-weight:700;font-size:13px;padding:8px 18px;border-radius:999px;cursor:pointer;transition:background .15s;">
       Sign in
     </button>
   </div>
   <div class="wrap">
-    <img src="masterminds-logo.jpeg" alt="SCG Masterminds" style="height:60px;max-width:280px;object-fit:contain;margin-bottom:8px;">
-    <p class="h-lead">A tutor-led learning programme designed especially for children in Years 1, 2 and 3.</p>
-    <div class="hero-img-placeholder"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:32px;padding:40px 0;">
+
+      <!-- Left: text -->
+      <div style="flex:1;min-width:0;">
+        <img src="masterminds-logo.jpeg" alt="SCG Masterminds" style="height:56px;max-width:260px;object-fit:contain;margin-bottom:20px;display:block;">
+        <p style="font-size:16px;font-weight:600;color:#0d1b2a;line-height:1.7;margin-bottom:12px;">
+          SCG Masterminds is a tutor-led learning programme designed especially for children in Years 1, 2 and 3. Our sessions bring together expert tutors and young learners in a supportive, engaging environment where curiosity is encouraged and confidence is built one step at a time.
+        </p>
+        <p style="font-size:15px;color:#4b5673;line-height:1.7;margin-bottom:12px;">
+          At this stage, children are forming the foundations that will shape their learning journey for years to come, and that's exactly where our focus lies. Through small-group, tutor-led sessions, we help children strengthen their core skills in a way that feels encouraging rather than overwhelming, with plenty of one-on-one attention along the way.
+        </p>
+        <p style="font-size:15px;color:#4b5673;line-height:1.7;">
+          Every child learns differently, and our tutors are there to guide, encourage and adapt to each learner's pace, helping them build not just knowledge, but a genuine love of learning.
+        </p>
+      </div>
+
+      <!-- Right: picture -->
+      <div style="flex-shrink:0;width:380px;max-width:42%;">
+        <img src="masterminds-picture.jpeg" alt="Children learning together" style="width:100%;border-radius:20px;box-shadow:0 12px 40px -8px rgba(12,18,52,.18);display:block;">
+      </div>
+
+    </div>
   </div>
 </div>
 
