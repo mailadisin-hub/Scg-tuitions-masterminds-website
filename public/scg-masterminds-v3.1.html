@@ -2180,9 +2180,10 @@ var Q={
         else{this.style.background='#ef4444';this.style.color='#fff';this.style.borderColor='#dc2626';
           btns.forEach(function(b){if(b.getAttribute('data-l')===target){b.style.background='#22c55e';b.style.color='#fff';b.style.borderColor='#16a34a';}});
         }
+        if(correct)s.correct++;
         s.answers.push({q:'Sound: '+target,ok:correct,chosen:chosen});
         var fb=document.getElementById('plc-fb');
-        fb.innerHTML='<p style="font-size:22px;font-weight:800;color:'+(correct?'#16a34a':'#dc2626')+'">'+(correct?'✅ Correct!':'❌ It was '+target)+'</p>';
+        fb.innerHTML='<p style="font-size:22px;font-weight:800;color:'+(correct?'#16a34a':'#dc2626')+'">'+(correct?'&#x2705; Correct!':'&#x274C; It was '+target)+'</p>';
         s.qi++;
         setTimeout(function(){self.renderPhLetterChoose();},1100);
       });
