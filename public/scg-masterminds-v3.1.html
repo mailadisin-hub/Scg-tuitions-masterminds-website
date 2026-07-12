@@ -1605,6 +1605,10 @@ var Q={
   },
   prog:function(p){mbar.style.width=Math.max(0,Math.min(100,p))+'%';},
   total:function(){var s=this.st;return s.type==='maths'?s.qs.length:s.qs.length;},
+  /* denominator for the score: questions actually answered (so a quiz cut short
+     by the paywall reports e.g. 3/5, not 3/10). Falls back to full length for
+     games that record no per-question answers (e.g. letter recognise). */
+  scoredTotal:function(){var s=this.st;return(s.answers&&s.answers.length)?s.answers.length:this.total();},
 
   /* dots for question progress */
   dots:function(total,qi,answers){
@@ -2354,7 +2358,7 @@ var Q={
   /* ── PARENT FORM ── */
   scoreColor:function(p){return p>=80?'#27ae60':p>=50?'#e8781a':'#d33';},
   renderForm:function(){
-    var s=this.st,tot=this.total(),pct=Math.round((s.correct/tot)*100);
+    var s=this.st,tot=this.scoredTotal(),pct=Math.round((s.correct/tot)*100);
     this.prog(88);
     var sv=Store.parent()||{};
     var col=this.scoreColor(pct);
@@ -2390,7 +2394,7 @@ var Q={
 
   /* ── RESULTS ── */
   renderDone:function(par){
-    var s=this.st,tot=this.total(),pct=Math.round((s.correct/tot)*100);
+    var s=this.st,tot=this.scoredTotal(),pct=Math.round((s.correct/tot)*100);
     this.prog(100);
 
     if (!currentUser) {
