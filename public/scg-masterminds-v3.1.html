@@ -979,7 +979,7 @@ var FQ_BANK=[
 
 /* ═══ DATA: FAQ ═════════════════════════════════════════════════════════ */
 var FAQ=[
-["🆓","Is SCG Masterminds really free?","Reception phonics games are completely free with no account needed. For Year 1 and above, a free account gives you 5 questions to try. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
+["🆓","Is SCG Masterminds really free?","Reception phonics games are completely free with no account needed. Everyone also gets a free taster — one full English comprehension and 10 maths questions (1 credit per question) to try across the whole site. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
 ["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
 ["📊","What happens to my child's score?","At the end of each quiz a full results report — including a question-by-question breakdown — is emailed directly to you. Create a free account to save progress and track scores over time."],
 ["📅","Which year groups are covered?","Reception (Phonics Phases 1–5 with 3 games each), Year 1 (5 comprehensions + 3 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions, 4 maths topics plus the 11+ FSCE mini-paper drawn from a 500+ question bank). Year 6 SATs preparation is coming soon."],
@@ -1008,14 +1008,20 @@ var Store={
 
 var FreeUsage = {
   _key: 'scgMM2_free_used',
+  ENGLISH_FREE: 1,    // free English comprehensions for the free tier (across all years)
+  MATHS_CREDITS: 10,  // free maths credits for the free tier — 1 credit per question (across all years)
   get: function() { try { return JSON.parse(localStorage.getItem(this._key) || '{"english":0,"maths":0}'); } catch(e) { return {english:0,maths:0}; } },
   inc: function(type) { var d=this.get(); d[type]=(d[type]||0)+1; try{localStorage.setItem(this._key,JSON.stringify(d));}catch(e){} },
-  hasUsedFree: function(type) { return this.get()[type] >= 1; },
+  hasUsedFree: function(type) { return this.get()[type] >= this.ENGLISH_FREE; },
   mathsQUsed: function() { return this.get().maths || 0; },
+  mathsCreditsLeft: function() { return Math.max(0, this.MATHS_CREDITS - this.mathsQUsed()); },
+  mathsExhausted: function() { return this.mathsQUsed() >= this.MATHS_CREDITS; },
   incMaths: function() { this.inc('maths'); },
-  isExempt: function() {
+  isExempt: function(type) {
     var tier = localStorage.getItem('scgMM2_tier') || 'free';
-    return tier === 'english' || tier === 'max';
+    if (tier === 'max') return true;          // English + Maths subscription
+    if (tier === 'english') return type === 'english'; // English-only subscription
+    return false;                              // free tier
   }
 };
 
@@ -1463,20 +1469,25 @@ function goActivities(year,subj){
   if(subj==='english'){
     title.innerHTML='<div class="ey">Year '+year+' · English</div><h2>Choose a story</h2><p>The story is read aloud by your device, sentence by sentence with the current line highlighted. Then 5 questions, mark instantly.</p>';
     var comps=year===1?CY1:(year===2?CY2:CY3);
+    // Free tier: one comprehension in total (across all years). Once used, every
+    // story and the mixed round are locked behind the subscribe modal.
+    var engLocked = !FreeUsage.isExempt('english') && FreeUsage.hasUsedFree('english');
+    function startEnglish(fn) {
+      if (!FreeUsage.isExempt('english') && FreeUsage.hasUsedFree('english')) { showSubscribeModal(); return; }
+      if (!FreeUsage.isExempt('english')) FreeUsage.inc('english');
+      fn();
+    }
     var grid=document.createElement('div');grid.className='act-grid';
     var _mx=document.createElement('div');_mx.className='ac mix-card';
     _mx.style.setProperty('--ac',a);_mx.style.setProperty('--acs',as);
     _mx.innerHTML=
       '<div class="atp"><span class="anum">🎲</span><div class="atp-r"><span class="atag">All Stories</span></div></div>'+
-      '<h4>🔀 Mixed Questions</h4>'+
+      '<h4>'+(engLocked?'🔒 ':'')+'🔀 Mixed Questions</h4>'+
       '<div class="apreview">Questions from all '+comps.length+' stories jumbled at random — great for revision!</div>'+
       '<div class="aft"><span>📝 10 questions · All stories</span><span class="ago">Start '+arr()+'</span></div>';
+    if (engLocked) _mx.style.opacity = '0.6';
     _mx.addEventListener('click', function() {
-      if (year === 1 && !FreeUsage.isExempt() && FreeUsage.hasUsedFree('english')) {
-        showSubscribeModal();
-        return;
-      }
-      Q.startMixedComp(comps, a, year);
+      startEnglish(function(){ Q.startMixedComp(comps, a, year); });
     });
     comps.forEach(function(c,i){
       var card=document.createElement('div');card.className='ac';
@@ -1486,51 +1497,46 @@ function goActivities(year,subj){
         '<div class="atp"><span class="anum">'+(i+1)+'</span>'+
           '<div class="atp-r">'+(b?'<span class="star-pill">★ '+b+'%</span>':'')+'<span class="atag">Year '+year+'</span></div>'+
         '</div>'+
-        '<h4>'+c.emoji+' '+c.title+'</h4>'+
+        '<h4>'+(engLocked?'🔒 ':'')+c.emoji+' '+c.title+'</h4>'+
         '<div class="apreview">'+c.paras[0].slice(0,88)+'…</div>'+
         '<div class="aft">'+
           '<span>🔊 Read-aloud · '+c.time+'</span>'+
           '<span class="ago">Start '+arr()+'</span>'+
         '</div>';
-      if (year === 1 && i > 0) {
-        card.querySelector('h4').innerHTML = '🔒 ' + card.querySelector('h4').innerHTML;
-        if (!FreeUsage.isExempt() && FreeUsage.hasUsedFree('english')) card.style.opacity = '0.6';
-      }
-      card.addEventListener('click', (function(idx, comp) {
+      if (engLocked) card.style.opacity = '0.6';
+      card.addEventListener('click', (function(comp) {
         return function() {
-          if (year === 1 && idx > 0) {
-            if (!FreeUsage.isExempt() && FreeUsage.hasUsedFree('english')) {
-              showSubscribeModal();
-              return;
-            }
-          }
-          if (year === 1 && idx === 0) {
-            FreeUsage.inc('english');
-          }
-          Q.startComp(comp, a, year);
+          startEnglish(function(){ Q.startComp(comp, a, year); });
         };
-      })(i, c));
+      })(c));
       grid.appendChild(card);
     });
     grid.appendChild(_mx);
     body.appendChild(grid);
 
   } else if(subj==='maths'){
-    title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check, or press Enter.</p>';
+    var mLeft = FreeUsage.mathsCreditsLeft(), mExempt = FreeUsage.isExempt('maths');
+    var creditNote = mExempt ? '' : ' <span style="color:var(--gn);font-weight:700">'+mLeft+' free credit'+(mLeft===1?'':'s')+' left</span> · 1 per question.';
+    title.innerHTML='<div class="ey">Year '+year+' · Maths</div><h2>Choose a skill</h2><p>10 randomly generated questions per round. Type each answer and press Check, or press Enter.'+creditNote+'</p>';
     var mgrid=document.createElement('div');mgrid.className='mop-grid';
     var mcols=['#1a2870','#27ae60','#00b4c8','#e8781a'];
     var ops=year===1?[Y1MOPS[0],Y1MOPS[1],Y1MOPS[2]]:MOPS;
+    var mathsLocked = !mExempt && FreeUsage.mathsExhausted();
     ops.forEach(function(op,i){
       var mc=mcols[i];
       var card=document.createElement('div');card.className='mop';card.style.setProperty('--mc',mc);
       var b=bests[op.n+', Year '+year];
       card.innerHTML=
         '<div class="msym" style="color:'+mc+'">'+op.s+'</div>'+
-        '<h4>'+op.n+'</h4>'+
+        '<h4>'+(mathsLocked?'🔒 ':'')+op.n+'</h4>'+
         '<p>'+op.d+'</p>'+
         (b?'<div class="star-pill" style="margin:0 auto 12px">★ Best '+b+'%</div>':'')+
         '<button class="mst" style="background:'+mc+'">Start →</button>';
-      card.addEventListener('click',function(){Q.startMaths(year,op,a);});
+      if (mathsLocked) card.style.opacity = '0.6';
+      card.addEventListener('click',function(){
+        if (!FreeUsage.isExempt('maths') && FreeUsage.mathsExhausted()) { showSubscribeModal(); return; }
+        Q.startMaths(year,op,a);
+      });
       mgrid.appendChild(card);
     });
     body.appendChild(mgrid);
@@ -2004,10 +2010,10 @@ var Q={
       $$('.mopt',mbody).forEach(function(b,j){
         b.classList.add('locked');
       });
-      if(s.year===1 && !FreeUsage.isExempt()){
-        FreeUsage.incMaths();
-        if(FreeUsage.mathsQUsed()>=5){
-          setTimeout(function(){showSubscribeModal();},400);
+      if(!FreeUsage.isExempt('maths')){
+        FreeUsage.incMaths();                 // 1 credit per question, across all years
+        if(FreeUsage.mathsExhausted()){
+          setTimeout(function(){self.renderForm();showSubscribeModal();},400);
           return;
         }
       }
