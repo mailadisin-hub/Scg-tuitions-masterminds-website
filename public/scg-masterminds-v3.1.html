@@ -563,6 +563,83 @@
 }
 #scgmm-subscribe #sub-btn-english:hover { filter: brightness(1.12); }
 #scgmm-subscribe #sub-btn-both:hover { filter: brightness(1.08); }
+
+/* ═══════════ LANDING PAGE (lp-*) ═══════════ */
+#scgmm .lp-badge{display:inline-flex;align-items:center;gap:8px;background:#eaf7ef;color:var(--gn2);
+  font-weight:700;font-size:12.5px;padding:7px 14px;border-radius:999px;margin-bottom:18px;border:1px solid #cdeede;}
+#scgmm .lp-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--gn3);box-shadow:0 0 0 3px rgba(52,212,114,.25);}
+#scgmm .hero h1 .hl{color:var(--gn2);}
+#scgmm .lp-cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 18px;}
+#scgmm .lp-btn{display:inline-flex;align-items:center;gap:8px;background:var(--nv);color:#fff;font-weight:800;
+  font-size:16px;padding:15px 28px;border-radius:14px;box-shadow:var(--sh2);transition:transform .14s,filter .18s;text-decoration:none;}
+#scgmm .lp-btn:hover{transform:translateY(-2px);filter:brightness(1.09);}
+#scgmm .lp-btn.g{background:var(--gn);}
+#scgmm .lp-btn-2{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--nv);font-weight:700;
+  font-size:15px;padding:15px 24px;border-radius:14px;border:2px solid var(--ln);transition:border-color .15s,transform .14s;text-decoration:none;}
+#scgmm .lp-btn-2:hover{border-color:var(--nv);transform:translateY(-2px);}
+#scgmm .lp-trust{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--mid);font-weight:600;}
+#scgmm .lp-trust span{display:inline-flex;align-items:center;gap:6px;}
+#scgmm .lp-trust .ck{color:var(--gn2);font-weight:900;}
+
+#scgmm .lp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 8px;}
+#scgmm .lp-stat{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:20px 16px;text-align:center;box-shadow:var(--sh1);}
+#scgmm .lp-stat b{display:block;font-family:'Poppins',sans-serif;font-size:26px;font-weight:900;color:var(--nv);letter-spacing:-.02em;}
+#scgmm .lp-stat span{font-size:12.5px;color:var(--muted);font-weight:600;}
+
+#scgmm .lp-sec{padding:46px 0 10px;}
+#scgmm .lp-sec-h{text-align:center;max-width:640px;margin:0 auto 30px;}
+#scgmm .lp-sec-h .ey{font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#2563eb;margin-bottom:10px;}
+#scgmm .lp-sec-h h2{font-size:clamp(24px,3.4vw,34px);font-weight:900;letter-spacing:-.02em;}
+#scgmm .lp-sec-h p{color:var(--mid);font-size:15.5px;margin-top:12px;}
+
+#scgmm .lp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:st;}
+#scgmm .lp-step{position:relative;background:#fff;border:1px solid var(--ln);border-radius:18px;padding:26px 22px 22px;box-shadow:var(--sh1);}
+#scgmm .lp-step::before{counter-increment:st;content:counter(st);position:absolute;top:-16px;left:22px;width:38px;height:38px;
+  border-radius:11px;background:var(--nv);color:#fff;font-family:'Poppins';font-weight:800;font-size:17px;display:flex;align-items:center;justify-content:center;box-shadow:var(--sh2);}
+#scgmm .lp-step h4{font-size:17px;font-weight:800;margin:10px 0 8px;}
+#scgmm .lp-step p{font-size:14px;color:var(--mid);}
+
+#scgmm .lp-feats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+#scgmm .lp-feat{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:22px;box-shadow:var(--sh1);transition:transform .14s,box-shadow .18s;}
+#scgmm .lp-feat:hover{transform:translateY(-4px);box-shadow:var(--sh2);}
+#scgmm .lp-feat .ic{font-size:26px;width:50px;height:50px;border-radius:13px;background:var(--sf);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+#scgmm .lp-feat h4{font-size:16.5px;font-weight:800;margin-bottom:6px;}
+#scgmm .lp-feat p{font-size:14px;color:var(--mid);}
+
+#scgmm .lp-price{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch;}
+#scgmm .lp-plan{position:relative;background:#fff;border:1.5px solid var(--ln);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;box-shadow:var(--sh1);}
+#scgmm .lp-plan.feat{border-color:var(--gn);box-shadow:var(--sh2);}
+#scgmm .lp-plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gn);color:#fff;font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;padding:5px 14px;border-radius:999px;}
+#scgmm .lp-plan h3{font-size:18px;font-weight:900;margin-bottom:4px;}
+#scgmm .lp-plan .pr{font-family:'Poppins';font-size:34px;font-weight:900;color:var(--nv);letter-spacing:-.02em;margin:6px 0 2px;}
+#scgmm .lp-plan .pr small{font-size:14px;color:var(--muted);font-weight:600;}
+#scgmm .lp-plan .sub{font-size:13px;color:var(--muted);margin-bottom:16px;}
+#scgmm .lp-plan ul{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:10px;flex:1;}
+#scgmm .lp-plan li{font-size:14px;color:var(--ink);display:flex;gap:9px;align-items:flex-start;}
+#scgmm .lp-plan li::before{content:"✓";color:var(--gn2);font-weight:900;flex-shrink:0;}
+#scgmm .lp-plan li.no{color:var(--muted);}
+#scgmm .lp-plan li.no::before{content:"—";color:var(--muted);}
+#scgmm .lp-plan .pcta{display:block;text-align:center;font-weight:800;font-size:15px;padding:14px;border-radius:13px;text-decoration:none;transition:filter .16s,transform .14s;}
+#scgmm .lp-plan .pcta:hover{filter:brightness(1.08);transform:translateY(-2px);}
+#scgmm .lp-plan .pcta.nv{background:var(--nv);color:#fff;}
+#scgmm .lp-plan .pcta.gn{background:var(--gn);color:#fff;}
+#scgmm .lp-plan .pcta.ghost{background:var(--sf);color:var(--nv);}
+
+#scgmm .lp-quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+#scgmm .lp-quote{background:#fff;border:1px solid var(--ln);border-radius:18px;padding:24px;box-shadow:var(--sh1);}
+#scgmm .lp-quote .stars{color:var(--gd);font-size:15px;letter-spacing:2px;margin-bottom:12px;}
+#scgmm .lp-quote p{font-size:14.5px;color:var(--ink);line-height:1.7;margin-bottom:14px;}
+#scgmm .lp-quote .who{font-size:13px;font-weight:700;color:var(--nv);}
+#scgmm .lp-quote .who span{color:var(--muted);font-weight:500;}
+
+#scgmm .lp-final{margin:48px 0 8px;background:linear-gradient(135deg,#1a2870,#0f1746);border-radius:24px;padding:44px 32px;text-align:center;color:#fff;box-shadow:var(--sh3);}
+#scgmm .lp-final h2{color:#fff;font-size:clamp(24px,3.4vw,32px);font-weight:900;margin-bottom:10px;}
+#scgmm .lp-final p{color:#c7d0f0;font-size:15.5px;max-width:520px;margin:0 auto 22px;}
+
+@media(max-width:820px){
+  #scgmm .lp-steps,#scgmm .lp-feats,#scgmm .lp-price,#scgmm .lp-quotes{grid-template-columns:1fr;}
+  #scgmm .lp-stats{grid-template-columns:1fr 1fr;}
+}
 </style>
 
 <!-- ═══ HERO ═══ -->
@@ -574,25 +651,28 @@
     </button>
   </div>
   <div class="wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:32px;padding:40px 0;">
+    <div style="display:flex;align-items:center;gap:40px;padding:30px 0;flex-wrap:wrap;">
 
       <!-- Left: text -->
-      <div style="flex:1;min-width:0;">
-        <img src="masterminds-logo.jpeg" alt="SCG Masterminds" style="height:92px;max-width:420px;object-fit:contain;margin-bottom:22px;display:block;">
-        <p style="font-size:16px;font-weight:600;color:#0d1b2a;line-height:1.7;margin-bottom:12px;">
-          SCG Masterminds is a tutor-led learning programme designed especially for children in Years 1, 2 and 3. Our sessions bring together expert tutors and young learners in a supportive, engaging environment where curiosity is encouraged and confidence is built one step at a time.
-        </p>
-        <p style="font-size:15px;color:#4b5673;line-height:1.7;margin-bottom:12px;">
-          At this stage, children are forming the foundations that will shape their learning journey for years to come, and that's exactly where our focus lies. Through small-group, tutor-led sessions, we help children strengthen their core skills in a way that feels encouraging rather than overwhelming, with plenty of one-on-one attention along the way.
-        </p>
-        <p style="font-size:15px;color:#4b5673;line-height:1.7;">
-          Every child learns differently, and our tutors are there to guide, encourage and adapt to each learner's pace, helping them build not just knowledge, but a genuine love of learning.
-        </p>
+      <div style="flex:1;min-width:280px;">
+        <img src="masterminds-logo.jpeg" alt="SCG Masterminds" style="height:92px;max-width:420px;object-fit:contain;margin-bottom:20px;display:block;">
+        <div class="lp-badge"><span class="dot"></span> Built by SCG Tuitions tutors</div>
+        <h1>English &amp; Maths practice that gets your child <span class="hl">exam‑ready</span></h1>
+        <p class="h-lead">Read‑aloud comprehension, exam‑style 11+ questions and quick‑fire maths — every answer marked instantly, with a full report emailed straight to you. Structured the way tutors actually teach.</p>
+        <div class="lp-cta-row">
+          <a class="lp-btn g" href="#start" onclick="window.scrollTo({top:Math.max((document.querySelector('.hero').offsetHeight||0)-64,0),behavior:'smooth'});return false;">Start free →</a>
+          <a class="lp-btn-2" href="#how" onclick="var e=document.getElementById('lp-how');if(e)e.scrollIntoView({behavior:'smooth'});return false;">See how it works</a>
+        </div>
+        <div class="lp-trust">
+          <span><span class="ck">✓</span> Free to start</span>
+          <span><span class="ck">✓</span> No card needed</span>
+          <span><span class="ck">✓</span> Works on any device</span>
+        </div>
       </div>
 
       <!-- Right: picture -->
-      <div style="flex-shrink:0;width:380px;max-width:42%;">
-        <img src="masterminds-picture.jpeg" alt="Children learning together" style="width:100%;border-radius:20px;box-shadow:0 12px 40px -8px rgba(12,18,52,.18);display:block;">
+      <div style="flex:1;min-width:280px;max-width:440px;">
+        <img src="masterminds-picture.jpeg" alt="Children learning together" style="width:100%;border-radius:22px;box-shadow:0 18px 50px -12px rgba(12,18,52,.28);display:block;">
       </div>
 
     </div>
@@ -625,9 +705,133 @@
 <!-- ═══ SCREEN 1: Home ═══ -->
 <div class="scr" id="s-home">
   <div class="wrap">
-    <div class="stitle"><div class="ey">Year Group</div><h2>Choose a year group</h2><p>Phonics, comprehension and maths — structured the way tutors actually teach.</p></div>
+
+    <!-- What's inside -->
+    <div class="lp-stats" style="margin-top:26px;">
+      <div class="lp-stat"><b>15</b><span>Read‑aloud comprehensions</span></div>
+      <div class="lp-stat"><b>500+</b><span>11+ FSCE questions</span></div>
+      <div class="lp-stat"><b>11</b><span>Maths topics</span></div>
+      <div class="lp-stat"><b>Instant</b><span>Marking &amp; email report</span></div>
+    </div>
+
+    <!-- Year picker -->
+    <div class="stitle" id="start"><div class="ey">Start here</div><h2>Choose a year group</h2><p>Comprehension, maths and 11+ practice — structured the way tutors actually teach.</p></div>
     <div class="yr-grid" id="yrgrid"></div>
-    <div class="faq-section">
+
+    <!-- How it works -->
+    <div class="lp-sec" id="lp-how">
+      <div class="lp-sec-h">
+        <div class="ey">How it works</div>
+        <h2>Practice in three simple steps</h2>
+        <p>No setup, no downloads. Pick a topic and your child is working within seconds.</p>
+      </div>
+      <div class="lp-steps">
+        <div class="lp-step">
+          <h4>Pick a year &amp; topic</h4>
+          <p>Choose Year 1, 2 or 3, then a read‑aloud story, a maths skill, or the 11+ FSCE mini‑paper.</p>
+        </div>
+        <div class="lp-step">
+          <h4>Your child practises</h4>
+          <p>Stories are read aloud sentence by sentence with the line highlighted. Every answer is marked the moment it's given.</p>
+        </div>
+        <div class="lp-step">
+          <h4>You get the report</h4>
+          <p>A question‑by‑question breakdown lands in your inbox — so you know exactly what to work on next.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Why us -->
+    <div class="lp-sec">
+      <div class="lp-sec-h">
+        <div class="ey">Why SCG Masterminds</div>
+        <h2>Built by tutors, not by a quiz generator</h2>
+        <p>Every question is written and sequenced the way our tutors teach in real sessions.</p>
+      </div>
+      <div class="lp-feats">
+        <div class="lp-feat"><div class="ic">🔊</div><h4>Read‑aloud comprehension</h4><p>The passage is read to your child sentence by sentence with the current line highlighted — perfect for building reading stamina.</p></div>
+        <div class="lp-feat"><div class="ic">🎓</div><h4>Real 11+ FSCE practice</h4><p>A 500+ question bank across Maths Reasoning and Comprehension. Twenty drawn at random, so every attempt is a fresh paper.</p></div>
+        <div class="lp-feat"><div class="ic">⚡</div><h4>Marked instantly</h4><p>No waiting, no marking for you. Your child sees their score and you get the full breakdown by email.</p></div>
+        <div class="lp-feat"><div class="ic">📊</div><h4>Progress you can see</h4><p>Best scores are saved per topic so you can watch each subject improve week by week.</p></div>
+        <div class="lp-feat"><div class="ic">📱</div><h4>Works on any device</h4><p>Phone, tablet or laptop. Nothing to install and nothing to print.</p></div>
+        <div class="lp-feat"><div class="ic">🔒</div><h4>Private by design</h4><p>Results stay on your device, we never sell your data, and you can ask us to delete it at any time.</p></div>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="lp-sec" id="lp-pricing">
+      <div class="lp-sec-h">
+        <div class="ey">Pricing</div>
+        <h2>Try it free, upgrade when you're ready</h2>
+        <p>Every family gets a free taster. No card needed to start, cancel any time.</p>
+      </div>
+      <div class="lp-price">
+        <div class="lp-plan">
+          <h3>Free taster</h3>
+          <div class="pr">£0</div>
+          <div class="sub">No card needed</div>
+          <ul>
+            <li>1 full English comprehension</li>
+            <li>10 maths questions</li>
+            <li>Instant marking</li>
+            <li>Emailed score report</li>
+            <li class="no">Unlimited practice</li>
+          </ul>
+          <a class="pcta ghost" href="#start" onclick="var e=document.getElementById('start');if(e)e.scrollIntoView({behavior:'smooth'});return false;">Start free</a>
+        </div>
+        <div class="lp-plan feat">
+          <div class="tag">Most popular</div>
+          <h3>English + Maths</h3>
+          <div class="pr">£8<small>/month</small></div>
+          <div class="sub">Everything unlocked</div>
+          <ul>
+            <li>All 15 comprehensions</li>
+            <li>All 11 maths topics</li>
+            <li>11+ FSCE mini‑papers</li>
+            <li>Mixed revision quizzes</li>
+            <li>Emailed score reports</li>
+          </ul>
+          <a class="pcta gn" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A38%2Fmonth)">Get English + Maths</a>
+        </div>
+        <div class="lp-plan">
+          <h3>English only</h3>
+          <div class="pr">£5<small>/month</small></div>
+          <div class="sub">Comprehension focus</div>
+          <ul>
+            <li>All 15 comprehensions</li>
+            <li>Mixed revision quizzes</li>
+            <li>Emailed score reports</li>
+            <li class="no">Maths topics</li>
+            <li class="no">11+ FSCE papers</li>
+          </ul>
+          <a class="pcta nv" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A35%2Fmonth)">Get English</a>
+        </div>
+      </div>
+    </div>
+
+    <!--
+      ═══ PARENT REVIEWS — ready to switch on ═══
+      Paste real parent quotes below and delete this comment to publish the section.
+      Keep them genuine: only reviews families have actually given you.
+
+      <div class="lp-sec">
+        <div class="lp-sec-h"><div class="ey">Parents</div><h2>What families say</h2></div>
+        <div class="lp-quotes">
+          <div class="lp-quote"><div class="stars">★★★★★</div><p>"REVIEW TEXT HERE"</p><div class="who">Parent name <span>· Year 3</span></div></div>
+          <div class="lp-quote"><div class="stars">★★★★★</div><p>"REVIEW TEXT HERE"</p><div class="who">Parent name <span>· Year 2</span></div></div>
+          <div class="lp-quote"><div class="stars">★★★★★</div><p>"REVIEW TEXT HERE"</p><div class="who">Parent name <span>· Year 1</span></div></div>
+        </div>
+      </div>
+    -->
+
+    <!-- Final CTA -->
+    <div class="lp-final">
+      <h2>Give your child a head start today</h2>
+      <p>One free comprehension and 10 maths questions — no card, no account needed. See the difference structured practice makes.</p>
+      <a class="lp-btn g" href="#start" onclick="var e=document.getElementById('start');if(e)e.scrollIntoView({behavior:'smooth'});return false;">Start practising free →</a>
+    </div>
+
+    <div class="faq-section" style="margin-top:44px;">
       <button class="faq-btn" id="faq-tog">Got questions?</button>
       <div id="faq-box" style="display:none"><div class="faq-wrap" id="faq-inner" style="margin-top:22px;text-align:left"></div></div>
     </div>
@@ -655,6 +859,11 @@
 <!-- ═══ FOOTER ═══ -->
 <div class="foot">
   <div class="wrap">
+    <div style="display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;margin-bottom:12px;font-weight:600;">
+      <a href="/privacy.html" style="color:var(--nv);text-decoration:none;">Privacy Policy</a>
+      <a href="/terms.html" style="color:var(--nv);text-decoration:none;">Terms of Service</a>
+      <a href="mailto:info@scgtuitions.co.uk" style="color:var(--nv);text-decoration:none;">Contact us</a>
+    </div>
     Part of SCG Tuitions · Structured tuition, online.
   </div>
 </div>
@@ -979,10 +1188,10 @@ var FQ_BANK=[
 
 /* ═══ DATA: FAQ ═════════════════════════════════════════════════════════ */
 var FAQ=[
-["🆓","Is SCG Masterminds really free?","Reception phonics games are completely free with no account needed. Everyone also gets a free taster — one full English comprehension and 10 maths questions (1 credit per question) to try across the whole site. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
+["🆓","Is SCG Masterminds really free?","Everyone gets a free taster — one full English comprehension and 10 maths questions (1 credit per question) to try across the whole site, no account needed. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
 ["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
 ["📊","What happens to my child's score?","At the end of each quiz a full results report — including a question-by-question breakdown — is emailed directly to you. Create a free account to save progress and track scores over time."],
-["📅","Which year groups are covered?","Reception (Phonics Phases 1–5 with 3 games each), Year 1 (5 comprehensions + 3 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions, 4 maths topics plus the 11+ FSCE mini-paper drawn from a 500+ question bank). Year 6 SATs preparation is coming soon."],
+["📅","Which year groups are covered?","Year 1 (5 comprehensions + 3 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions, 4 maths topics plus the 11+ FSCE mini-paper drawn from a 500+ question bank). Year 6 SATs preparation is coming soon."],
 ["🔁","Can my child do a quiz more than once?","Absolutely. Practice makes progress! Any story or maths round can be replayed as many times as you like."],
 ["📱","Will it work on a phone or tablet?","Yes, the whole platform is designed for phones, tablets and computers. For the clearest read-aloud voice we recommend Chrome or Edge."],
 ["✉️","How is my email used?","Your email is used to create your account and to receive your child's score reports after each quiz. We never share it with third parties. You can ask to be removed at any time."]
@@ -1279,7 +1488,6 @@ function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.flo
 (function(){
   var g=$("#yrgrid",root);
   var years=[
-    {num:'R',label:'Reception',cls:'pu',ages:'Ages 4–5',tags:['🔤 Phonics','👂 Listening & rhyme'],disabled:false,action:goPhonicsPhases},
     {num:1,label:'Year 1',cls:'or',ages:'Ages 5–6',tags:['📜 English','🔢 Maths'],disabled:false,action:function(){goSubjects(1);}},
     {num:2,label:'Year 2',cls:'nv',ages:'Ages 6–7',tags:['📜 English','🔢 Maths'],disabled:false,action:function(){goSubjects(2);}},
     {num:3,label:'Year 3',cls:'gn',ages:'Ages 7–8',tags:['📜 English','🔢 Maths','🎓 11+ FSCE'],disabled:false,action:function(){goSubjects(3);}},
@@ -1294,7 +1502,7 @@ function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i--){var j=Math.flo
       '<h2>'+y.label+'</h2>'+
       '<div class="yages">'+y.ages+'</div>'+
       '<div class="ytags">'+y.tags.map(function(t){return'<span class="ytag">'+t+'</span>';}).join('')+'</div>'+
-      '<div class="ycta"><span>'+(y.disabled?'Coming soon':y.label)+'</span>'+
+      '<div class="ycta"><span>'+(y.disabled?'Coming soon':'Start practising')+'</span>'+
         (y.disabled?'':'<span class="arr">'+arr()+'</span>')+
       '</div>';
     if(!y.disabled){
