@@ -26,7 +26,7 @@ const MIME = {
    description or image at all. */
 const SITE = process.env.SITE_URL || 'https://scgmasterminds.co.uk';
 const TITLE = 'SCG Masterminds | 11+, English & Maths Practice for Years 1-3';
-const DESC = 'Tutor-built English and maths practice for Years 1, 2 and 3. Read-aloud comprehensions, 500+ 11+ FSCE questions and instant marking, with a full score report emailed to you. Start free, then from GBP 1.50 a month.';
+const DESC = 'Tutor-built English and maths practice for Years 1, 2 and 3. Read-aloud comprehensions, real grammar and punctuation practice, timed 11+ FSCE mock papers and instant marking, with a full score report emailed to you. Start free, then from GBP 1.50 a month.';
 
 function wrap(fragment) {
   return '<!doctype html>\n' +
