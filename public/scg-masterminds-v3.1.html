@@ -606,7 +606,8 @@
 #scgmm .lp-feat h4{font-size:16.5px;font-weight:800;margin-bottom:6px;}
 #scgmm .lp-feat p{font-size:14px;color:var(--mid);}
 
-#scgmm .lp-price{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch;}
+#scgmm .lp-price{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-items:stretch;}
+@media(max-width:1000px){#scgmm .lp-price{grid-template-columns:1fr 1fr;}}
 #scgmm .lp-plan{position:relative;background:#fff;border:1.5px solid var(--ln);border-radius:20px;padding:28px 24px;display:flex;flex-direction:column;box-shadow:var(--sh1);}
 #scgmm .lp-plan.feat{border-color:var(--gn);box-shadow:var(--sh2);}
 #scgmm .lp-plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gn);color:#fff;font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;padding:5px 14px;border-radius:999px;}
@@ -780,31 +781,42 @@
           <a class="pcta ghost" href="#start" onclick="var e=document.getElementById('start');if(e)e.scrollIntoView({behavior:'smooth'});return false;">Start free</a>
         </div>
         <div class="lp-plan feat">
-          <div class="tag">Most popular</div>
+          <div class="tag">Best value</div>
           <h3>English + Maths</h3>
-          <div class="pr">£8<small>/month</small></div>
+          <div class="pr">£2<small>/month</small></div>
           <div class="sub">Everything unlocked</div>
           <ul>
             <li>All 15 comprehensions</li>
             <li>All 11 maths topics</li>
-            <li>11+ FSCE mini‑papers</li>
+            <li>Timed 11+ FSCE mock papers</li>
             <li>Mixed revision quizzes</li>
             <li>Emailed score reports</li>
           </ul>
-          <a class="pcta gn" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A38%2Fmonth)">Get English + Maths</a>
+          <a class="pcta gn" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A32%2Fmonth)">Get English + Maths</a>
         </div>
         <div class="lp-plan">
           <h3>English only</h3>
-          <div class="pr">£5<small>/month</small></div>
+          <div class="pr">£1.50<small>/month</small></div>
           <div class="sub">Comprehension focus</div>
           <ul>
             <li>All 15 comprehensions</li>
             <li>Mixed revision quizzes</li>
             <li>Emailed score reports</li>
             <li class="no">Maths topics</li>
-            <li class="no">11+ FSCE papers</li>
           </ul>
-          <a class="pcta nv" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A35%2Fmonth)">Get English</a>
+          <a class="pcta nv" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A31.50%2Fmonth)">Get English</a>
+        </div>
+        <div class="lp-plan">
+          <h3>Maths only</h3>
+          <div class="pr">£1.50<small>/month</small></div>
+          <div class="sub">Number skills focus</div>
+          <ul>
+            <li>All 11 maths topics</li>
+            <li>Easy / medium / hard levels</li>
+            <li>Emailed score reports</li>
+            <li class="no">Comprehensions</li>
+          </ul>
+          <a class="pcta nv" style="background:#0f766e;color:#fff" href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20Maths%20(%C2%A31.50%2Fmonth)">Get Maths</a>
         </div>
       </div>
     </div>
@@ -1188,7 +1200,7 @@ var FQ_BANK=[
 
 /* ═══ DATA: FAQ ═════════════════════════════════════════════════════════ */
 var FAQ=[
-["🆓","Is SCG Masterminds really free?","Everyone gets a free taster — one full English comprehension and 10 maths questions (1 credit per question) to try across the whole site, no account needed. Unlock unlimited English practice from £5/month, or English + Maths from £8/month — cancel any time."],
+["🆓","Is SCG Masterminds really free?","Everyone gets a free taster — one full English comprehension and 10 maths questions (1 credit per question) to try across the whole site, no account needed. Unlock unlimited English or Maths for £1.50/month each, or both together for £2/month — cancel any time."],
 ["🔊","How does the read-aloud work? Do I need to install anything?","No installation needed. The story is read aloud using your device's own built-in voice, the same technology that reads out navigation directions. It works in Chrome, Edge and Safari with the sound on. No cost, no API."],
 ["📊","What happens to my child's score?","At the end of each quiz a full results report — including a question-by-question breakdown — is emailed directly to you. Create a free account to save progress and track scores over time."],
 ["📅","Which year groups are covered?","Year 1 (5 comprehensions + 3 maths topics), Year 2 (5 comprehensions + 4 maths topics) and Year 3 (5 comprehensions, 4 maths topics plus the 11+ FSCE mini-paper drawn from a 500+ question bank). Year 6 SATs preparation is coming soon."],
@@ -1228,8 +1240,9 @@ var FreeUsage = {
   incMaths: function() { this.inc('maths'); },
   isExempt: function(type) {
     var tier = localStorage.getItem('scgMM2_tier') || 'free';
-    if (tier === 'max') return true;          // English + Maths subscription
-    if (tier === 'english') return type === 'english'; // English-only subscription
+    if (tier === 'max') return true;                    // English + Maths subscription
+    if (tier === 'english') return type === 'english';  // English-only subscription
+    if (tier === 'maths') return type === 'maths';      // Maths-only subscription
     return false;                              // free tier
   }
 };
@@ -1308,12 +1321,12 @@ function initSubTC() {
   var cb = document.getElementById('sub-tc-check');
   if (!cb) return;
   cb.checked = false;
-  ['sub-btn-english','sub-btn-both'].forEach(function(id){
+  ['sub-btn-english','sub-btn-both','sub-btn-maths'].forEach(function(id){
     var btn = document.getElementById(id);
     if(btn){ btn.disabled = true; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none'; }
   });
   cb.addEventListener('change', function() {
-    ['sub-btn-english','sub-btn-both'].forEach(function(id){
+    ['sub-btn-english','sub-btn-both','sub-btn-maths'].forEach(function(id){
       var btn = document.getElementById(id);
       if(btn){ btn.disabled = !cb.checked; btn.style.opacity = cb.checked ? '1' : '0.5'; btn.style.pointerEvents = cb.checked ? 'auto' : 'none'; }
     });
@@ -1405,7 +1418,7 @@ function openAccountModal() {
   document.getElementById('acct-email').textContent = email;
 
   // Tier — read from localStorage key 'scgMM2_tier' (set by subscription flow later)
-  // Values: 'free' | 'english' | 'max'
+  // Values: 'free' | 'english' | 'maths' | 'max'
   var tier = localStorage.getItem('scgMM2_tier') || 'free';
   var tierEl = document.getElementById('acct-tier');
   var upgradeEl = document.getElementById('acct-tier-upgrade');
@@ -1418,6 +1431,11 @@ function openAccountModal() {
     tierEl.style.background = '#dbeafe';
     tierEl.style.color = '#1e40af';
     tierEl.innerHTML = '📘 English Tier';
+    upgradeEl.style.display = 'none';
+  } else if (tier === 'maths') {
+    tierEl.style.background = '#dcfce7';
+    tierEl.style.color = '#15803d';
+    tierEl.innerHTML = '🔢 Maths Tier';
     upgradeEl.style.display = 'none';
   } else {
     tierEl.style.background = '#f4f6fc';
@@ -2768,8 +2786,9 @@ var Q={
       '<div style="background:#f4f6fc;border-radius:16px;padding:20px 24px;margin-bottom:20px;">' +
       '<p style="font-size:14px;font-weight:700;color:#1a2870;margin-bottom:14px;">Want daily practice? Subscribe below:</p>' +
       '<div style="display:flex;flex-direction:column;gap:10px;">' +
-      '<a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A35%2Fmonth)" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜 English only — £5/month</a>' +
-      '<a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A38%2Fmonth)" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜🔢 English + Maths — £8/month</a>' +
+      '<a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A32%2Fmonth)" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜🔢 English + Maths — £2/month</a>' +
+      '<a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A31.50%2Fmonth)" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">📜 English only — £1.50/month</a>' +
+      '<a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20Maths%20(%C2%A31.50%2Fmonth)" style="display:block;background:#0f766e;color:#fff;font-weight:700;font-size:15px;padding:14px 20px;border-radius:12px;text-decoration:none;">🔢 Maths only — £1.50/month</a>' +
       '</div></div>' +
       '<div style="display:flex;gap:10px;justify-content:center;">' +
       '<button class="d-again" id="d-again" style="background:#1a2870;color:#fff;font-weight:700;padding:12px 20px;border-radius:12px;font-size:14px;">Try again</button>' +
@@ -2872,8 +2891,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
       </label>
     </div>
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px;">
-      <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A35%2Fmonth)" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜 English only — £5/month</a>
-      <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A38%2Fmonth)" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜🔢 English + Maths — £8/month</a>
+      <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A32%2Fmonth)" id="sub-btn-both" style="display:block;background:#27ae60;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜🔢 English + Maths — £2/month</a>
+      <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A31.50%2Fmonth)" id="sub-btn-english" style="display:block;background:#1a2870;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">📜 English only — £1.50/month</a>
+      <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20Maths%20(%C2%A31.50%2Fmonth)" id="sub-btn-maths" style="display:block;background:#0f766e;color:#fff;font-weight:700;font-size:16px;padding:16px 24px;border-radius:14px;text-decoration:none;transition:filter .15s;opacity:0.5;pointer-events:none;">🔢 Maths only — £1.50/month</a>
     </div>
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid #2a2d3a;">
       <p style="font-size:13px;color:#8b90a8;margin-bottom:10px;">Just want your score?</p>
@@ -2979,7 +2999,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modal.class
           <!-- filled by openAccountModal() -->
         </div>
         <div id="acct-tier-upgrade" style="margin-top:10px;display:none;">
-          <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20(%C2%A35%2Fmonth)" style="font-size:13px;color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:none;">Upgrade to English tier →</a>
+          <a href="mailto:info@scgtuitions.co.uk?subject=Subscribe%3A%20English%20and%20Maths%20(%C2%A32%2Fmonth)" style="font-size:13px;color:#1d4ed8;font-weight:700;cursor:pointer;text-decoration:none;">Upgrade from £1.50/month →</a>
         </div>
       </div>
 
