@@ -2124,7 +2124,7 @@ var Q={
     function answer(ch){
       if(done)return;done=true;
       var ok=(ch===q.c);
-      s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
+      s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok,e:q.e||''});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       // no feedback shown — silently advance after 400ms
@@ -2184,7 +2184,7 @@ var Q={
     function answer(ch){
       if(done)return;done=true;
       var ok=(ch===q.c);
-      s.answers.push({q:'['+q._story+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
+      s.answers.push({q:'['+q._story+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok,e:q.e||''});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       // no feedback shown — silently advance after 400ms
@@ -2379,7 +2379,7 @@ var Q={
     function answer(ch){
       if(done)return;done=true;
       var val=parseInt(opts[ch],10),ok=(val===q.ans);
-      s.answers.push({q:q.txt,chosen:String(val),correct:String(q.ans),ok:ok});
+      s.answers.push({q:q.txt,chosen:String(val),correct:String(q.ans),ok:ok,e:q.e||''});
       if(ok)s.correct++;
       $$('.mopt',mbody).forEach(function(b,j){
         b.classList.add('locked');
@@ -2446,7 +2446,7 @@ var Q={
     function answer(ch){
       if(done)return;done=true;
       var ok=(ch===q.c);
-      s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
+      s.answers.push({q:q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok,e:q.e||''});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x,i){
         x.classList.add('locked');
@@ -2554,7 +2554,7 @@ var Q={
     function answer(ch){
       if(done||s.expired)return;done=true;
       var ok=(ch===q.c);
-      s.answers.push({q:'['+q.s+'] '+q.q,sec:q.s,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
+      s.answers.push({q:'['+q.s+'] '+q.q,sec:q.s,chosen:q.o[ch],correct:q.o[q.c],ok:ok,e:q.e||''});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
       setTimeout(function(){
@@ -2896,7 +2896,11 @@ var Q={
       Store.saveParent(par);
       var bd=s.answers.map(function(a,i){return'Q'+(i+1)+':'+(a.ok?'✓':'✗');}).join(' | ');
       var rec={date:new Date().toLocaleString('en-GB'),childName:ch,parentName:pn,parentEmail:em,
-        section:s.section,quiz:s.quizTitle,score:s.correct,total:tot,percentage:pct,breakdown:bd};
+        section:s.section,quiz:s.quizTitle,score:s.correct,total:tot,percentage:pct,breakdown:bd,
+        details:s.answers.map(function(a,i){
+          return{n:i+1,q:String(a.q||''),chosen:String(a.chosen===undefined?'':a.chosen),
+                 correct:String(a.correct===undefined?'':a.correct),ok:!!a.ok,e:String(a.e||'')};
+        })};
       /* FSCE papers also report per-section marks, and timed mocks report the clock */
       if(s.type==='fsce'){
         var st=self.fsceSectionStats(),parts=[];
