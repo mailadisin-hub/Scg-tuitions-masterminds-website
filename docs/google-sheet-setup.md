@@ -1,11 +1,19 @@
-# Collect all results in one Google Sheet
+# Results sheet + parent email reports
 
 By default, SCG Masterminds saves each quiz result in the visitor's own browser.
-Follow these steps once to also send every result into a single Google Sheet
-that **you** own. From then on, every quiz anyone completes (on any phone,
-tablet or computer) drops a new row into your sheet automatically.
+Follow these steps once and every result will also:
+
+1. drop a new row into a single Google Sheet that **you** own, and
+2. **email the parent a full question-by-question report** — score, percentage,
+   the section breakdown, timed-mock details, and for every question what their
+   child chose, the right answer, and why.
 
 This is free and takes about 5 minutes.
+
+> **If reports stop arriving, check this first.** The email is sent by the Apps
+> Script, not by the website. If you ever replace `Code.gs` with an older copy
+> that has no `MailApp.sendEmail(...)` call, rows will keep appearing in the
+> Sheet but no parent will receive anything.
 
 ---
 
@@ -40,7 +48,7 @@ This is free and takes about 5 minutes.
 
 ## Step 4 — Paste the URL into the website
 
-1. Open the website file `public/scg-masterminds.html`.
+1. Open the website file `public/scg-masterminds-v3.1.html`.
 2. Near the top of the `<script>` block, find this line:
 
    ```js
@@ -57,16 +65,103 @@ This is free and takes about 5 minutes.
 
 ## Step 5 — Test it
 
+**Quickest check (no website needed):** in the Apps Script editor choose
+`testEmail` from the function dropdown and press **Run**. It writes a sample row
+and sends a realistic report to the address in `TEST_TO` at the top of the file.
+Change that constant to your own address first.
+
+Then test the real thing:
+
 1. Open the SCG Masterminds page and complete any quiz, entering a test
    parent email.
-2. Switch to your Google Sheet — a new row should appear within a few seconds
-   with the child's name, parent's email, the quiz, and the score.
+2. Within a few seconds you should get **both**:
+   - a new row in your Google Sheet, and
+   - the report email in that inbox (**check spam the first time**).
+
+If the row appears but the email does not, open the **Errors** tab the script
+creates in the same Sheet — the reason is logged there.
 
 That's it. Your Google Sheet is now your live results spreadsheet — you can
 sort it, filter it, download it as Excel (**File ▸ Download ▸ Microsoft Excel**),
 or connect it to your OpenClaw automation later.
 
 ---
+
+---
+
+## The Members tab — who has paid
+
+The script creates a second tab called **Members**, one row per person, the
+first time anyone signs up or submits a score.
+
+| Column | Filled by | What it is |
+|---|---|---|
+| Email | automatic | how a person is identified |
+| Parent Name / Child Name | automatic | refreshed each visit |
+| **Tier** | **you** | `free`, `english`, `maths` or `max` |
+| **Status** | **you** | `active`, `paused` or `cancelled` |
+| Signed Up / Last Seen | automatic | first and most recent visit |
+| Quizzes Taken / Last Quiz | automatic | activity |
+| **Notes** | **you** | anything you like |
+
+**Tier, Status and Notes are yours.** The website never overwrites them — it
+only ever refreshes the automatic columns, so an upgrade you type in by hand
+sticks permanently. Tier and Status are dropdowns, so you cannot mistype them.
+
+### How to upgrade someone
+
+1. Find their row on the **Members** tab.
+2. Change **Tier** to `english`, `maths` or `max`.
+3. That's it. The change reaches them the next time they open the site.
+
+Set **Status** to `paused` or `cancelled` to remove access without deleting the
+row or losing their history — they drop back to free until you set it to
+`active` again.
+
+### What "automatic" does and does not mean
+
+Automatic today:
+
+- everyone who signs up or submits a score is **added to the sheet by
+  themselves**, starting on `free`
+- the site **reads their tier back** on every visit, so your edits apply
+  without touching any code
+
+Not automatic yet:
+
+- **paying does not upgrade anyone by itself.** The subscribe buttons currently
+  open an email to you, so when someone pays you set their Tier by hand. Once
+  Stripe is connected this becomes fully automatic — Stripe tells the script
+  who paid and it writes the Tier for you.
+
+### One thing to be aware of
+
+The tier is also kept in the visitor's browser so the site works offline and
+feels instant. Someone technical could edit that copy to unlock content
+without paying. For a GBP 2 a month product that trade-off is normally worth
+it, but it is worth knowing that this is a convenience lock, not a bank vault.
+Real enforcement would mean checking the membership on a server before serving
+each question.
+
+---
+
+### Settings you can change
+
+At the top of `Code.gs`:
+
+| Setting | What it does |
+|---|---|
+| `REPLY_TO` | Address parents reply to. Default `info@scgtuitions.co.uk`. |
+| `COPY_TO`  | Set an address to BCC yourself on every report. Empty by default. |
+| `TEST_TO`  | Only used by the `testEmail()` function. |
+| `FROM_NAME`| Sender name parents see. Default `SCG Masterminds`. |
+
+### Sending limits
+
+A free `@gmail.com` account can send roughly **100 emails a day**; Google
+Workspace roughly **1,500**. If the quota is exceeded the result is still saved
+to the Sheet and the failure is recorded on the **Errors** tab, so nothing is
+lost — the parent simply does not get that email.
 
 ### Notes & FAQ
 

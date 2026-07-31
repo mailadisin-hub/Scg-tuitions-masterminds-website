@@ -1,11 +1,12 @@
 {
-  "name": "temp-app",
+  "name": "scg-masterminds",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "build": "echo 'No build step needed'",
+    "start": "node server.js",
+    "next:dev": "next dev",
+    "next:build": "next build",
     "lint": "eslint"
   },
   "dependencies": {
