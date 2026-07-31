@@ -932,6 +932,10 @@ auth.onAuthStateChanged(function(user) {
     localStorage.setItem('scgMM2_tier', 'max');
   }
   updateAuthNav();
+  if (user && user.email && typeof Members !== 'undefined') {
+    Members.register(user.email, user.displayName || '', '');
+    setTimeout(function(){ Members.syncTier(user.email); }, 800);
+  }
 });
 
 // Maps letter → string that TTS pronounces as the phoneme sound
@@ -959,6 +963,70 @@ function ph(letter) {
 /* ═══ CONFIG ═══════════════════════════════════════════════════════════════ */
 var ENDPOINT = "https://script.google.com/macros/s/AKfycby-9SnjWIyheMM9VC-mRxn6s9MS3YcWPMs6EEYsOan59WGAT1vAD3WcAAGxDHi6RJ8c/exec";
 /* ══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══ MEMBERSHIP ═════════════════════════════════════════════════════════
+   The Google Sheet is the source of truth for who has paid. The site
+   registers anyone who signs up or submits a score, then reads their tier
+   back, so editing the Tier cell by hand takes effect on their next visit.
+   Note: this is convenience-grade, not security-grade — the tier also lives
+   in localStorage, which a determined user could edit. */
+var Members = {
+  _last: 0,
+  register: function(email, parentName, childName) {
+    if (!ENDPOINT || !email) return;
+    try {
+      fetch(ENDPOINT, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          action: 'register', parentEmail: email,
+          parentName: parentName || '', childName: childName || ''
+        })
+      });
+    } catch (e) {}
+  },
+  /* JSONP, because an Apps Script web app cannot send CORS headers we can read */
+  syncTier: function(email) {
+    if (!ENDPOINT || !email) return;
+    var now = Date.now();
+    if (now - this._last < 30000) return;   // don't hammer it on every screen
+    this._last = now;
+    var cb = 'scgTier' + now;
+    var done = false;
+    window[cb] = function(info) {
+      done = true;
+      try {
+        // Only ever trust a row that actually exists; never downgrade a
+        // visitor just because they are not in the sheet yet.
+        if (info && info.found && info.tier) {
+          localStorage.setItem('scgMM2_tier', info.tier);
+          if (typeof updateAuthNav === 'function') updateAuthNav();
+        }
+      } catch (e) {}
+      cleanup();
+    };
+    function cleanup() {
+      try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+      if (tag && tag.parentNode) tag.parentNode.removeChild(tag);
+    }
+    var tag = document.createElement('script');
+    tag.src = ENDPOINT + '?action=tier&callback=' + cb +
+              '&email=' + encodeURIComponent(email);
+    tag.onerror = cleanup;
+    document.head.appendChild(tag);
+    setTimeout(function(){ if (!done) cleanup(); }, 8000);
+  },
+  /* the best email we know for this visitor */
+  knownEmail: function() {
+    if (typeof currentUser !== 'undefined' && currentUser && currentUser.email) {
+      return currentUser.email;
+    }
+    try {
+      var p = JSON.parse(localStorage.getItem(PK) || '{}');
+      return p.parentEmail || '';
+    } catch (e) { return ''; }
+  }
+};
 
 var $=function(s,r){return(r||document).querySelector(s);};
 var $$=function(s,r){return[].slice.call((r||document).querySelectorAll(s));};
@@ -1299,6 +1367,11 @@ $("#a-clr").addEventListener('click',function(){if(confirm('Delete all saved res
 $("#a-hi").addEventListener('click',function(){Admin.hide();});
 if(location.hash==='#scg-admin')Admin.show();
 window.addEventListener('hashchange',function(){if(location.hash==='#scg-admin')Admin.show();});
+
+/* Returning visitor: pick up any membership change made in the Google Sheet. */
+setTimeout(function(){
+  try{ var em=Members.knownEmail(); if(em) Members.syncTier(em); }catch(e){}
+}, 1200);
 document.addEventListener('keydown',function(e){if(e.ctrlKey&&e.shiftKey&&(e.key==='E'||e.key==='e')){e.preventDefault();Admin.show();}});
 
 function showSubscribeModal() {
@@ -2894,6 +2967,8 @@ var Q={
       if(!ok)return;
       var par={childName:ch,parentName:pn,parentEmail:em};
       Store.saveParent(par);
+      Members.register(em, pn, ch);
+      setTimeout(function(){ Members.syncTier(em); }, 1500);
       var bd=s.answers.map(function(a,i){return'Q'+(i+1)+':'+(a.ok?'✓':'✗');}).join(' | ');
       var rec={date:new Date().toLocaleString('en-GB'),childName:ch,parentName:pn,parentEmail:em,
         section:s.section,quiz:s.quizTitle,score:s.correct,total:tot,percentage:pct,breakdown:bd,

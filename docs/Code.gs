@@ -28,6 +28,7 @@
 
 /* ─────────── SETTINGS ─────────── */
 var SHEET_NAME  = 'Results';
+var MEMBERS_SHEET = 'Members';
 var ERROR_SHEET = 'Errors';
 var FROM_NAME   = 'SCG Masterminds';
 var REPLY_TO    = 'info@scgtuitions.co.uk';
@@ -52,7 +53,21 @@ function doPost(e) {
     }
     data = JSON.parse(e.postData.contents);
 
+    // A sign-up just registers the person; there is no quiz result to save.
+    if (data.action === 'register') {
+      upsertMember(data);
+      return jsonOut({ ok: true, registered: true });
+    }
+
+
     saveRow(data);
+
+    // Registering the contact must never be able to block the report.
+    try {
+      upsertMember(data);   // anyone who submits a result is a known contact
+    } catch (memberErr) {
+      logError('upsertMember', memberErr, data);
+    }
 
     // The report is a bonus — an email failure must never lose the result.
     try {
@@ -74,10 +89,125 @@ function doPost(e) {
   }
 }
 
-/** Opening the Web app URL in a browser shows this, so you can check it is live. */
-function doGet() {
+/**
+ * GET is used for two things:
+ *   ?action=tier&email=...&callback=fn  -> the website asking which membership
+ *                                          this email has (JSONP, so it works
+ *                                          cross-origin without CORS headers)
+ *   anything else                       -> a health check you can open in a tab
+ */
+function doGet(e) {
+  var p = (e && e.parameter) ? e.parameter : {};
+
+  if (p.action === 'tier') {
+    var info = lookupMember(p.email);
+    var body = JSON.stringify(info);
+    if (p.callback) {
+      return ContentService
+        .createTextOutput(p.callback + '(' + body + ');')
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return jsonOut(info);
+  }
+
   return ContentService.createTextOutput(
-    'SCG Masterminds results collector is running. Deployed: ' + new Date());
+    'SCG Masterminds collector is running. Deployed: ' + new Date());
+}
+
+/* ─────────── MEMBERS ───────────
+   One row per person. The website only ever writes the grey columns
+   (name, last seen, quiz counts). Tier, Status and Notes are yours to edit by
+   hand and are never overwritten once the row exists. */
+function membersSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(MEMBERS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(MEMBERS_SHEET);
+    sheet.appendRow([
+      'Email', 'Parent Name', 'Child Name', 'Tier', 'Status',
+      'Signed Up', 'Last Seen', 'Quizzes Taken', 'Last Quiz', 'Notes'
+    ]);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, 10).setFontWeight('bold');
+    // A dropdown keeps the Tier column to valid values.
+    var rule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['free', 'english', 'maths', 'max'], true).build();
+    sheet.getRange(2, 4, 2000, 1).setDataValidation(rule);
+    var srule = SpreadsheetApp.newDataValidation()
+      .requireValueInList(['active', 'paused', 'cancelled'], true).build();
+    sheet.getRange(2, 5, 2000, 1).setDataValidation(srule);
+  }
+  return sheet;
+}
+
+/** Row number for an email, or 0 if not present. */
+function findMemberRow(sheet, email) {
+  var key = String(email || '').trim().toLowerCase();
+  if (!key) return 0;
+  var last = sheet.getLastRow();
+  if (last < 2) return 0;
+  var emails = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (var i = 0; i < emails.length; i++) {
+    if (String(emails[i][0]).trim().toLowerCase() === key) return i + 2;
+  }
+  return 0;
+}
+
+/** Create the person if new; otherwise only refresh the automatic columns. */
+function upsertMember(d) {
+  var email = String(d.parentEmail || d.email || '').trim();
+  if (!isEmail(email)) return;
+
+  var sheet = membersSheet();
+  var row = findMemberRow(sheet, email);
+  var now = new Date();
+  var name = d.parentName || '';
+  var child = d.childName || '';
+  var quiz = d.quiz || '';
+
+  if (!row) {
+    sheet.appendRow([
+      email, name, child,
+      'free',      // everyone starts free — change this cell to upgrade someone
+      'active',
+      now, now,
+      quiz ? 1 : 0,
+      quiz, ''
+    ]);
+    return;
+  }
+
+  // Existing member: never touch Tier (D), Status (E) or Notes (J).
+  if (name)  sheet.getRange(row, 2).setValue(name);
+  if (child) sheet.getRange(row, 3).setValue(child);
+  sheet.getRange(row, 7).setValue(now);
+  if (quiz) {
+    var count = Number(sheet.getRange(row, 8).getValue()) || 0;
+    sheet.getRange(row, 8).setValue(count + 1);
+    sheet.getRange(row, 9).setValue(quiz);
+  }
+}
+
+/** What the website asks for. A non-active member is treated as free. */
+function lookupMember(email) {
+  try {
+    if (!isEmail(email)) return { found: false, tier: 'free', status: 'unknown' };
+    var sheet = membersSheet();
+    var row = findMemberRow(sheet, email);
+    if (!row) return { found: false, tier: 'free', status: 'unknown' };
+
+    var vals = sheet.getRange(row, 4, 1, 2).getValues()[0];
+    var tier = String(vals[0] || 'free').trim().toLowerCase();
+    var status = String(vals[1] || 'active').trim().toLowerCase();
+
+    if (['free', 'english', 'maths', 'max'].indexOf(tier) === -1) tier = 'free';
+    if (status !== 'active') tier = 'free';   // paused or cancelled loses access
+
+    return { found: true, tier: tier, status: status };
+  } catch (err) {
+    logError('lookupMember', err, { email: email });
+    return { found: false, tier: 'free', status: 'error' };
+  }
 }
 
 /* ─────────── SHEET ─────────── */
@@ -341,6 +471,9 @@ function testEmail() {
     ]
   };
   saveRow(sample);
+  upsertMember(sample);
   sendReport(sample);
-  Logger.log('Sent a test report to ' + TEST_TO + ' and added a row to the ' + SHEET_NAME + ' sheet.');
+  Logger.log('Sent a test report to ' + TEST_TO + ', added a row to ' + SHEET_NAME +
+             ', and registered the contact on ' + MEMBERS_SHEET + '.');
+  Logger.log('Tier lookup for ' + TEST_TO + ': ' + JSON.stringify(lookupMember(TEST_TO)));
 }

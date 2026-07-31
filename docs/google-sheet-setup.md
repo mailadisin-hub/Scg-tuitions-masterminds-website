@@ -87,6 +87,64 @@ or connect it to your OpenClaw automation later.
 
 ---
 
+---
+
+## The Members tab — who has paid
+
+The script creates a second tab called **Members**, one row per person, the
+first time anyone signs up or submits a score.
+
+| Column | Filled by | What it is |
+|---|---|---|
+| Email | automatic | how a person is identified |
+| Parent Name / Child Name | automatic | refreshed each visit |
+| **Tier** | **you** | `free`, `english`, `maths` or `max` |
+| **Status** | **you** | `active`, `paused` or `cancelled` |
+| Signed Up / Last Seen | automatic | first and most recent visit |
+| Quizzes Taken / Last Quiz | automatic | activity |
+| **Notes** | **you** | anything you like |
+
+**Tier, Status and Notes are yours.** The website never overwrites them — it
+only ever refreshes the automatic columns, so an upgrade you type in by hand
+sticks permanently. Tier and Status are dropdowns, so you cannot mistype them.
+
+### How to upgrade someone
+
+1. Find their row on the **Members** tab.
+2. Change **Tier** to `english`, `maths` or `max`.
+3. That's it. The change reaches them the next time they open the site.
+
+Set **Status** to `paused` or `cancelled` to remove access without deleting the
+row or losing their history — they drop back to free until you set it to
+`active` again.
+
+### What "automatic" does and does not mean
+
+Automatic today:
+
+- everyone who signs up or submits a score is **added to the sheet by
+  themselves**, starting on `free`
+- the site **reads their tier back** on every visit, so your edits apply
+  without touching any code
+
+Not automatic yet:
+
+- **paying does not upgrade anyone by itself.** The subscribe buttons currently
+  open an email to you, so when someone pays you set their Tier by hand. Once
+  Stripe is connected this becomes fully automatic — Stripe tells the script
+  who paid and it writes the Tier for you.
+
+### One thing to be aware of
+
+The tier is also kept in the visitor's browser so the site works offline and
+feels instant. Someone technical could edit that copy to unlock content
+without paying. For a GBP 2 a month product that trade-off is normally worth
+it, but it is worth knowing that this is a convenience lock, not a bank vault.
+Real enforcement would mean checking the membership on a server before serving
+each question.
+
+---
+
 ### Settings you can change
 
 At the top of `Code.gs`:
