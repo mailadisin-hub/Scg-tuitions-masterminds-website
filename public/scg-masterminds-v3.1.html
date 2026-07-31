@@ -1750,19 +1750,23 @@ function goActivities(year,subj){
     body.appendChild(mgrid);
 
   } else {
-    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mixed practice paper</h2><p>Twenty questions chosen at random from a bank of 500+ across Maths Reasoning and Comprehension. Every attempt gives a different set.</p>';
+    title.innerHTML='<div class="ey">11+ · FSCE</div><h2>Mock papers &amp; practice</h2><p>Twenty questions chosen at random from a bank of 500+ across Maths Reasoning and Comprehension. Sit it against the clock like the real exam, or take your time.</p>';
     var fc=document.createElement('div');fc.className='fsce-card nosel';
     fc.innerHTML=
-      '<h2>Ready for the 11+ FSCE mini-paper?</h2>'+
-      '<p>Twenty questions drawn at random from a bank of 500+, marked instantly. Every attempt gives a different selection.</p>'+
+      '<h2>Ready for the 11+ FSCE paper?</h2>'+
+      '<p>Twenty questions drawn at random from a bank of 500+, marked instantly, with a predicted score and a section-by-section breakdown at the end.</p>'+
       '<div class="fsce-fs">'+
         '<div class="fsce-f"><b>Maths Reasoning</b><span>Problem solving</span></div>'+
         '<div class="fsce-f"><b>Comprehension</b><span>Read &amp; infer</span></div>'+
-        '<div class="fsce-f"><b>20 questions</b><span>Instantly marked</span></div>'+
+        '<div class="fsce-f"><b>20 minutes</b><span>Exam conditions</span></div>'+
       '</div>'+
-      '<div class="fsce-ctas"><button class="btn-g" id="fsce-go">Begin the paper →</button></div>';
+      '<div class="fsce-ctas">'+
+        '<button class="btn-g" id="fsce-timed" style="background:#d33">⏱️ Sit the timed mock →</button>'+
+        '<button class="btn-ghost" id="fsce-go">Untimed practice</button>'+
+      '</div>';
     body.appendChild(fc);
-    $("#fsce-go",root).addEventListener('click',function(){Q.startFsce();});
+    $("#fsce-go",root).addEventListener('click',function(){Q.startFsce(false);});
+    $("#fsce-timed",root).addEventListener('click',function(){Q.startFsce(true);});
   }
   showScr('s-act','fwd');
 }
@@ -1813,7 +1817,7 @@ var Q={
     document.documentElement.style.overflow='hidden';
   },
   close:function(){
-    Sp.stop();modal.classList.remove('on');
+    Sp.stop();this.stopFsceTicker();modal.classList.remove('on');
     document.documentElement.style.overflow='';
     this.st=null;mbody.innerHTML='';
   },
@@ -2234,33 +2238,75 @@ var Q={
   },
 
   /* ── FSCE ── */
-  startFsce:function(){
-    this.st={type:'fsce',ac:'#1a2870',section:'11+ FSCE',quizTitle:'FSCE Mini-Paper',
-      qs:shuffle(FQ_BANK.slice()).slice(0,20),qi:0,answers:[],correct:0};
-    this.open('#1a2870','🎓','FSCE Mini-Paper','11+ · mixed sections');
+  FSCE_Q:20,          /* questions per paper */
+  FSCE_MINS:20,       /* exam-condition time limit, 1 minute per question */
+  startFsce:function(timed){
+    this.st={type:'fsce',ac:'#1a2870',section:'11+ FSCE',
+      quizTitle:timed?'FSCE Mock Paper (timed)':'FSCE Mini-Paper',
+      qs:shuffle(FQ_BANK.slice()).slice(0,this.FSCE_Q),qi:0,answers:[],correct:0,
+      timed:!!timed,startedAt:null,endsAt:null,expired:false};
+    this.open('#1a2870','🎓',timed?'FSCE Mock Paper':'FSCE Mini-Paper','11+ · mixed sections');
     this.renderFsceIntro();
   },
   renderFsceIntro:function(){
-    this.prog(5);
+    var s=this.st,timed=s.timed;this.prog(5);
     mbody.innerHTML=
       '<div class="ph-intro nosel">'+
-        '<span class="ph-em">🎓</span>'+
-        '<h2>11+ FSCE Mini-Paper</h2>'+
-        '<p class="il">Twenty questions drawn at random from a bank of 500+, across Maths Reasoning and Comprehension. Every attempt is different.</p>'+
+        '<span class="ph-em">'+(timed?'⏱️':'🎓')+'</span>'+
+        '<h2>'+(timed?'11+ FSCE Mock Paper':'11+ FSCE Mini-Paper')+'</h2>'+
+        '<p class="il">'+(timed
+          ? this.FSCE_Q+' questions in '+this.FSCE_MINS+' minutes, under exam conditions. The clock runs from the moment you start and the paper submits itself when time is up — exactly like the real thing.'
+          : 'Twenty questions drawn at random from a bank of 500+, across Maths Reasoning and Comprehension. Take as long as you like.')+'</p>'+
         '<div class="ph-steps">'+
-          '<div class="ph-step"><span class="sn">1</span>20 mixed questions</div>'+
-          '<div class="ph-step"><span class="sn">2</span>Instant marking</div>'+
-          '<div class="ph-step"><span class="sn">3</span>Section report</div>'+
+          '<div class="ph-step"><span class="sn">1</span>'+(timed?this.FSCE_MINS+'-minute time limit':this.FSCE_Q+' mixed questions')+'</div>'+
+          '<div class="ph-step"><span class="sn">2</span>'+(timed?'Auto-submits at 0:00':'Instant marking')+'</div>'+
+          '<div class="ph-step"><span class="sn">3</span>Predicted score &amp; section report</div>'+
         '</div>'+
-        '<button class="rc play" id="m-fgo" style="background:var(--gn)">Begin paper →</button>'+
+        '<button class="rc play" id="m-fgo" style="background:'+(timed?'#d33':'var(--gn)')+'">'+(timed?'Start the clock →':'Begin paper →')+'</button>'+
       '</div>';
     var self=this;
-    $("#m-fgo").addEventListener('click',function(){self.renderFsceQ();});
+    $("#m-fgo").addEventListener('click',function(){
+      if(self.st.timed){
+        self.st.startedAt=Date.now();
+        self.st.endsAt=self.st.startedAt+self.FSCE_MINS*60000;
+      }
+      self.renderFsceQ();
+    });
   },
+  /* countdown shown above each question in timed mode */
+  fsceClock:function(){
+    var s=this.st;if(!s||!s.timed||!s.endsAt)return'';
+    var left=Math.max(0,s.endsAt-Date.now()),frac=left/(this.FSCE_MINS*60000);
+    var col=frac<=0.1?'#d33':(frac<=0.25?'#e8781a':'#1a2870');
+    var m=Math.floor(left/60000),sec=Math.floor((left%60000)/1000);
+    return'<div id="fsce-clock" style="display:flex;align-items:center;justify-content:center;gap:8px;'+
+      'font-family:Poppins,sans-serif;font-weight:800;font-size:20px;color:'+col+';margin-bottom:10px;">'+
+      '<span style="font-size:16px">⏱️</span><span id="fsce-clock-t">'+m+':'+(sec<10?'0':'')+sec+'</span></div>';
+  },
+  startFsceTicker:function(){
+    var self=this;this.stopFsceTicker();
+    if(!this.st||!this.st.timed)return;
+    this._fsceTick=setInterval(function(){
+      var s=self.st;
+      if(!s||!s.timed||s.expired){self.stopFsceTicker();return;}
+      var left=Math.max(0,s.endsAt-Date.now());
+      var el=document.getElementById('fsce-clock-t');
+      if(el){
+        var m=Math.floor(left/60000),sec=Math.floor((left%60000)/1000);
+        el.textContent=m+':'+(sec<10?'0':'')+sec;
+        var frac=left/(self.FSCE_MINS*60000);
+        var box=document.getElementById('fsce-clock');
+        if(box)box.style.color=frac<=0.1?'#d33':(frac<=0.25?'#e8781a':'#1a2870');
+      }
+      if(left<=0){s.expired=true;self.stopFsceTicker();self.renderForm();}
+    },1000);
+  },
+  stopFsceTicker:function(){if(this._fsceTick){clearInterval(this._fsceTick);this._fsceTick=null;}},
   renderFsceQ:function(){
     var s=this.st,q=s.qs[s.qi],total=s.qs.length;
     this.prog(14+(s.qi/total)*60);
     mbody.innerHTML=
+      this.fsceClock()+
       this.dots(total,s.qi,s.answers)+
       this.lscore(s.correct,s.qi)+
       '<div class="qprog">Question '+(s.qi+1)+' of '+total+' · '+q.s+'</div>'+
@@ -2270,17 +2316,33 @@ var Q={
       }).join('')+'</div>'+
       '<div class="clr"></div>'+
       '<p class="kbd-hint">Press <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to answer</p>';
+    this.startFsceTicker();
     var self=this,done=false;
     function answer(ch){
-      if(done)return;done=true;
+      if(done||s.expired)return;done=true;
       var ok=(ch===q.c);
-      s.answers.push({q:'['+q.s+'] '+q.q,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
+      s.answers.push({q:'['+q.s+'] '+q.q,sec:q.s,chosen:q.o[ch],correct:q.o[q.c],ok:ok});
       if(ok)s.correct++;
       $$('.qo',mbody).forEach(function(x){x.classList.add('locked');});
-      setTimeout(function(){s.qi++;if(s.qi<total)self.renderFsceQ();else self.renderForm();},400);
+      setTimeout(function(){
+        if(s.expired)return;
+        s.qi++;
+        if(s.qi<total)self.renderFsceQ();
+        else{self.stopFsceTicker();self.renderForm();}
+      },400);
     }
     $$('.qo',mbody).forEach(function(b){b.addEventListener('click',function(){answer(+b.dataset.i);});});
     self._answerFn=answer;
+  },
+  /* per-section marks, used on the results screen and in the emailed report */
+  fsceSectionStats:function(){
+    var s=this.st,out={};
+    (s.answers||[]).forEach(function(a){
+      var k=a.sec||'Other';
+      if(!out[k])out[k]={c:0,t:0};
+      out[k].t++;if(a.ok)out[k].c++;
+    });
+    return out;
   },
 
   /* ── SIGHT WORDS ── */
@@ -2600,8 +2662,24 @@ var Q={
       var par={childName:ch,parentName:pn,parentEmail:em};
       Store.saveParent(par);
       var bd=s.answers.map(function(a,i){return'Q'+(i+1)+':'+(a.ok?'✓':'✗');}).join(' | ');
-      Store.add({date:new Date().toLocaleString('en-GB'),childName:ch,parentName:pn,parentEmail:em,
-        section:s.section,quiz:s.quizTitle,score:s.correct,total:tot,percentage:pct,breakdown:bd});
+      var rec={date:new Date().toLocaleString('en-GB'),childName:ch,parentName:pn,parentEmail:em,
+        section:s.section,quiz:s.quizTitle,score:s.correct,total:tot,percentage:pct,breakdown:bd};
+      /* FSCE papers also report per-section marks, and timed mocks report the clock */
+      if(s.type==='fsce'){
+        var st=self.fsceSectionStats(),parts=[];
+        Object.keys(st).forEach(function(k){parts.push(k+' '+st[k].c+'/'+st[k].t);});
+        if(parts.length)rec.sectionBreakdown=parts.join(' · ');
+        if(s.timed){
+          rec.timed='Yes ('+self.FSCE_MINS+' min limit)';
+          rec.questionsAttempted=s.answers.length+' of '+s.qs.length;
+          if(s.startedAt){
+            var secs=Math.round(Math.min(Date.now()-s.startedAt,self.FSCE_MINS*60000)/1000);
+            rec.timeTaken=Math.floor(secs/60)+'m '+(secs%60)+'s';
+          }
+          if(s.expired)rec.note='Time expired before the paper was finished';
+        }
+      }
+      Store.add(rec);
       self.renderDone(par);
     });
   },
@@ -2611,18 +2689,66 @@ var Q={
     var s=this.st,tot=this.scoredTotal(),pct=Math.round((s.correct/tot)*100);
     this.prog(100);
 
+    var scoreCol = pct >= 80 ? '#27ae60' : pct >= 60 ? '#e8781a' : '#e57373';
+    var scoreMsg = pct >= 80 ? 'Brilliant work! 🌟' : pct >= 60 ? 'Good effort! 💪' : 'Keep going! 📚';
+
+    /* FSCE: predicted standard + per-section marks + clock summary */
+    var fscePanel = '';
+    if (s.type === 'fsce') {
+      var band = pct >= 80 ? ['On track for a competitive grammar/independent place', '#27ae60']
+               : pct >= 65 ? ['Approaching the mark — close the gaps below', '#e8781a']
+               : pct >= 50 ? ['Building — steady practice needed before the exam', '#e8781a']
+               : ['Early days — plenty of room to grow', '#e57373'];
+      var st = this.fsceSectionStats(), rows = '';
+      Object.keys(st).forEach(function (k) {
+        var c = st[k].c, t = st[k].t, p = t ? Math.round((c / t) * 100) : 0;
+        var col = p >= 70 ? '#27ae60' : p >= 50 ? '#e8781a' : '#e57373';
+        rows +=
+          '<div style="margin-bottom:12px;text-align:left;">' +
+            '<div style="display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;color:#1a2870;margin-bottom:5px;">' +
+              '<span>' + k + '</span><span>' + c + '/' + t + ' · ' + p + '%</span>' +
+            '</div>' +
+            '<div style="height:8px;border-radius:99px;background:#e4e8f5;overflow:hidden;">' +
+              '<div style="height:100%;width:' + p + '%;background:' + col + ';border-radius:99px;"></div>' +
+            '</div>' +
+          '</div>';
+      });
+      var clockLine = '';
+      if (s.timed) {
+        var secs = s.startedAt ? Math.round(Math.min(Date.now() - s.startedAt, this.FSCE_MINS * 60000) / 1000) : 0;
+        clockLine =
+          '<p style="font-size:13px;color:#4b5673;margin-top:6px;">' +
+          (s.expired ? '⏱️ <b>Time ran out</b> — answered ' + s.answers.length + ' of ' + s.qs.length + ' in ' + this.FSCE_MINS + ' minutes.'
+                     : '⏱️ Finished in <b>' + Math.floor(secs / 60) + 'm ' + (secs % 60) + 's</b> of ' + this.FSCE_MINS + ' minutes.') +
+          '</p>';
+      }
+      fscePanel =
+        '<div style="background:#f4f6fc;border-radius:16px;padding:18px 20px;margin-bottom:20px;text-align:left;">' +
+          '<p style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8692a6;margin-bottom:6px;">Predicted standard</p>' +
+          '<p style="font-size:14.5px;font-weight:800;color:' + band[1] + ';margin-bottom:14px;">' + band[0] + '</p>' +
+          '<p style="font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8692a6;margin-bottom:10px;">By section</p>' +
+          rows + clockLine +
+        '</div>';
+    }
+
+    /* Guests still see their full result — the score is the payoff, not the bait.
+       The account prompt sits underneath it rather than in front of it. */
     if (!currentUser) {
       mbody.innerHTML =
         '<div style="text-align:center;padding:20px 0">' +
-        '<div style="font-size:48px;margin-bottom:12px;">🎉</div>' +
-        '<h2 style="font-family:\'Poppins\',sans-serif;font-size:20px;font-weight:900;color:#0d1b2a;margin-bottom:8px;">Nice work, ' + par.childName + '!</h2>' +
-        '<p style="font-size:14px;color:#4b5673;margin-bottom:6px;">Create a free account to:</p>' +
-        '<ul style="text-align:left;max-width:260px;margin:0 auto 20px;font-size:14px;color:#4b5673;line-height:2;">' +
+        '<div style="width:100px;height:100px;border-radius:50%;background:' + scoreCol + ';display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 6px 0 rgba(0,0,0,0.15);">' +
+          '<span style="font-size:28px;font-weight:900;color:#fff;font-family:Poppins,sans-serif;">' + s.correct + '/' + tot + '</span>' +
+        '</div>' +
+        '<h2 style="font-family:\'Poppins\',sans-serif;font-size:20px;font-weight:900;color:#1a2870;margin-bottom:4px;">' + pct + '% — ' + scoreMsg + '</h2>' +
+        '<p style="font-size:14px;color:#4b5673;margin-bottom:22px;">Nice work, ' + par.childName + '! A full breakdown is on its way to <b>' + par.parentEmail + '</b>.</p>' +
+        fscePanel +
+        '<div style="background:#f4f6fc;border-radius:16px;padding:18px 20px;margin-bottom:16px;">' +
+        '<p style="font-size:14px;font-weight:700;color:#1a2870;margin-bottom:10px;">Create a free account to:</p>' +
+        '<ul style="text-align:left;max-width:260px;margin:0 auto 4px;font-size:14px;color:#4b5673;line-height:2;">' +
         '<li>✅ Save your progress</li>' +
         '<li>🔥 Build a daily streak</li>' +
-        '<li>📊 Access 1,000s of questions</li>' +
-        '<li>🚀 New features dropping soon</li>' +
-        '</ul>' +
+        '<li>📊 Track every subject over time</li>' +
+        '</ul></div>' +
         '<button onclick="openAuthModal(\'signup\')" style="width:100%;background:#1d4ed8;color:#fff;font-weight:700;font-size:15px;padding:14px;border-radius:12px;border:none;cursor:pointer;margin-bottom:10px;">Create free account →</button>' +
         '<button onclick="openAuthModal(\'signin\')" style="width:100%;background:#f4f6fc;color:#1d4ed8;font-weight:600;font-size:14px;padding:12px;border-radius:12px;border:none;cursor:pointer;margin-bottom:14px;">I already have an account</button>' +
         '<a onclick="document.getElementById(\'scgmm-modal\').classList.remove(\'on\')" style="font-size:13px;color:#8692a6;cursor:pointer;display:block;">Skip for now</a>' +
@@ -2630,8 +2756,6 @@ var Q={
       return;
     }
 
-    var scoreCol = pct >= 80 ? '#27ae60' : pct >= 60 ? '#e8781a' : '#e57373';
-    var scoreMsg = pct >= 80 ? 'Brilliant work! 🌟' : pct >= 60 ? 'Good effort! 💪' : 'Keep going! 📚';
     mbody.innerHTML =
       '<div style="text-align:center;padding:20px 0">' +
       '<div style="width:100px;height:100px;border-radius:50%;background:' + scoreCol + ';display:flex;align-items:center;justify-content:center;margin:0 auto 12px;box-shadow:0 6px 0 rgba(0,0,0,0.15);">' +
@@ -2639,7 +2763,8 @@ var Q={
       '</div>' +
       '<h2 style="font-family:\'Poppins\',sans-serif;font-size:20px;font-weight:900;color:#1a2870;margin-bottom:4px;">' + pct + '% — ' + scoreMsg + '</h2>' +
       '<p style="font-size:14px;color:#4b5673;margin-bottom:6px;line-height:1.6;">A full breakdown has been sent to <b>' + par.parentEmail + '</b>.</p>' +
-      '<p style="font-size:13px;color:#8692a6;margin-bottom:28px;">Check your email for the question-by-question results.</p>' +
+      '<p style="font-size:13px;color:#8692a6;margin-bottom:22px;">Check your email for the question-by-question results.</p>' +
+      fscePanel +
       '<div style="background:#f4f6fc;border-radius:16px;padding:20px 24px;margin-bottom:20px;">' +
       '<p style="font-size:14px;font-weight:700;color:#1a2870;margin-bottom:14px;">Want daily practice? Subscribe below:</p>' +
       '<div style="display:flex;flex-direction:column;gap:10px;">' +
@@ -2656,7 +2781,7 @@ var Q={
       if(s.type==='comp') self.startComp(s.data, s.ac, s.year);
       else if(s.type==='maths') self.startMaths(s.year, s.op, s.ac);
       else if(s.type==='mixed') self.startMixedComp(s.comps, s.ac, s.year);
-      else self.startFsce();
+      else self.startFsce(s.timed);
     });
     document.getElementById('d-menu').addEventListener('click', function() { self.close(); });
   },
